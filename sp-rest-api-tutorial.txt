@@ -1,0 +1,2015 @@
+#+OPTIONS: date:t H:3 ^:{} author:t email:nil num:t title:t makeindex:t
+#+OPTIONS: toc:t
+#+MACRO: NEWLINE @@latex:\\@@ @@html:<br>@@
+#+MACRO: IMAGE @@latex:\\ \vspace{8cm} \hfill \usebox{\titleimage}@@
+#+TITLE: SP REST API Cookbook {{{NEWLINE}}} SP v8.3 {{{NEWLINE}}} API v3 {{{IMAGE}}}
+#+DATE: <2017-07-14 Fri>
+#+AUTHOR: Arbor Networks
+#+LATEX_CLASS: tufte-book
+# #+LATEX_CLASS: memoir
+#+LaTeX_CLASS_OPTIONS: [koma,utopia,12pt,symmetric,notoc]
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{makeidx}
+#+LATEX_HEADER: \setcounter{tocdepth}{1}
+#+LATEX_HEADER: \makeindex
+#+LATEX_HEADER: \newsavebox{\titleimage}
+#+LATEX_HEADER: \savebox{\titleimage}{\includegraphics[height=7\baselineskip]{images/ArborLogo.png}}
+#+BEGIN_COMMENT
+To use the minted package, you should also add these lines to your
+.emacs file:
+ -------
+(setq org-latex-minted-options '(
+                                 ("frame" "lines")
+                                 ("fontsize" "\\scriptsize")
+                                 ("xleftmargin" "\\parindent")
+                                 ("linenos" "")
+				 ("breaklines" "")
+				 ("breakafter" "+")
+                                 ))
+ -------
+if that is untenable to you, comment out the \usepackage{minted} line
+above and uncomment the following LATEX_HEADER lines to switch to the
+listings package.
+#+END_COMMENT
+# #+LATEX_HEADER: \usepackage{listings}
+# #+LATEX_HEADER: \lstset{
+# #+LATEX_HEADER:     frame=single,
+# #+LATEX_HEADER:     breaklines=true,
+# #+LATEX_HEADER:     showstringspaces=false,
+# #+LATEX_HEADER:     postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}}
+# #+LATEX_HEADER: }
+#+LATEX: \renewcommand \plaintitle{SP REST API Cookbook, SP v8.3, API v3} % keep the image out of the headers
+#+LATEX: \renewcommand{\ref}{\nameref}
+
+* Introduction
+
+  Arbor Networks SP is a very sophisticated piece of software that
+  gives visibility into the network traffic on networks ranging up to
+  those that are massively large; SP support hundreds of configuration
+  parameters for defining what exactly visibility means and the
+  reported data from SP is very rich and very broad.  Almost no
+  network operators who use SP make use of the entire range of its
+  capabilities.
+
+  The configuration of SP and the management of its data is done in
+  two ways: the SP web-based UI and the web-based API interfaces to
+  SP.  While SP has had APIs for many versions, the versions starting
+  with 8.1 have had a REST API as one of the options for configuration
+  and data retrieval.
+
+  This book describes how to programmatically configure SP and get
+  data about your network from SP using a json:api-based REST API to
+  SP.
+
+  #+INDEX: REST
+  #+INDEX: SOAP API
+  REST is a common, HTTP-based protocol that defines web-based
+  services that allow clients (sometimes called "requesting systems")
+  to access and manipulate textual representations (in the case of SP,
+  JSON representations) of SP configuration and reporting data
+  (generically called "Web resources") using a uniform and predefined
+  set of stateless, from the client's perspective, operations.  All of
+  the state, configuration and data, is maintained within SP, not by
+  the API client.  The API described here is the SP REST API.  SP has
+  other APIs (SOAP and WebServices) that are documented in other SP
+  documentation.  The intent of the SP REST API is to, over time,
+  include all of the functionality of the SOAP and WebServices API, at
+  which point those will be deprecated.
+
+  #+INDEX: jsonapi
+  The SP REST API uses a particular API-focused JavaScript Object
+  Notation (JSON) format to represent its data.  JSON is a textual
+  representation of data in collections (Python calls these
+  dictionaries, C calls them structures, Go calls them maps, Ruby and
+  Perl call them hashes) and lists (Python and Perl also calls them
+  lists, Go calls them slices, C and Ruby call them arrays).  The
+  elements in collections and lists are other collections, other
+  lists, Boolean values, numeric values, or string values as
+  described by the JSON specification (http://www.json.org/).  The
+  particular JSON representation that the SP REST API adheres to is
+  called json:api (http://jsonapi.org/); the rules and guidelines
+  described in Version 1.0 of the json:api specification are
+  implemented for the SP REST API.
+
+  The SP REST API is under development.  Each release of Arbor
+  Networks SP after version 8.0 includes a REST API that has more
+  features than the prior release.  Arbor Networks expects that the
+  REST API will not be complete for several years, but incremental
+  steps will be included in each version of SP.  This book describes
+  Version 3 of the API that is included in SP 8.3.  (The versioning
+  mechanism is described in more detail in the section [[Guiding
+  Principles of the SP REST API]].)
+
+  This book is intended for the SP administrator or advanced user who
+  has some programming or shell scripting experience and who wants to
+  automate network management or reporting tasks, or combine SP data
+  with other sources of data for reporting, configuration, or decision
+  making.
+
+
+** Conventions Used in this Book
+
+   Things in a fixed-width font are either input or output, for the
+   most part.
+
+   See the section [[Reporting Errors to Arbor]] for advice on how to
+   provide feedback.
+
+   This is a collaborative document, feedback, additions, edits,
+   changes, modifications, etc. are all greatly appreciated.  Please
+   see the section [[Contributing and other technical details]] for advice
+   on ways to contribute.
+
+** SP APIs
+
+   #+INDEX: SOAP API
+   Arbor Networks SP has three officially supported types of APIs: the
+   SOAP API, the WebServices API, and the REST API.
+
+   The SOAP and WebServices API are documented in the online SP
+   documentation and in the API software development kit available
+   from the SP web UI at the Administration > Download Arbor API SDK
+   menu item.
+
+   Arbor Networks has decided to focus on the REST API (the topic of
+   this book) for its future development with the goal of encompassing
+   the functionality of the other APIs, the SP command-line interface,
+   and all of the functionality provided by the web-based UI that is
+   the most familiar to SP users.
+
+   As you develop clients for SP's APIs, keep in mind that the REST
+   API is the officially preferred API for SP.  However, in this
+   version (and, likely, several upcoming versions), the REST API does
+   not provide all of the functionality of the SOAP and WebServices
+   APIs.  Arbor recommends using the REST API where you can in your
+   clients, and augmenting it with API requests to the other APIs,
+   replacing those requests as the REST API gains functionality.
+
+** Guiding Principles of the SP REST API
+
+   As Arbor Networks develops the REST API, we abide by some standards
+   and principles that you can rely on as you you create API clients.
+*** JSON API
+    #+INDEX: jsonapi
+    The first of these guidelines is that the structure of the JSON
+    that is used for input and output from the API follows the JSON
+    API specification ([[http://jsonapi.org/]]).  While you don't need to
+    understand the specification to use the SP REST API, it may help
+    answer some questions about why things are the way they are in the
+    API, and how Arbor is likely to handle future additions to the
+    API.
+*** Useful Errors for Humans and Computers
+    #+INDEX: errors
+    The second guideline is that the SP REST API should provide you
+    with useful error messages that can be interpreted by both a human
+    and a computer program.  Arbor makes use of a combination of HTTP
+    response codes as described in Section 10 of RFC 2616
+    (https://www.ietf.org/rfc/rfc2616.txt) and error objects that
+    contain some or all of an error title string, an error detail
+    string, an HTTP status code string, and a pointer to the error in
+    the input.  An example error object that resulted from the REST
+    client requesting a nonexistent endpoint is:
+    #+NAME: errorExample
+    #+CAPTION: Error Example
+    #+BEGIN_SRC json
+      {
+          "detail": "Resource https://leader.example.com/api/sp/asdf could not be found.",
+          "meta": {
+              "api": "SP",
+              "api_version": "2",
+              "sp_build_id": "HGRD",
+              "sp_version": "8.3"
+          },
+          "status": "404",
+          "title": "Missing resource error."
+      }
+    #+END_SRC
+    This error object contains the error detail, status code, and
+    title along with the standard ="meta"= section which gives
+    information about the API itself.  Error objects are further
+    described in the JSON API specification in the /Errors/ section
+    (http://jsonapi.org/format/#errors).
+
+*** Backward compatibility
+    Another guideline is that the REST API will maintain
+    backward-compatibility as it increases in version.  The version for
+    the API is a combination of the SP version and the API version
+    number; in the example above the API version would be reported as
+    "SP v8.3, API v2".  It is possible that there will be an API v2
+    for SP v8.2.3 that is different from the API v2 for SP v8.3.
+    Arbor Networks will retain at least one prior version of the API
+    in each version of SP so if you have written clients that use v3
+    of the API in SP v8.4 and upgrade to SP v8.5 that defaults API v4,
+    you can still access API v3 in SP v8.5 with your clients while you
+    work to migrate them to the latest version.  API version increases
+    will happen when Arbor Networks introduces a change in the API
+    that could potentially break existing clients; this includes
+    things like changing the name of an API key, changing the type of
+    an API value, or removing an API endpoint.  Adding keys and
+    endpoints is not considered breaking, as well-written API clients
+    should ignore extra data returned to them.
+*** Discoverability
+    #+INDEX: HATEOAS
+    #+INDEX: Fielding, Roy
+    Arbor Networks makes every effort to ensure the SP REST API is
+    fully discoverable from the root URL, =/api/sp/=.  Starting there,
+    every response you receive may contain an object called
+    =relationships= that will lead you to the related objects.  There
+    are no detached nodes of the API tree.  This is called Hypermedia
+    as the Engine of Application State (HATEOAS) and is defined[fn:1]
+    by Roy T. Fielding (the inventor of REST) as:
+    #+BEGIN_QUOTE
+    A REST API should be entered with no prior knowledge beyond the
+    initial URI (bookmark) and set of standardized media types that
+    are appropriate for the intended audience (i.e., expected to be
+    understood by any client that might use the API). From that point
+    on, all application state transitions must be driven by client
+    selection of server-provided choices that are present in the
+    received representations or implied by the user’s manipulation of
+    those representations. The transitions may be determined (or
+    limited by) the client’s knowledge of media types and resource
+    communication mechanisms, both of which may be improved on-the-fly
+    (e.g., code-on-demand).
+    #+END_QUOTE
+    In the case of the SP REST API, the "initial URI" is
+    https://sp-leader.example.com/api/sp/ and following that
+    the elements in the =links= objects provide connectivity to the
+    rest of the API.
+
+** Online Reference Manual
+
+   The SP REST API includes a reference manual for each endpoint with
+   a description of each key in that endpoint; there are very few
+   examples of using the API in the reference manual (hence this
+   book), but all of the endpoints and their properties are listed for
+   all of the versions of the API supported on the installed version
+   of SP.
+
+   In addition, changes between versions are in the Deprecation Policy
+   section of the reference manual.
+
+   This book will often make reference to the online reference manual;
+   having access to that manual will be helpful as you develop
+   clients.  The online reference manual is available from the Arbor
+   SP UI by selecting the "REST API Documentation" from the
+   "Administration" menu.  A PDF copy of this is available from your
+   local engineer or from the Arbor Technical Assistance Center.
+
+* Set-up
+** Permissions, Access Tokens, and SSL Certificates
+
+   The current version of the SP REST API does not support
+   authorization.  That is, granting someone an API access token is
+   the same as granting them "=admin=" access to the SP deployment.
+*** Access Tokens
+    #+INDEX: token
+    SP REST API tokens are created from the SP command line interface
+    with the command:
+    #+BEGIN_SRC sh
+    / services aaa local apitoken generate admin "comment"
+    #+END_SRC
+    where =admin= is the username of the administrative user and
+    ="comment"= is a useful comment for you.  Arbor recommends the
+    local name of the user and the date the token is created, for
+    example:
+    #+BEGIN_SRC sh
+    / services aaa local apitoken generate admin "fred@example.com 2017-07-01"
+    #+END_SRC
+
+    You can list the tokens that have been created with the command:
+    #+BEGIN_SRC sh :exports code
+    / services aaa local apitoken show
+    #+END_SRC
+    which will result in a list of API tokens and their associated
+    comments, something like this:
+    #+LATEX: \scriptsize
+    #+BEGIN_EXAMPLE
+      admin:
+       wz8SmDeJRSkz_0kNbdSajSQ_Jk82EVOqRU6CPU_O  susy@example.com - 2017-06-01
+       YK3va5ATpXdmTWwfgzZPBckrj7zue205CzjLBtK5  fred@example.com - 2017-07-01
+    #+END_EXAMPLE
+    #+LATEX: \normalsize
+
+    To remove the token =YK3va5ATpXdmTWwfgzZPBckrj7zue205CzjLBtK5= type
+    the command:
+    #+BEGIN_SRC sh :exports code
+    / services aaa local apitoken remove YK3va5ATpXdmTWwfgzZPBckrj7zue205CzjLBtK5
+    #+END_SRC
+*** SSL Certificates
+    #+INDEX: ssl
+    All SP REST API requests should use the secure HTTP transport
+    (=https=).  This will ensure that your API key and the contents of
+    requests and responses are encrypted.  In addition, SP will
+    attempt to redirect unencrypted HTTP requests to the encrypted
+    port, but that can affect the use of the POST and PATCH options.
+
+    SP comes with its own SSL certificate, and your organization may
+    also add their own; to verify that your communications are secure,
+    you will need a copy of that certificate.  The person who
+    maintains your SP deployment should be able to provide that to
+    you; if you have shell access to the SP leader, the file
+    containing the certificates is at =/etc/ca-bundle.crt=.  Copying
+    that file to your API client's environment will allow you to refer
+    to it.  In the examples in this book that file is referred to at
+    =certfile= in most places.
+** Useful Tools
+
+   When working with REST APIs there are several common actions that
+   you will take: getting data from the API, processing retrieved
+   data, and sending data to the API.  There are many free programs
+   that can help you do this in an interactive way.  This can be
+   useful during development of more complicated programs, for quick
+   API queries that don't require a whole program, for use in a shell
+   script, or for interactively working the SP REST API.
+
+   Examples later in this book will make use of at least some of these
+   tools.
+
+*** Any web browser
+
+    The SP API is available via any web browser by simply going to a
+    URL of the form =https//spleader.example.com/api/sp/=; this
+    will present a nicely formatted web page showing the request and
+    the results.  It's not as convenient as other tools (cURL or
+    HTTPie, see the following section) for actions other than GET, but
+    as a quick test of an API request, it can be very handy.  An
+    example of how it looks is in Figure [[fig:api-results-web-browser]].
+     #+CAPTION: The SP REST API can be accessed using a web browser
+     #+CAPTION: and the query and results are displayed nicely.
+     #+NAME:    fig:api-results-web-browser
+     [[./images/api-results-web-browser.png]]
+
+*** cURL
+    #+INDEX: curl!command line
+    cURL is a classic program (dating back to 1997) for accessing HTTP
+    services from the command line.  It is open source and available
+    for free from the main cURL website http://curl.haxx.se or via
+    package managers for your platform.  cURL is available for 34
+    different operating systems, so should work in almost all
+    scenarios.  There are more modern and feature-rich tools for
+    accessing REST APIs (or other HTTP services), but cURL is nearly
+    ubiquitous.
+**** Getting data with cURL
+
+     An example of using cURL to get data from SP via the SP REST API
+     is:
+     #+BEGIN_SRC sh :exports code
+     curl --cacert certfile --ssl -X GET -H "Content-Type:application/vnd.api+json" -H "X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O" https://leader.example.com/api/sp/
+     #+END_SRC
+
+     In order of appearance, the options used in the =curl= command
+     above are:
+      - =--cacert certfile= tells =curl= to use the SSL certificate
+	called =certfile= (more on this later)
+      - =--ssl= tells =curl= to use Secure Sockets Layer (SSL) for its
+	connection
+      - =-X GET= tells =curl= to issue an HTTP =GET= command (more on
+	this later, too)
+      - =-H "Content-Type:application/vnd.api+json"= sends the HTTP
+	header =Content-Type= set to the value of
+	=application/vnd.api+json=.  Other than the endpoints at
+	=/insight/=, all of the SP API uses this content type
+      - =-H
+	"X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
+	sends the HTTP header =X-Arbux-APIToken= set to the value of
+	the API key that was set via the SP command line
+      - =https://leader.example.com/api/sp/= which is the URL
+	(hostname and endpoint) that is requested.  In this case, it is
+	the index endpoint for the API.
+
+     The output of this particular command is the index of the SP REST
+     API represented as a JSON object (defined by the outer-most curly
+     braces) with two JSON objects in it, =meta= and =links=.
+
+     Successful requests for data from the SP REST API will return the
+     requested data along with the HTTP status code =200 OK=.
+
+     #+BEGIN_COMMENT
+     #+BEGIN_QUOTE
+     A brief aside:
+
+     The =meta= object tells you a little about the version of SP and
+     the API on the SP leader you are connecting to.  This is most
+     useful when writing clients that need to work with more than one
+     version of SP and when submitting questions to the Arbor
+     Technical Assistance Center (ATAC).  The =links= object contains
+     a map between the endpoint type (for example, =alert=) and the
+     URL where that data is accessible in this version (in the case of
+     =alert=, that is =https://leader.example.com/api/sp/v2/alerts/=).
+     #+INDEX: /alerts/ endpoint
+     You should try to write your clients using this mapping; the key
+     names will not change, but the URLs may and if your program uses
+     the key names, this won't affect you as you upgrade SP.
+     #+END_QUOTE
+     #+END_COMMENT
+**** Sending data with cURL
+
+     An example of using cURL to send data to SP via the SP REST API
+     is:
+     #+INDEX: /alerts/ endpoint
+     #+INDEX: /alerts/ endpoint!annotations
+     #+BEGIN_SRC sh :results output :exports code
+       curl --cacert certfile --ssl -X POST -H "Content-Type:application/vnd.api+json" -H "X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O" -d @input.json https://leader.example.com/api/sp/alerts/12519/annotations/
+     #+END_SRC
+
+     In order of appearance, the options used in the =curl= command
+     above are:
+      - =--cacert certfile= tells =curl= to use the SSL certificate
+	called =certfile= (more on this later)
+      - =--ssl= tells =curl= to use Secure Sockets Layer (SSL) for its
+	connection
+      - =-X POST= tells =curl= to issue an HTTP =POST= command (more
+        on this later, too)
+      - =-H "Content-Type:application/vnd.api+json"= sends the HTTP
+	header =Content-Type= set to the value of
+	=application/vnd.api+json=.  Other than the endpoints at
+	=/insight/=, all of the SP API uses this content type
+      - =-H
+	"X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
+	sends the HTTP header =X-Arbux-APIToken= set to the value of
+	the API key that was set via the SP command line
+      - =-d @input.json= tells cURL that the data to be sent can be
+        found in the file named =input.json=
+      - =https://leader.example.com/api/sp/alerts/12519/annotations/=
+	#+INDEX: /alerts/ endpoint!annotations
+        which is the URL (hostname and endpoint) to which the data
+        will be sent.  In this case, it is an alert annotation for the
+        alert with id 12519.
+
+     Although this will be discussed in more depth later in this book,
+     the format of the data for an alert annotation (in this example,
+     the contents of the file =input.json=) is:
+     #+BEGIN_SRC json
+       {
+	   "data": {
+	       "attributes": {
+		   "author": "The name of the author",
+		   "text": "The text of the annotation"
+	       }
+	   }
+       }
+     #+END_SRC
+
+     Using the HTTP verb =PATCH= to change data is very similar to how
+     the =POST= verb is used.
+
+     Successful API =POST= and =PATCH= requests will return all of the
+     data for the object that was created or modified along with
+     either a =200 OK= or =201 Created= status code.
+
+**** Deleting data with cURL
+
+     An example of using cURL to delete data from SP via the SP REST
+     API is:
+     #+INDEX: /routers/ endpoint
+     #+BEGIN_SRC sh :results output :exports code
+       curl --cacert certfile --ssl -X DELETE -H "Content-Type:application/vnd.api+json" -H "X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O" https://leader.example.com/api/sp/routers/132
+     #+END_SRC
+
+     In order of appearance, the options used in the =curl= command
+     above are:
+      - =--cacert certfile= tells =curl= to use the SSL certificate
+	called =certfile= (more on this later)
+      - =--ssl= tells =curl= to use Secure Sockets Layer (SSL) for its
+	connection
+      - =-X DELETE= tells =curl= to issue an HTTP =DELETE= command
+        (more on this later, too)
+      - =-H "Content-Type:application/vnd.api+json"= sends the HTTP
+	header =Content-Type= set to the value of
+	=application/vnd.api+json=.  Other than the endpoints at
+	=/insight/=, all of the SP API uses this content type
+      - =-H
+	"X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
+	sends the HTTP header =X-Arbux-APIToken= set to the value of
+	the API key that was set via the SP command line
+      - =https://leader.example.com/api/sp/routers/132= which is the
+	#+INDEX: /routers/ endpoint
+        URL (hostname and endpoint) that identifies what resource in
+        SP will be deleted.  In this case, it is the router with
+        id 132.
+
+     API delete requests do not return any data, since the SP object
+     you were acting on is now gone.  The HTTP status code that will
+     be returned for successfully deletions is =204 No Content=.
+
+*** HTTPie
+    #+INDEX: httpie
+    HTTPie is a Python program that is much newer than cURL (although
+    has still seen a lot of development; the initial commit to Github
+    was on 25 February 2012) and has some conveniences that cURL
+    doesn't.  The biggest convenience, in my opinion, is the ability
+    to save configuration data for a host, and select which host
+    configuration to use when the the command is run.
+
+    HTTPie is open source and available for free from
+    https://httpie.org/ or via package managers for your platform.
+    HTTPie is based on Python, so is available for any platform that
+    supports Python.  There are installation instructions for MacOS,
+    Linux, and Windows at https://httpie.org/doc#installation.
+
+    Among the Arbor Networks engineers, HTTPie is widely used.
+
+**** Configuring HTTPie
+
+     There is much more information on the configuration of HTTPie in
+     its online documentation, but the two things that might be useful
+     are setting the defaults and creating some sessions.
+
+     HTTPie's configuration is kept in a simple JSON-formatted file
+     called =config.json= (see
+     https://httpie.org/doc#config-file-location for more); a good
+     start for configuration is:
+     #+BEGIN_SRC json
+       {
+	   "__meta__": {
+	       "about": "HTTPie configuration file",
+	       "help": "https://github.com/jkbrzt/httpie#config",
+	       "httpie": "0.9.4"
+	   },
+	   "default_options": [
+	       "--verify=/path/to/a/ssl/certfile",
+	       "--session=spleader.my.example.com",
+	       "--timeout=60",
+	       "--follow"
+	   ]
+       }
+     #+END_SRC
+     The ="__meta__"= section comes with HTTPie, and the default
+     options set:
+      - the path to a SSL certificate file bundle
+      - the default connection information (what HTTPie calls a
+        session)
+      - a useful timeout value of 60 seconds
+      - the option to follow HTTP redirects
+
+     Once you have created =config.json= you can add some information
+     to the saved session by typing all of the information once on the
+     command line.  The information the SP REST API needs is the
+     =Content-Type= and =X-Arbux-APIToken= headers; this is entered by
+     typing:
+     #+BEGIN_SRC sh :results output :exports code
+     http https://spleader.example.com/api/sp X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O Content-Type:application/vnd.api+json
+     #+END_SRC
+     (replacing, of course, the hostname and API token in that example
+     with your own hostname and API token).  After you do that once,
+     you can then type:
+     #+BEGIN_SRC sh :results output :exports code
+     http https://spleader.my.comany.com/api/sp
+     #+END_SRC
+     and the configuration will read the data from the saved file.
+     Save session information is in the =.httpie/sessions/= directory
+     and are JSON files in directories named after the host.
+
+**** Getting data with HTTPie
+
+     Replicating the cURL example from earlier, getting the SP REST
+     API index using HTTPie, after following the configuration steps,
+     is done using the command:
+     #+BEGIN_SRC sh :results output :exports code
+     http GET https://spleader.example.com/api/sp/
+     #+END_SRC
+
+     When HTTPie detects that is is writing to the terminal, it will
+     include additional information that might look about like:
+     #+BEGIN_VERSE
+       HTTP/1.1 200 OK
+       Connection: Keep-Alive
+       Content-Length: 1593
+       Content-Security-Policy: default-src 'self' 'unsafe-inline' 'unsafe-eval'
+       Content-Type: application/vnd.api+json
+       Date: Tue, 01 Aug 2017 00:55:31 GMT
+       Keep-Alive: timeout=15, max=10000
+       P3P: policyref="/w3c/p3p.xml", CP="NOI DSP COR TAIa OUR NOR UNI"
+       Server: Apache
+       Strict-Transport-Security: max-age=1261440000
+       Via: 1.1 127.0.0.1
+       X-Frame-Options: SAMEORIGIN
+     #+END_VERSE
+     when HTTPie thinks it is directing its output somewhere else, it
+     will not print this information; if you want to override HTTPie's
+     decisions about this, there are command-line options to do so.
+
+**** Sending data with HTTPie
+
+     An example of using HTTPie to send the same data to SP we sent
+     via the SP REST API is using cURL earlier is (see =input.json=
+     in the cURL example of sending data to SP):
+     #+BEGIN_SRC sh :results output :exports code
+     cat input.json | http POST http https://spleader.example.com/api/sp/alerts/12519/annotations/
+     #+END_SRC
+
+     The two differences between getting and sending data to SP via
+     the REST API using HTTPie are:
+      - using the =POST= verb instead of the =GET= verb before the URL
+      - the data you want to send to SP via the REST API is in the
+        same format as in the cURL example, but it is piped into the
+        =http= command
+
+     To make changes to SP via the REST API, you can use the =PATCH=
+     verb to HTTPie instead of =POST=.  There will be more examples of
+     this later.
+
+**** Deleting data with HTTPie
+
+     Repeating the example of deleting data from the cURL section, the
+     syntax for using HTTPie to delete data from SP via the SP REST
+     API is:
+     #+BEGIN_SRC sh :results output :exports code
+       http DELETE https://spleader.example.com/api/sp/routers/132
+     #+END_SRC
+
+     The SP REST API will return the HTTP status code =204 No Content=
+     and HTTPie will print this if you aren't piping or redirecting
+     the output somewhere else.
+
+*** Postman
+    #+INDEX: postman
+    Postman is an application that provides a graphical user interface
+    for working with REST APIs.  It is free to use the basic version,
+    with the versions more suitable for development enterprises
+    costing money.  Postman is available from
+    https://www.getpostman.com/ for MacOS, Linux, and Windows.  It is
+    also available in the Chrome App Store as a plug-in for the Google
+    Chrome web browser[fn:2].
+
+    Among the Arbor Networks engineers, Postman is widely used.
+
+**** Configuring Postman
+
+     If you are installing the Postman client there are three
+     configuration settings you need to make before using it with the
+     SP REST API; adding the certificate bundle and adding the
+     =Content-Type= and =X-Arbux-APIToken= headers.  If you are using
+     the Postman Chrome app, you don't need to add the certificates;
+     Postman will use those in your browser, but you may still have to
+     add them to your browser.
+
+     To add the SP certificate bundle to the Postman application,
+     select the wrench icon in the upper right part of the Postman
+     window and choose Settings from the menu.  In the resulting
+     window, choose the Certificates option from the top row of
+     options, then click Add Certificate. In the Host text entry
+     field, type =*.mydomain.com= (replacing =mydomain.com= with the
+     domain where your SP leader is), and in the CRT File text entry
+     field type the path to the certificate bundle for your SP
+     environment.  It should look something like what is shown in
+     Figure [[fig:postman-cert-config]].
+     #+CAPTION: The Postman certificate configuration window should
+     #+CAPTION: look similar to this, with your information filled in;
+     #+CAPTION: if you are using the Chrome app, you won't see the
+     #+CAPTION: Certificates option in the top row; Postman will use
+     #+CAPTION: your browser's certificates.
+     #+NAME:    fig:postman-cert-config
+     [[./images/postman-cert-config.png]]
+
+     For both the application and Chrome app you will need to set the
+     =Content-Type= and =X-Arbux-APIToken= headers.  This is done in
+     the Headers section that is immediately below the URL entry field
+     (after making a request, there will be another Headers section
+     for the response).  You simply type in each key and the values
+     for them.  For all of the SP REST API endpoints /except/ those
+     under =/insight/= you must set =Content-Type= to
+     =application/vnd+api.json=; for the endpoints under =/insight/=
+     you must set =Content-Type= to =application/json=.
+
+**** Getting data with Postman
+
+     Following the cURL and HTTPie examples, to get the SP REST API
+     index using Postman you make sure that =GET= is selected to the
+     left of the text entry box that says "Enter request URL", then
+     enter the URL for the index endpoint
+     (=https://spleader.example.com/api/sp/=) and press the Send
+     button. The results (the body, cookies, and headers) will appear
+     in the bottom pane.  It will look something like what is shown in
+     Figure [[fig:postman-GET-index]].
+     #+CAPTION: Retrieving data from the SP REST API using Postman
+     #+CAPTION: is done by setting the two headers shown, entering
+     #+CAPTION: a URL, and pressing the Send button.  The data
+     #+CAPTION: retrieved is displayed in the lower pane.
+     #+NAME:    fig:postman-GET-index
+     [[./images/postman-GET-index.png]]
+
+**** Sending data with Postman
+
+     Once again using the same =input.json= file from earlier, we will
+     set an annotation on an alert, this time using Postman.
+
+     The steps in Postman to get ready to send date are:
+      - change the HTTP verb to the left of the URL from =GET= to
+        =POST=
+      - enter the URL to which you are sending the data in the text
+        entry box that says "Enter request URL"
+      - select Body from the items below the URL
+      - select raw from the items above the text entry box
+      - select JSON from the dropdown to the right of type selections
+      - enter the JSON body you are sending in the text box.
+
+     Having done all of those steps, you should have something that
+     looks like Figure [[fig:postman-POST-annotation]].
+     #+CAPTION: Sending data to SP using the REST API and Postman
+     #+CAPTION: is done by setting the HTTP verb to POST, filling
+     #+CAPTION: in the URL, selecting the Body option, then the raw
+     #+CAPTION: option and the JSON type, and filling in the JSON
+     #+CAPTION: body.  Once that is complete, press the Send button.
+     #+NAME:    fig:postman-POST-annotation
+     [[./images/postman-POST-annotation.png]]
+
+     After sending the body with the correct settings, the results
+     will appear in the bottom text area in Postman.
+
+**** Deleting data with Postman
+
+     Repeating the example of deleting data from the cURL and HTTPie
+     sections, the method for using Postman to delete data from SP via
+     the SP REST API is to enter the URL for the object you want to
+     delete, change the HTTP verb to Delete, and press the Send
+     button.
+
+     The SP REST API will return the HTTP status code =204 No Content=
+     and no body content.
+
+     After a successful DELETE operation you should have something
+     that looks like Figure [[fig:postman-DELETE-router]].
+     #+CAPTION: Deleting data from SP using the REST API and Postman
+     #+CAPTION: is done by selecting the =DELETE= HTTP verb from the
+     #+CAPTION: menu, entering the URL of the item to be deleted and
+     #+CAPTION: pressing Send.  There will be no content in returned
+     #+CAPTION: but on the right side just above the (empty) returned
+     #+CAPTION: data box the status will read =204 NO CONTENT=.
+     #+NAME:    fig:postman-DELETE-router
+     [[./images/postman-DELETE-router.png]]
+
+*** =jq=
+    #+INDEX: jq
+    =jq= is a JSON parsing and manipulation tool in the spirit of
+    what =sed=[fn:3] and =awk=[fn:4] are for text.
+
+    =jq= is free and open-source; it is available at
+    https://stedolan.github.io/jq/ for MacOS, Linux, and Windows or
+    via package managers for your platform.  The C source code and
+    build instructions are available at https://github.com/stedolan/jq
+    for other platforms.
+
+    =jq= is very powerful, but complicated.  It can be used to extract
+    subsets of data from JSON input, search for keys or values in JSON
+    data and only print the objects that match the search criteria,
+    select and recast data from JSON input into different JSON
+    output.  The complete manual is available at the =jq= website, but
+    we will provide a few examples of using =jq= with the JSON from
+    the SP REST API.
+
+**** Extracting only names, descriptions, and ids of routers into a new JSON format
+
+     The HTTPie command to get the router information from SP using
+     the REST API is:
+     #+BEGIN_SRC sh :results output :exports code
+     http https://leader.example.com/api/sp/routers/
+     #+END_SRC
+     but on a system with 12 routers this results in 503 lines of JSON
+     output.  If all you need is the id, name, and description of each
+     router, that is a lot of information to deal with.
+
+     Using =jq= we can extract the 36 pieces of data that we need.
+
+     Looking at the original output from the =/routers/= endpoint, we
+     need to make note of two things: the information we want is in a
+     list of objects in the ="data"= object; the fields we want are at
+     the top level of each data object (="id"=) and in the
+     ="attributes"= sub-object for each data object.
+
+     The first thing we can do is have =jq= print each object in the
+     ="data"= list by giving it the filter =.data[]= which means "from
+     the top level (=.=) print every element =[]= in the ="data"=
+     array".  In practice this looks like:
+     #+BEGIN_SRC sh :results output :exports code
+       http https://leader.example.com/api/sp/routers/ | jq '.data[]'
+     #+END_SRC
+     The =jq= filter is in single-quotes to prevent the square
+     brackets from being interpreted by the shell.
+
+     =jq= uses periods to denote the JSON hierarchy (that's why
+     =.data= starts with a period, it is the root of the JSON tree),
+     the pipe (=|=) character to chain together its filters, and
+     commas to group elements together for selection.
+
+     So the next thing we can do is extract one element from the JSON
+     output of the SP REST API by adding it to the =.data[]= filter.
+     To get the names of the routers we can add =.attributes.name=
+     (remember, ="name"= is in the ="attributes"= subobject of data.
+     On the command line this looks like:
+     #+BEGIN_SRC sh :results output :exports code
+       http https://leader.example.com/api/sp/routers/ | jq '.data[].attributes.name'
+     #+END_SRC
+     This will print a list of the names of all of the routers
+     configured in SP.  This is part of our original goal, but we
+     still also want the id and description of the routers.
+
+     To select more than one element, =jq= supports sending each list
+     item over which it is iterating to a group of elements for
+     selection.  To get the router id and description along with the
+     name, we can type:
+     #+BEGIN_SRC sh :results output :exports code
+       http https://leader.example.com/api/sp/routers/ | jq '.data[] | .id,.attributes.name,.attributes.description'
+     #+END_SRC
+     This will then print a list that is something like:
+     #+LATEX: \scriptsize
+     #+BEGIN_EXAMPLE
+       "121"
+       "rtr1.nyc"
+       "a router in New York"
+       "122"
+       "rtr2.chi"
+       "a router in Chicago"
+       "123"
+       "rtr3.lax"
+       "a router in Los Angeles"
+       "124"
+       "pigeon.net"
+       "See RFC 1149"
+     #+END_EXAMPLE
+     #+LATEX: \normalsize
+     where the order of the elements is the same order as they were
+     requested in the filter.  But this isn't very easy to read, and
+     is not very useful as input to computer programs.  =jq= can do
+     better.
+
+     To make JSON-compliant output that is easy to read and easy for
+     another computer program to ingest, =jq= needs to know how things
+     should be grouped.
+     #+BEGIN_SRC sh :results output :exports code
+     http https://leader.example.com/api/sp/routers/ | jq '{"routers": [.data[] | {id:.id,name:.attributes.name,description:.attributes.description}]}'
+     #+END_SRC
+     will print a list that looks something like:
+     #+BEGIN_SRC json
+       {
+	   "routers": [
+	       {
+		   "id": "121",
+		   "name": "rtr1.nyc",
+		   "description": "a router in New York"
+	       },
+	       {
+		   "id": "122",
+		   "name": "rtr2.chi",
+		   "description": "a router in Chicago"
+	       },
+	       {
+		   "id": "123",
+		   "name": "rtr3.lax",
+		   "description": "a router in Los Angeles"
+	       },
+	       {
+		   "id": "124",
+		   "name": "pigeon.net",
+		   "description": "See RFC 1149"
+	       }
+	   ]
+       }
+     #+END_SRC
+
+     While this example is for four routers, with the original example
+     of 12 routers we have gone from 503 lines of JSON output to 64
+     lines, removing the 87% of the data we didn't need using one
+     filter in =jq=.
+
+**** Extracting alerts that have a severity percentage above 200
+
+     =jq= can also look for certain properties of objects and print
+     only the objects that have those properties.
+
+     For example, a typical alert from the SP REST API looks like:
+     #+BEGIN_SRC json
+       {
+	   "data": {
+	       "attributes": {
+		   "alert_class": "dos",
+		   "alert_type": "dos_host_detection",
+		   "classification": "Possible Attack",
+		   "importance": 2,
+		   "ongoing": true,
+		   "start_time": "2017-08-01T19:44:45+00:00",
+		   "subobject": {
+		       "fast_detected": false,
+		       "host_address": "192.168.12.203",
+		       "impact_boundary": "rtr1.nyc",
+		       "impact_bps": 8251040,
+		       "impact_pps": 3010,
+		       "ip_version": 4,
+		       "misuse_types": [
+			   "icmp",
+			   "total",
+			   "dns",
+			   "udp"
+		       ],
+		       "severity_percent": 153,
+		       "severity_threshold": 1000,
+		       "severity_unit": "bps",
+		       "summary_url": "/page?id=profile_summary&gid=154"
+		   }
+	       },
+	       "id": "799318",
+	       "links": {
+		   "self": "https://leader.example.com/api/sp/v2/alerts/799318"
+	       },
+	       "relationships": {
+		   "annotations": {
+		       "data": [
+			   {
+			       "id": "1492098",
+			       "type": "alert_annotation"
+			   },
+			   {
+			       "id": "1492097",
+			       "type": "alert_annotation"
+			   },
+			   {
+			       "id": "1492096",
+			       "type": "alert_annotation"
+			   },
+			   {
+			       "id": "1492095",
+			       "type": "alert_annotation"
+			   },
+			   {
+			       "id": "1492094",
+			       "type": "alert_annotation"
+			   },
+			   {
+			       "id": "1492093",
+			       "type": "alert_annotation"
+			   }
+		       ],
+		       "links": {
+			   "related": "https://leader.example.com/api/sp/v2/alerts/799318/annotations/"
+		       }
+		   },
+		   "device": {
+		       "data": {
+			   "id": "115",
+			   "type": "device"
+		       },
+		       "links": {
+			   "related": "https://leader.example.com/api/sp/v2/devices/115"
+		       }
+		   },
+		   "managed_object": {
+		       "data": {
+			   "id": "154",
+			   "type": "managed_object"
+		       },
+		       "links": {
+			   "related": "https://leader.example.com/api/sp/v2/managed_objects/154"
+		       }
+		   },
+		   "packet_size_distribution": {
+		       "data": {
+			   "id": "packet-size-distribution-799318",
+			   "type": "alert_packet_size_distribution"
+		       },
+		       "links": {
+			   "related": "https://leader.example.com/api/sp/v2/alerts/799318/packet_size_distribution"
+		       }
+		   },
+		   "patterns": {
+		       "links": {
+			   "related": "https://leader.example.com/api/sp/v2/alerts/799318/patterns/"
+		       }
+		   },
+		   "router_traffic": {
+		       "links": {
+			   "related": "https://leader.example.com/api/sp/v2/alerts/799318/router_traffic/"
+		       }
+		   },
+		   "traffic": {
+		       "data": {
+			   "id": "alert-traffic-799318",
+			   "type": "alert_traffic"
+		       },
+		       "links": {
+			   "related": "https://leader.example.com/api/sp/v2/alerts/799318/traffic"
+		       }
+		   }
+	       },
+	       "type": "alert"
+	   },
+	   "links": {
+	       "self": "https://leader.example.com/api/sp/v2/alerts/799318"
+	   },
+	   "meta": {
+	       "api": "SP",
+	       "api_version": "2",
+	       "sp_build_id": "HHAB",
+	       "sp_version": "8.3"
+	   }
+       }
+     #+END_SRC
+     which is a lot of information to parse; using =jq= you can filter
+     the data after the API returns it to you (there is some filtering
+     available via the API that happens on the SP side before
+     returning data to you, but it is limited; this will be discussed
+     later).
+
+     If you want only the alerts out of the most recent 50 that have
+     severity percents (in =jq= path representation,
+     =.data[].attributes.subobject.severity_percent= greater than 200,
+     =jq= can select those alerts.
+
+     The first step is the same as it was in the previous example, get
+     each object out of the data list:
+     #+BEGIN_SRC sh :results output :exports code
+     http https://leader.example.com/api/sp/alerts/ | jq '.data[]'
+     #+END_SRC
+
+     The second step is to make the selection using =jq='s pipe
+     functionality and put the results into a list by adding square
+     brackets around the whole statement:
+     #+BEGIN_SRC sh :results output :exports code
+     http https://leader.example.com/api/sp/alerts/ | jq '[.data[] | select(.attributes.subobject.severity_percent>200)]'
+     #+END_SRC
+
+     To verify that this is returning only alerts with a severity
+     percent greater than 200 we can add =|
+     .[].attributes.subobject.severity_percent= to the query
+     #+BEGIN_SRC sh :results output :exports both
+     http GET https://leader.example.com/api/sp/alerts/ | jq '[.data[] | select(.attributes.subobject.severity_percent>200)] | .[].attributes.subobject.severity_percent'
+     #+END_SRC
+
+     #+RESULTS:
+     : 301
+     : 374
+     : 262
+     : 342
+     : 374
+     : 402
+     : 342
+     : 443
+     : 373
+
+     These are only two examples of what =jq= can help you with when
+     you are faced with a lot of JSON data, the manual and some
+     experimentation will be very useful in using =jq= in your
+     particular environment.
+
+** The Python Environment
+   #+INDEX: python
+   Most of the examples in this book will be in the Python
+   (http://www.python.org) programming language---it is an
+   easy-to-read language even if you aren't familiar with it; Python
+   is available for nearly every operating system; and it includes
+   nearly everything you need ("The Python source distribution has
+   long maintained the philosophy of "batteries included" -- having a
+   rich and versatile standard library which is immediately available,
+   without making the user download separate packages. This gives the
+   Python language a head start in many projects.").
+
+   A standard Python installation includes everything you need to
+   access the SP REST API and process data from it---an HTTP library
+   (=httplib=) and a JSON library (=json=).  However, the =httplib=
+   documentation (at https://docs.python.org/2/library/httplib.html)
+   says "The Requests package is recommended for a higher-level HTTP
+   client interface."
+
+   The examples in this book will make significant use of the Requests
+   library; you will be able to follow along with nearly all of the
+   examples using only that additional library.  If we use other
+   libraries (for example, for accessing databases, creating web
+   pages, etc.) we will go into more depth about those at the time.
+
+*** The =requests= library
+    #+INDEX: python!requests
+    The Python Requests library documentation at
+    https://requests.readthedocs.io/ purports:
+    #+BEGIN_QUOTE
+    Requests is the only Non-GMO HTTP library for Python, safe for
+    human consumption.
+    #+END_QUOTE
+    and warns:
+    #+BEGIN_QUOTE
+    Recreational use of the Python standard library for HTTP may
+    result in dangerous side-effects, including: security
+    vulnerabilities, verbose code, reinventing the wheel, constantly
+    reading documentation, depression, headaches, or even death.
+    #+END_QUOTE
+
+    Installation instructions for the =requests= library are at the
+    =readthedocs= site at
+    https://requests.readthedocs.io/en/master/user/install/, but
+    mostly comprise =pip install requests=.  (And if you haven't got
+    =pip=, see
+    http://docs.python-guide.org/en/latest/starting/installation/ for
+    installing it and a few other useful things).
+
+    Once you think you have the =requests= library installed, a simple
+    test is to follow the steps in this example (=%= is a Mac or Linux
+    shell prompt, and =>>>= is the interactive Python prompt):
+    #+LATEX: \scriptsize
+    #+BEGIN_EXAMPLE
+      % python
+      Python 2.7 (blah blah blah)
+      Type "help", "copyright", "credits" or "license" for more information.
+      >>> import requests
+      >>> rg = requests.get("http://www.google.com")
+      >>> rg
+      >>> <Response [200]>
+      >>> rg.headers
+      >>> {'Content-Length': '4740', 'X-XSS-Protection': '1; mode=block',
+	  'Content-Encoding': 'gzip', 'Set-Cookie':
+	  'NID=110=BXSpW6kxChyqif9p3Q0yFhL75QRsh0-C3vjFY_uTwpS-ANLlJsTjpC_9LypwgClOwL36COwCH6oAIBPfgcP-vZ4mwhpSqwM_UuG0pOpEGfDMDSKEtpK0mdHDaIqsEjR7;
+	  expires=Sat, 24-Feb-2018 05:12:11 GMT; path=/;
+	  domain=.google.co.nz; HttpOnly', 'Expires': '-1', 'Server': 'gws',
+	  'Cache-Control': 'private, max-age=0', 'Date': 'Fri, 25 Aug 2017
+	  05:12:11 GMT', 'P3P': 'CP="This is not a P3P policy! See
+	  https://www.google.com/support/accounts/answer/151657?hl=en for
+	  more info."', 'Content-Type': 'text/html; charset=ISO-8859-1',
+	  'X-Frame-Options': 'SAMEORIGIN'}
+    #+END_EXAMPLE
+    #+LATEX: \normalsize
+    If you get an error after you type =import requests= you haven't
+    installed requests correctly, and may want to consult a local
+    expert for help. If you get a response other than =<Response
+    [200]>= after typing the =requests.get= line, you may not have
+    access to either http://www.google.com or to the Internet, both of
+    which would be a little odd, frankly, but that's where you should
+    start looking.
+
+** Summary
+
+   At this point, you should be able to access your SP Leader's REST
+   API using at least one of =curl=, =httpie=, or =postman=.  You
+   might also be able to extract some sort of useful information using
+   the =jq= tool.
+
+   You should be able to make a simple HTTP request using Python and
+   the Requests library.
+
+   The rest of this book will be examples of using these tools (and
+   some examples in other programming languages) demonstrating how to
+   do things with the SP REST API that will hopefully be a useful
+   starting point for your own uses of the API.
+
+* Reports
+
+  The chapter describes how to produce reports from the data available
+  from the SP REST API.  This certainly isn't an exhaustive list of
+  reports you can produce, and the most interesting reports will be
+  those you create by combining data from SP with data from other
+  sources.
+
+  The difference between a report program and either configuration or
+  operational programs is that a report program only fetches data from
+  SP, it doesn't not change the state of SP in any way (in
+  programmatic terms, the only HTTP verb used in these examples is
+  =GET=).
+
+** Example: Time between an Alert and a Mitigation
+   #+INDEX: /alerts/ endpoint
+   #+INDEX: /mitigations/ endpoint
+   Arbor Networks SP can alert you to various kinds of network
+   attacks by monitoring the network traffic across hundreds of
+   routers and looking for anomalous behavior.  In combination with
+   Arbor Networks TMS applicances, these attacks can be mitigated by
+   directing the odd traffic through a TMS for inspection and, if
+   needed, cleaning.
+
+   SP and TMS support mitigating the anomalous traffic manually, where
+   a network operator notices the alert, applies some other metrics to
+   it, and then either decides to direct that traffic to a TMS or
+   not.  Monitoring the time between an alert and the manual
+   mitigation can be useful.  In addition, SP and TMS support
+   automatic mitigation of traffic that generates an alert.
+   Monitoring the time between the alert and the automatic mitigation
+   can also be useful.
+
+   The steps to look at this are:
+    - establish a time period over which you want to produce this
+      report
+    - collect the mitigations that were started in that time frame
+      using the REST API
+    - extract from the mitigation information the related alerts
+    - collect the alert information about those specific alerts using
+      the REST API
+    - for the group of manually started mitigations, collect the
+      difference in start times for each mitigation
+    - do the same for the group of automatically started mitigations
+
+   Python supports command-line options very gracefully using the
+   included =argparse= library
+   (https://docs.python.org/2.7/library/argparse.html) but, for the
+   purpose of this example, we will simply hard-code what would
+   normally be options.
+
+   #+INCLUDE: code-examples/alert-to-mitigation-time.py src python
+   #+CAPTION: code-examples/alert-to-mitigation-time.py
+
+   #+LATEX: \tiny
+   #+begin_example
+   The time range for the report is
+                    from: Tue Aug 29 10:45:05 2017
+                      to: Tue Sep 12 10:45:05 2017
+   Out of 27 mitigations on leader.example.com, 24 have associated alerts
+        Mit. Started By | Mit. Type  | Secs to Mit | Alert Ids
+   -------------------- | ---------- | ----------- | ------------------
+                  admin | tms        |       211.0 | 71
+                        |            |       213.0 | 72
+                        |            |       372.0 | 77
+                        |            |       481.0 | 65
+                        |            |       488.0 | 66
+                        |            |       497.0 | 67
+                        |            |       504.0 | 68
+                        |            |       551.0 | 1913
+                        |            |       558.0 | 1912
+                        |            |       740.0 | 75
+                        |            |       744.0 | 388
+                        |            |       819.0 | 387
+                        |            |       843.0 | 1910
+                        |            |      1255.0 | 1909
+                        |            |      1338.0 | 38
+                        |            |      1354.0 | 37
+                        |            |      1363.0 | 36
+                        |            |      1373.0 | 35
+                        |            |      2527.0 | 381
+                        |            |      4366.0 | 1865
+                        |            |     25051.0 | 294
+                        |            |     25058.0 | 295
+                        |            |     25065.0 | 292
+                        |            |     25072.0 | 293
+   #+end_example
+   #+LATEX: \normalsize
+
+** Example: The Collector with the most system alerts
+   #+INDEX: /alerts/ endpoint
+   #+INDEX: /devices/ endpoint
+   When operating an Arbor SP/TMS deployment, looking at system errors
+   can helpful in diagnosing performance problems.  The following
+   Python program will gather a list of alerts in the alert class
+   "system" and group them by appliance, then print them sorted by the
+   number of alerts for each appliance.
+
+   #+INCLUDE: code-examples/ragu-python-collector-sys-alerts-ex.py src python
+
+   The output from this is a list of SP appliances with the most
+   system alerts, that looks something like:
+
+   #+LATEX: \tiny
+   #+BEGIN_EXAMPLE
+     ==== System Alert Count ===== Device Name ======== Device Type ======== IP Address =========
+	  79                       my-leader            pi                   192.168.3.14
+	  42                       my-tra1              cp                   192.168.3.15
+	  19                       my-tra2              cp                   192.168.3.16
+	  14                       my-tms               tms                  192.168.3.17
+	  7                        my-backupleader      pi                   192.168.26.32
+   #+END_EXAMPLE
+   #+LATEX: \normalsize
+** Example: Plotting Alert Data
+   #+INDEX: plot
+   #+INDEX: png
+   #+INDEX: SOAP API
+   #+INDEX: matplotlib
+   #+INDEX: /alerts/ endpoint!router traffic
+   #+INDEX: python!arrow
+   The SOAP API can give you PNG files that you can use in your
+   reports.  The REST API does not do that, but you can make your own
+   using Python and the additional library =matplotlib=[fn:5].  This example
+   also introduces the =arrow= Python package[fn:6], which makes it easier
+   to deal with dates and time; it claims to offer "a sensible,
+   human-friendly approach to creating, manipulating, formatting and
+   converting dates, times, and timestamps" and, in this author's
+   opinion, it delivers on that.
+
+   The steps to look at this are:
+    - choose an alert for which the traffic across the router is
+      interesting
+    - get the =router_traffic= data from the API buy replacing the =X=
+      in this URL fragment with the alert ID you are interested in:
+      - =/api/sp/alerts/X/router_traffic/=
+    - extract from the alert information the time-series data for
+      router traffic
+    - turn the data into a time-series that =matplotlib= can consume
+      and write out a file for each router involved
+
+   This Python program demonstrates reading alert data and using
+   =matplotlib= to make a plot of that data.  The plot it creates
+   using the sample data monitored by SP is in Figure
+   [[fig:alert-data-plot]].
+   #+CAPTION: The SOAP API to SP can produce PNG files containing plots
+   #+CAPTION: of alert traffic data.  The REST API does not offer that
+   #+CAPTION: exact functionality, but creating plots using Python and
+   #+CAPTION: the =matplotlib= library isn't too difficult and offers
+   #+CAPTION: many more output format and styling options for the
+   #+CAPTION: plots.
+   #+NAME:    fig:alert-data-plot
+   [[./images/alert-data-plot.png]]
+
+   #+INCLUDE: code-examples/ragu-python-png-output.py src python
+** Example: Alert Details Comparison Summary                       :noexport:
+   - top_N example
+   - clustering
+   - some really vague hand-wavey thing that looks at all of the
+     things in the =/alert/<alert_id>/traffic= endpoint and does a
+     thing with them
+* Configuration
+
+  This chapter describes how to configure SP using the SP REST API.
+  The difference between configuration and operations is that
+  configuration doesn't assume that SP is collecting flow from any
+  routers.  While the example programs in this chapter will change the
+  state of your SP deployment, they can do so without having any
+  information about or effect on the traffic on your network.
+
+** Example: Adding a Managed Object using business information
+   #+INDEX: /managed\_objects/ endpoint
+   #+INDEX: /config/ endpoint
+   #+INDEX: config commit
+   #+INDEX: config write
+   The SP REST API can be used to create customer configurations in SP
+   using data from other business systems (databases, web sites, text
+   files, etc.) that your company uses to manage its customers.
+
+   In the example below, the business information is kept in a CSV
+   file called =main.csv= that looks like:
+   #+BEGIN_EXAMPLE
+     name,prefix
+     test3,192.168.2.71/32
+     test4,192.168.13.0/24
+   #+END_EXAMPLE
+   From this information, we want to create a managed object (MO) in
+   SP with the MO name coming from the =name= column and the CIDR
+   match prefix coming from the =prefix= column.  In addition, all of
+   the managed objects will be type =customer=, will be tagged =api=,
+   and will use the mitigation template with the ID 2.
+
+   The steps to do this are:
+   - read the data from the CSV file
+   - create the managed object JSON with the data that was read and
+     the data that is constant for all of the managed objects
+   - =POST= the JSON to the =managed_objects= endpoint
+   - repeat those steps until there isn't any more data in the CSV
+     file
+   - create a configuration JSON that includes a log message and then
+     =POST= that to the =config= endpoint to write the configuration
+
+   When there are no errors, this script simply prints
+   #+BEGIN_EXAMPLE
+     Committing configuration.
+     Committed configuration.
+   #+END_EXAMPLE
+   to the screen.
+
+   #+INCLUDE: code-examples/BI-to-MO.py src python
+
+** Example: Setting Appliance Monitoring Limits
+   #+INDEX: /devices/ endpoint
+   #+INDEX: appliance monitoring
+   #+INDEX: appliance monitoring!limits
+   #+INDEX: limits!appliance monitoring
+   Starting with SPv8.0 monitoring appliances in your SP/TMS
+   deployment improved with the addition of the Appliance Monitoring
+   page (available under the System > Status menu in the web UI).  The
+   Appliance Monitoring page allows you to configure limits for all of
+   the metrics it displays; those limits are used to sort the graphs
+   and to color them relatively more red as the limit is exceeded.
+
+   Configuring those limits is done from the SP command line.  For
+   each appliance, you set the limits you want for each metric.  So if
+   you have 10 appliances in your deployment and want to set the "Disk
+   used %" and "Items tracked per day", it requires 20 command line
+   entries.  There are 86 total metrics, so even configuring one
+   quarter of those would require 20 command line entries per
+   appliance.
+
+   A much easier way to do this is to establish the limits outside of
+   SP, and use the REST API to apply them to all of the appliances.
+
+   The Python program below sets the =items_tracked_per_day= metric to
+   have a limit of 15 for each of the appliances that the leader
+   knows about.
+
+   The steps to do this are:
+   - get a list of the appliances
+   - iterate over that list
+   - check that the metric isn't already set (you could also make sure
+     it was within some limits and correct it if it wasn't, etc.)
+   - if it isn't set, set it
+
+   The output from running this script when the limit isn't set looks
+   like:
+   #+BEGIN_EXAMPLE
+     Starting appliance-limiting script
+     Retrieving appliances from leader.example.com
+     Appliances retrieved. Configuring limits
+     Device 115: metrics_items_tracked_per_day_limit configured
+     Device 116: metrics_items_tracked_per_day_limit configured
+     Device 121: metrics_items_tracked_per_day_limit configured
+     Device 184: metrics_items_tracked_per_day_limit configured
+     Done
+   #+END_EXAMPLE
+   While when the limits are set, it looks like:
+   #+BEGIN_EXAMPLE
+     Starting appliance-limiting script
+     Retrieving appliances from leader.example.com
+     Appliances retrieved. Configuring limits
+     Device 115: metrics_items_tracked_per_day_limit is already configured
+     Device 116: metrics_items_tracked_per_day_limit is already configured
+     Device 121: metrics_items_tracked_per_day_limit is already configured
+     Device 184: metrics_items_tracked_per_day_limit is already configured
+     Done
+   #+END_EXAMPLE
+
+   #+INCLUDE: code-examples/ragu-python-appliance-limit-ex.py src python
+
+** Example: Adding a new TMS                                       :noexport:
+   - we might not be able to do this in a reasonable way in SP8.3v2
+** Example: Moving Routers between Collectors                      :noexport:
+   - this doesn't work at all, so we shouldn't do it
+
+* Operations
+
+  This chapter will describe how to use the SP REST API
+  operationally.  The difference between configuration and operations
+  is that operations requires SP to be receiving and processing
+  traffic, generating alerts, routing traffic to TMSs, and other
+  functions that SP provides that help you operate your network.
+
+** Example: Starting a Mitigation
+   #+INDEX: /alerts/ endpoint
+   #+INDEX: /alerts/ endpoint!filtering
+   #+INDEX: /mitigations/ endpoint
+   #+INDEX: mitigation
+   There is no better product than Arbor Networks' SP and TMS for
+   detecting and mitigating distributed denial of service attacks on
+   networks, and the automatic mitigations started by SP are very
+   effective.  However, SP provides no facility for additional
+   decision making when deciding whether or not to mitigation a
+   suspected DDoS attacks.  Using the SP REST API allows you to
+   construct your own set of rules around what to mitigate and when to
+   mitigate it.
+
+   The example Python program below demonstrates how to read alerts
+   from an SP leader, make some decisions about whether or not to
+   mitigate them, and then start the mitigatons.
+
+   In the case of the example program below, the function
+   =apply_rules= takes a list of alerts and their details, filters
+   them by the rules, and returns the rules and their details that
+   match the criteria:
+    - the alert importance is High
+    - the alert hasn't ended
+    - the alert is a DoS Host alert
+
+   The steps to look at this are:
+    - establish a time period over which you want to consider the
+      alerts
+    - collect the alerts that were started in that time frame
+      using the REST API
+    - filter out the alerts that don't match the rules for mitigation
+    - use the REST API to create and start mitigations the alerts that
+      do match the rules
+
+   #+INCLUDE: code-examples/start-mitigations-by-rules.py src python
+
+   #+RESULTS:
+   #+begin_example
+   Starting auto-mitigation script
+   Fetching alerts from Tue Sep 12 16:10:00 2017 onwards
+   Alerts retrieved. Filtering on configured ruleset
+   4 alert(s) match mitigation criterion
+   Mitigating alerts
+   Alert 11487 Auto-API-Mitigation started
+   Alert 11486 Auto-API-Mitigation started
+   Alert 11485 Auto-API-Mitigation started
+   Could not start mitigation: Alert 11473 Auto-API-Mitigation
+   Done
+#+end_example
+
+** Example: Adding an annotation
+   #+INDEX: /alerts/ endpoint!annotations
+   #+INDEX: /alerts/ endpoint
+   #+INDEX: /alerts/ endpoint!filtering
+   SP will automatically add annotations to alerts in many cases,
+   including changes in the severity of an alert and when a mitigation
+   is started for the alert.  Each set of annotations for an alert can
+   then be viewed in the SP web UI or retrieved via the SP REST API
+   to follow the progress of an alert over time.
+
+   Your organization may want to automatically add annotations to make
+   the annotation history of an alert more useful.
+
+   The following Python program adds the alert impact information (the
+   impact in bits-per-second and packets-per-second and the impact
+   boundary) to all of the running alerts every time it is run.
+   Running this every 4 hours would give a nice history of the impact
+   of an alert over time.
+
+   When run, this program prints out:
+   #+BEGIN_EXAMPLE
+     Starting auto-annotation script
+     Fetching ongoing alerts from leader.example.com
+     Alerts retrieved. Auto-annotating impact data
+     Annotating 11 ongoing alerts with impact data
+     Alert 8067 annotated
+     Alert 8066 annotated
+     Alert 8063 annotated
+     Alert 8062 annotated
+     Alert 8061 annotated
+     Alert 8060 annotated
+     Alert 8055 annotated
+     Alert 7814 annotated
+     Alert 5913 annotated
+     Alert 5912 annotated
+     Alert 5904 annotated
+     Done
+   #+END_EXAMPLE
+
+   And the annotation text, via the API looks like:
+   #+BEGIN_SRC json
+     {
+	 "meta": {
+	     "sp_version": "8.3",
+	     "api": "SP",
+	     "api_version": "3",
+	     "sp_build_id": "HIT4"
+	 },
+	 "data": [
+	     {
+		 "attributes": {
+		     "text": "Impact on boundary 'rtr1.nyc'; Impact in bps: 10558611; Impact in pps: 1707;",
+		     "added": "2017-09-25T19:34:12+00:00",
+		     "author": "API-Client"
+		 },
+		 "type": "alert_annotation",
+		 "id": "21168"
+	     },
+	     {
+		 "attributes": {
+		     "text": "Impact on boundary 'rtr1.nyc'; Impact in bps: 10558611; Impact in pps: 1707;",
+		     "added": "2017-09-25T19:33:34+00:00",
+		     "author": "API-Client"
+		 },
+		 "type": "alert_annotation",
+		 "id": "21157"
+	     },
+	     {
+		 "attributes": {
+		     "text": "The \"TCP NULL\" host alert signature severity rate configured for \"Customer\" has been exceeded for 2 minutes, changing Severity Level from medium to high  (expected rate: 1.00 Kpps, observed rate: 1.70 Kpps)",
+		     "added": "2017-09-25T19:18:45+00:00",
+		     "author": "auto-annotation"
+		 },
+		 "type": "alert_annotation",
+		 "id": "21155"
+	     }
+	 ],
+	 "links": {
+	     "self": "https://leader.example.com/api/sp/v3/alerts/8067/annotations/"
+	 }
+     }
+   #+END_SRC
+
+   The source code for the Python program that generates this follows,
+   and the steps are:
+
+   - gather the alerts that match the filter
+   - for each alert extract the impact data from its =attributes=
+     section in the returned JSON
+   - create annotation text
+   - annotate the alert with the new annotation text containing the
+     impact information (=POST= to the =/alert/<id>/annotations/=
+     endpoint)
+
+   #+INCLUDE: code-examples/ragu-python-annotate-ex.py src python
+
+** Example: Changing TMS Filter Lists                              :noexport:
+
+
+
+   #+INCLUDE: code-examples/ragu-python-tms-filter-ex.py src python
+
+** Example: Creating Cloud-signaled Alerts                         :noexport:
+   - may not be crucial because not everyone is a cloud signaling
+     user; even so, i like this example because it is a unique
+     programmatic thing in SP.  /--acaird/
+* Insight                                                          :noexport:
+** Example: Insight PDF Reports
+   - gather some data from Insight
+   - make a graph of it, or some other nice looking report that is a
+     PDF file
+   - this is not a good idea because
+     - it is difficult
+     - not everyone has Insight
+* Examples in Languages other than Python
+
+  These examples are intentionally less sophisticated than those
+  above; they are just intended to demonstrate basic interactions with
+  the API using languages other than Python.
+
+** Java
+   #+INDEX: java
+   #+INDEX: /alerts/ endpoint
+   #+INDEX: java!keygen
+   When operating an SP deployment that has many collectors, TMSs,
+   and is maintained by many network security engineers, it is
+   convenient to see the system events that SP logs in a concise
+   format.  System events include configuration changes, system
+   errors, and other operational details that can help maintain the
+   stability and availability of your Arbor SP/TMS environment.
+
+   This example uses a Java program to retrieve the events from an SP
+   leader that are considered system events, and print those events in
+   a concise format.
+
+
+
+   Java handles SSL certificate files differently from other languages
+   (most of which base their HTTP libraries on =libcurl=, hence their
+   similarity); the certificate file mentioned in [[SSL Certificates]]
+   needs to be converted to the Java Key Store format.  One way to do
+   this is to use the =keytool= command that is part of a standard
+   Java Development Kit distribution:
+   #+BEGIN_SRC sh
+   keytool -import -alias ca -file https_active.crt -keystore cacerts -storepass changeit
+   #+END_SRC
+   where =https_active.crt= is the name of the certificate file from
+   SP and =cacerts= is the name of the output file that will later be
+   read by the Java application.
+
+   This example makes use of the =json-simple=[fn:7] Java library;
+   after downloading the =.jar= file for =json-simple=, and place
+   it in the same directory as this example.
+
+   Then set the =CLASSPATH= environment variable to include the path
+   to the =json-simple= JAR file and the current working directory
+   (denoted by the single period, =.=) by setting it to
+   =./json-simple-1.1.1.jar:.= This way both the Java compiler and
+   run-time environment can find the libraries included in the
+   =json-simple= JAR file and the newly compiled =SystemEventClass=
+   program.
+
+   With =CLASSPATH= set you can compile =SystemEventClass.java= with
+   the command =javac -classpath ./json-simple-1.1.1.jar
+   SystemEventClient.java=.
+
+   After that, but in the same environment where you have set
+   =CLASSPATH= as above, typing =java SystemEventClass= will run the
+   Java program and it should result in output that looks like:
+   #+LATEX: \tiny
+   #+BEGIN_EXAMPLE
+     +-------+------------+-----------------------------+--------+---------+---------------------------+---------------------------+-------------+
+     |  ID   | Importance |            Alert            |  User  | Version |        Start_Time         |        End_Time           | Annotations |
+     +-------+------------+-----------------------------+--------+---------+---------------------------+---------------------------+-------------+
+     | 55316 | Medium     | System Configuration Update | admin  | 1.121   | 2017-09-21T20:58:27+00:00 | 2017-09-21T20:58:27+00:00 | Example Annotation |
+     | 55308 | Medium     | System Configuration Update | admin  | 1.120   | 2017-09-21T20:55:55+00:00 | 2017-09-21T20:55:55+00:00 | None        |
+     | 55307 | Medium     | System Configuration Update | admin  | 1.119   | 2017-09-21T20:55:45+00:00 | 2017-09-21T20:55:45+00:00 | None        |
+     | 55306 | Medium     | System Configuration Update | admin  | 1.118   | 2017-09-21T20:55:37+00:00 | 2017-09-21T20:55:37+00:00 | None        |
+     | 55231 | Medium     | System Configuration Update | admin  | 1.117   | 2017-09-21T19:14:48+00:00 | 2017-09-21T19:14:48+00:00 | None        |
+     | 54669 | Medium     | System Configuration Update | admin  | 1.115   | 2017-09-20T17:28:16+00:00 | 2017-09-20T17:28:16+00:00 | None        |
+     +-------+------------+-----------------------------+--------+---------+---------------------------+---------------------------+-------------+
+   #+END_EXAMPLE
+   #+LATEX: \normalsize
+
+   #+INCLUDE: code-examples/SystemEventClient.java src java
+
+** bash
+   #+INDEX: bash
+   #+INDEX: shell script
+   #+INDEX: jq
+   #+INDEX: curl!command line
+   #+INDEX: /alerts/ endpoint
+   #+INDEX: /alerts/ endpoint!filtering
+   Using the SP REST API can be done from a =sh= shell script and some
+   command line tools.
+
+   This example uses =curl= and =jq= (see the section titled [[Useful
+   Tools]] for more information on those tools) to get a list of alerts
+   from SP and print them in either JSON, tab-separated values, or
+   comma-separate values.
+
+   This example makes an API request to get the alerts for the last 24
+   hours, then uses =jq= to extract and re-render that information for
+   printing to the screen.
+
+   #+INCLUDE: code-examples/ongoing-alerts-bash-example.sh src sh
+
+   Running that script with the =-t= option produces output that looks
+   like:
+   #+BEGIN_SRC sh :exports source
+     type	start	description
+     tms_fault	2017-09-22T16:26:26+00:00	Hardware Sensor 'Power Draw (PS2)' is 'Critical' (Triggering value: 0 Watts)
+     tms_fault	2017-09-22T16:25:26+00:00	Hardware Device 'Power Supply PS2' is 'Error' (Presence detected, Power Supply AC lost)
+     collector_down	2017-09-21T19:39:21+00:00
+   #+END_SRC
+
+** PHP
+   #+INDEX: php
+   #+INDEX: /tms\_ports/ endpoint
+   A common programming language for web-based applications is PHP.
+   This example uses PHP to list port names and types, and TMS names,
+   models, and deployment types for all of the TMSs in your
+   deployment.
+
+   The steps to do this are:
+   - query the =tms_ports= endpoint
+   - for each object in the returned array, print the information
+     about that TMS port
+
+   When this PHP program is run, it produces output that looks like:
+   #+BEGIN_SRC sh
+     | Port Name | Port Type | TMS                   | TMS Model | TMS Deployment Type |
+     | tms0      | physical  | tms002                | TMS-2500  |                     |
+     | tms1      | physical  | tms002                | TMS-2500  |                     |
+     | tms2      | physical  | tms002                | TMS-2500  |                     |
+     | tms3      | physical  | tms002                | TMS-2500  |                     |
+     | tms4      | physical  | tms002                | TMS-2500  |                     |
+     | tms5      | physical  | tms002                | TMS-2500  |                     |
+     | tmsx0.0   | physical  | tms001                | TMS-3100  | inline              |
+     | tmsx0.1   | physical  | tms001                | TMS-3100  | inline              |
+   #+END_SRC
+
+   #+INCLUDE: code-examples/tms-ports-php-example.php src php
+
+** C
+   #+INDEX: C
+   #+INDEX: libcurl
+   #+INDEX: libjansson
+   #+INDEX: curl!library
+   #+INDEX: jansson
+   #+INDEX: /managed\_objects/ endpoint
+   Most of the software in the world is written in the C programming
+   language, so an API client for the SP REST API should be no
+   exception.
+
+   The example client below uses two libraries to make things easier:
+    - the cURL library to make the HTTPS request to the SP REST API
+      and retrieve the results; see https://curl.haxx.se/ for more
+      details
+    - the Jansson library for processing JSON data returned by the SP
+      REST API; see http://www.digip.org/jansson/ for more details
+
+   This example retrieves all of the managed objects from the SP REST
+   API in groups of 10 at a time (note the =perPage=10= part of the
+   URL) and prints out a table of a few of the attributes.
+
+   The output looks like:
+   #+LATEX: \tiny
+   #+BEGIN_EXAMPLE
+     |                     Name  | Child? |     Match Type  |                     Match Values  |
+     --------------------------------------------------------------------------------------------
+     |                  VPNSite1 |    Yes |     cidr_blocks |      192.168.1.0/24 172.16.1.0/24 |
+     |                  VPNSite2 |    Yes |     cidr_blocks |      192.168.2.0/24 172.16.2.0/24 |
+     |                  VPNSite3 |    Yes |     cidr_blocks |      192.168.3.0/24 172.16.3.0/24 |
+     |                  VPNSite4 |    Yes |     cidr_blocks |      192.168.4.0/24 172.16.4.0/24 |
+     |                      MPLS |        |     cidr_blocks |                       10.0.0.0/24 |
+     |                custMisuse |        |     cidr_blocks |                  192.168.137.0/28 |
+     |                 peer14989 |        |         peer_as |                             14989 |
+     |                 peer11420 |        |         peer_as |                             11420 |
+     |                 peer14041 |        |         peer_as |                             14041 |
+     |                     test2 |        |     cidr_blocks |                     10.11.12.0/24 |
+     |                     test3 |        |     cidr_blocks |                   192.168.2.71/32 |
+     |                     test4 |        |     cidr_blocks |                     10.11.13.0/24 |
+     |                  Internet |        |          (null) |                            (null) |
+     |           All Subscribers |        |          (null) |                            (null) |
+     --------------------------------------------------------------------------------------------
+                                                                 SP REST API version: SP8.3/APIv3
+   #+END_EXAMPLE
+   #+LATEX: \normalsize
+
+   #+INCLUDE: code-examples/mo-listing.c src c
+
+* Appendices
+** License
+   #+INDEX: license
+   This work is licensed under the Creative Commons
+   Attribution-ShareAlike 2.0 Generic License. To view a copy of this
+   license, visit http://creativecommons.org/licenses/by-sa/2.0/ or
+   send a letter to Creative Commons, PO Box 1866, Mountain View, CA
+   94042, USA.
+
+   The computer programs and code examples are licensed under The
+   Unlicense
+
+   #+BEGIN_QUOTE
+   The computer programs and code examples in this work are free and
+   unencumbered software released into the public domain.
+
+   Anyone is free to copy, modify, publish, use, compile, sell, or
+   distribute this software, either in source code form or as a
+   compiled binary, for any purpose, commercial or non-commercial, and
+   by any means.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY
+   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+   CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+   WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+   In jurisdictions that recognize copyright laws, the author or
+   authors of this software dedicate any and all copyright interest in
+   the software to the public domain. We make this dedication for the
+   benefit of the public at large and to the detriment of our heirs
+   and successors. We intend this dedication to be an overt act of
+   relinquishment in perpetuity of all present and future rights to
+   this software under copyright law.
+
+   For more information, please refer to http://unlicense.org/
+   #+END_QUOTE
+
+** Versioning
+   #+INDEX: versioning
+   The SP REST API version number is displayed in the =meta= section
+   of every API response.  In version 1 of the SP REST API the version
+   is stored by the key =sp_api_version=, in later versions it is
+   stored in the key =api_version=.  The =meta= object looks like:
+   #+BEGIN_SRC sh :results output :exports results
+   http --session leader GET https://leader.example.com/api/sp/ | jq '{"meta":.meta}'
+   #+END_SRC
+
+   #+BEGIN_SRC json
+     {
+	 "meta": {
+	     "sp_version": "8.3",
+	     "api": "SP",
+	     "api_version": "3",
+	     "sp_build_id": "HIT4"
+	 }
+     }
+   #+END_SRC
+
+   It is possible for the API version to remain the same across SP
+   versions, but that doesn't necessarily mean that the API hasn't
+   changed.  If keys are *added* to the API, but none of the existing
+   keys are changed or removed and none of the types of the values
+   change, the API version number will not change.  When referring to
+   what version of the API you are using, the most accurate way is to
+   combine the API version with the SP version.  In the example above
+   the version of the API is "SP8.3 APIv3".
+
+   If you have written API clients that rely on a particular version,
+   you can refer to that version in the URL by inserting =/vX/= after
+   =/api/sp= where =X= is the version you want to use.  To see the
+   index for version 1 on an SP leader running SP8.3 you can request
+   the URL =https://spleader.example.com/api/sp/v1/= which will
+   return a meta section that looks like:
+
+   #+BEGIN_SRC sh :results output :exports results
+   http --session leader GET https://leader.example.com/api/sp/v1/ | jq '{"meta":.meta}'
+   #+END_SRC
+
+   #+BEGIN_SRC json
+     {
+	 "meta": {
+	     "sp_build_id": "HIT4",
+	     "sp_version": "8.3",
+	     "api": "SP",
+	     "api_version": "1",
+	     "sp_api_version": "1.0.0"
+	 }
+     }
+   #+END_SRC
+
+   This example is using version "SP8.3 APIv1" of the API, which is
+   different from SP8.1 APIv1 because the =api_version= key does not
+   exist in SP8.1 APIv1, but because that key is additive and won't
+   affect clients that are not looking for it the addition of that key
+   doesn't require an increase in version.
+
+   Because adding keys is not a change that will prevent a client
+   written for a previous version from working, it is possible that a
+   client written for SP8.3 APIv3 will see additional keys when the
+   server is SP8.4 APIv3.  This also means that writing a client for
+   an older API version may present keys that don't exist in
+   original.  For example the addition of the key =highly_secure= in
+   SP8.4 APIv4 may also appear in SP8.4 APIv3, but will not exist in
+   SP8.3 APIv3.  Use caution when writing to prior APIs.
+
+   The differences in each version are in the Deprecation Policy
+   section of the SP REST API Reference manual that is available from
+   the SP UI at the item "REST API Documentation" in the
+   "Administration" menu.
+
+** Reference Manual
+
+   The SP REST API endpoint reference manual is available from the SP
+   web interface by going to the "Administration" menu and choosing
+   "REST API Documentation".
+
+** Reporting Errors to Arbor
+   #+INDEX: errors
+   While Arbor Networks strives to provide you with well-written and
+   well-tested software, it is possible that your application will
+   uncover mistakes that we missed.
+
+   In the case of the SP REST API, these mistakes will present
+   themselves as a HTTP response with the code =500 INTERNAL SERVER
+   ERROR=.  In nearly all cases this will also print some information
+   to one of SP's log files.
+
+   Arbor values your reporting of these errors and to help us diagnose
+   and fix the problem, it is helpful if you include a few things with
+   your report to the Arbor Technical Assistance Center.  In order of
+   their general usefulness to us, these are:
+
+   1. The API request that you made
+
+      Only the part of the URL from =/api/sp= onwards is required; we
+      do not need to have the name of your SP leader
+
+   2. The sections of the logs files with any additional errors
+
+      One or more of log files =syslog=, =www_access=, and =www_error=
+      in the directory =/base/var/log/= on SP will likely have a
+      Python traceback in them if you see an error with an HTTP status
+      code of 500; a copy of that will be very useful for us.
+
+   3. The =meta= information from any API request
+
+      Making a request to =https://spleader.example.com/api/sp/= and
+      sending us the results will contain the =meta= information that
+      we need.
+
+   4. The expected results or results of a similar query that works
+
+   5. The SP diagnostics package
+
+      A diagnostics package can be created from the SP command line by
+      typing =system diagnostics=
+
+   The Arbor Technical Assistance Center can be reached at
+   http://support.arbornetworks.com
+
+** Acknowledgments
+   Thanks to:
+
+   Andrea V, Andy C, David W, Grant L, Jen V, Todd S, Tony P.
+** Contributing and other technical details
+*** Contributing
+
+    This document is intended to grow and change based on contributions
+    from customers, Arbor field engineers, Arbor development engineers,
+    and anyone else who wants to contribute.
+
+    The contribution guidelines are pretty loose, but include things
+    like:
+     - the example should include both the source code and the
+       surrounding text explaining it; a patch or pull request or two
+       files or some other representation is fine
+     - the example should try to minimize external dependencies,
+       unless the point of the example is to should how to use them
+     - the example should work and be readable by someone who is
+       familiar with programming languages, either because it is a
+       readable language or because the program has a lot of comments
+
+    If you are contributing from within Arbor, you can use Reviewboard
+    to submit your contributions against the internal repository.
+
+    If you are contributing from outside of Arbor or just prefer
+    Github, you can fork the repository and send pull requests with
+    the changes.
+
+    If you don't want to deal with Git at all, you can email
+    =acaird@arbor.net= with the contribution and I'll probably get
+    around to it.
+*** Technical details
+
+    This document is written using the OrgMode markup and is rendered
+    into using Emacs and LaTeX and into HTML using Emacs.
+
+    It may be possible to render this document into other formats
+    using =pandoc=, but that is untested.
+#+LATEX: \printindex
+* Notes                                                            :noexport:
+
+** Rendering
+   - orgmode configuration for LaTeX output:
+     http://orgmode.org/worg/org-tutorials/org-latex-export.html
+   - captioning source blocks
+     https://lists.gnu.org/archive/html/emacs-orgmode/2011-04/msg00877.html
+   - minted: https://github.com/syl20bnr/spacemacs/issues/7055
+
+** Principles of the Document
+
+   - humans can read
+   - minimize version specificness
+   - examples that would be likely to be useful to a real-live
+     customer
+
+** Guidelines
+   - might want this document to go into the =ArborSDK.zip= file in
+     the build
+   - might want to show this to the SEs at the SE Summit in October
+
+* Footnotes
+
+[fn:1] http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
+
+[fn:2] https://www.google.com/chrome/
+
+[fn:3] https://www.gnu.org/software/sed/
+
+[fn:4] https://www.gnu.org/software/gawk/
+
+[fn:5] https://matplotlib.org/
+
+[fn:6] https://arrow.readthedocs.io/en/latest/
+
+[fn:7] https://github.com/fangyidong/json-simple
