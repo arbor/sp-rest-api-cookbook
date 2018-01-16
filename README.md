@@ -23,6 +23,17 @@ easiest for you.
 If you want to render this you can use Emacs+Orgmode's Export (`C-e`)
 command to produce HTML, PDF, etc.
 
+Exporting from Emacs Orgmode as a LaTeX file is the easiest thing to
+do, then, assuming you have the LaTeX packages that are required, you
+can run the commands:
+
+   pdflatex -shell-escape sp-rest-api-tutorial
+   pdflatex -shell-escape sp-rest-api-tutorial
+   makeindex sp-rest-api-tutorial
+   pdflatex -shell-escape sp-rest-api-tutorial
+
+to produce a PDF file.
+
 ## Releases
 
 Rendered versions will be released periodically at this Github site;
