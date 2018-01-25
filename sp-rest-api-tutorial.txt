@@ -396,7 +396,7 @@ listings package.
      Technical Assistance Center (ATAC).  The =links= object contains
      a map between the endpoint type (for example, =alert=) and the
      URL where that data is accessible in this version (in the case of
-     =alert=, that is =https://leader.example.com/api/sp/v2/alerts/=).
+     =alert=, that is =https://leader.example.com/api/sp/v3/alerts/=).
      #+INDEX: /alerts/ endpoint
      You should try to write your clients using this mapping; the key
      names will not change, but the URLs may and if your program uses
@@ -910,7 +910,7 @@ listings package.
 	       },
 	       "id": "799318",
 	       "links": {
-		   "self": "https://leader.example.com/api/sp/v2/alerts/799318"
+		   "self": "https://leader.example.com/api/sp/v3/alerts/799318"
 	       },
 	       "relationships": {
 		   "annotations": {
@@ -941,7 +941,7 @@ listings package.
 			   }
 		       ],
 		       "links": {
-			   "related": "https://leader.example.com/api/sp/v2/alerts/799318/annotations/"
+			   "related": "https://leader.example.com/api/sp/v3/alerts/799318/annotations/"
 		       }
 		   },
 		   "device": {
@@ -950,7 +950,7 @@ listings package.
 			   "type": "device"
 		       },
 		       "links": {
-			   "related": "https://leader.example.com/api/sp/v2/devices/115"
+			   "related": "https://leader.example.com/api/sp/v3/devices/115"
 		       }
 		   },
 		   "managed_object": {
@@ -959,7 +959,7 @@ listings package.
 			   "type": "managed_object"
 		       },
 		       "links": {
-			   "related": "https://leader.example.com/api/sp/v2/managed_objects/154"
+			   "related": "https://leader.example.com/api/sp/v3/managed_objects/154"
 		       }
 		   },
 		   "packet_size_distribution": {
@@ -968,17 +968,17 @@ listings package.
 			   "type": "alert_packet_size_distribution"
 		       },
 		       "links": {
-			   "related": "https://leader.example.com/api/sp/v2/alerts/799318/packet_size_distribution"
+			   "related": "https://leader.example.com/api/sp/v3/alerts/799318/packet_size_distribution"
 		       }
 		   },
 		   "patterns": {
 		       "links": {
-			   "related": "https://leader.example.com/api/sp/v2/alerts/799318/patterns/"
+			   "related": "https://leader.example.com/api/sp/v3/alerts/799318/patterns/"
 		       }
 		   },
 		   "router_traffic": {
 		       "links": {
-			   "related": "https://leader.example.com/api/sp/v2/alerts/799318/router_traffic/"
+			   "related": "https://leader.example.com/api/sp/v3/alerts/799318/router_traffic/"
 		       }
 		   },
 		   "traffic": {
@@ -987,14 +987,14 @@ listings package.
 			   "type": "alert_traffic"
 		       },
 		       "links": {
-			   "related": "https://leader.example.com/api/sp/v2/alerts/799318/traffic"
+			   "related": "https://leader.example.com/api/sp/v3/alerts/799318/traffic"
 		       }
 		   }
 	       },
 	       "type": "alert"
 	   },
 	   "links": {
-	       "self": "https://leader.example.com/api/sp/v2/alerts/799318"
+	       "self": "https://leader.example.com/api/sp/v3/alerts/799318"
 	   },
 	   "meta": {
 	       "api": "SP",
@@ -1419,7 +1419,7 @@ listings package.
    #+INCLUDE: code-examples/ragu-python-appliance-limit-ex.py src python
 
 ** Example: Adding a new TMS                                       :noexport:
-   - we might not be able to do this in a reasonable way in SP8.3v2
+   - we might not be able to do this in a reasonable way in SP8.3v3
 ** Example: Moving Routers between Collectors                      :noexport:
    - this doesn't work at all, so we shouldn't do it
 
