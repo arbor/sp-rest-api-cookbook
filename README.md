@@ -38,4 +38,9 @@ to produce a PDF file.
 
 Rendered versions will be released periodically at this Github site;
 unless you are intending to contribute or want to render your own
-version, the rendered releases are probably the best option for you.
+version, the rendered releases are probably the best option for you.  The
+releases are at 
+<a href=https://github.com/arbor/sp-rest-api-cookbook/releases>https://github.com/arbor/sp-rest-api-cookbook/releases</a>
+
+In addition, there is a rendered HTML version available at 
+<a href=https://arbor.github.io/sp-rest-api-cookbook/sp-rest-api-tutorial.html>https://arbor.github.io/sp-rest-api-cookbook/sp-rest-api-tutorial.html</a>.
