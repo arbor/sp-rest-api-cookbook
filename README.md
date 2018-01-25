@@ -1,4 +1,4 @@
-# Using the Arbor Networks SP REST API: SP v8.3 API v2
+# Using the Arbor Networks SP REST API: SP v8.3 API v3
 
 This repository contains the source material for a document that is
 intended to be a gentle, user-facing introduction to the Arbor 
