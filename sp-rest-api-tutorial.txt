@@ -2,7 +2,7 @@
 #+OPTIONS: toc:t
 #+MACRO: NEWLINE @@latex:\\@@ @@html:<br>@@
 #+MACRO: IMAGE @@latex:\\ \vspace{8cm} \hfill \usebox{\titleimage}@@
-#+TITLE: SP REST API Cookbook {{{NEWLINE}}} SP v8.3 {{{NEWLINE}}} API v3 {{{IMAGE}}}
+#+TITLE: SP REST API Cookbook {{{NEWLINE}}} SP v8.4 {{{NEWLINE}}} API v4 {{{IMAGE}}}
 #+DATE: <2017-07-14 Fri>
 #+AUTHOR: Arbor Networks
 #+LATEX_CLASS: tufte-book
@@ -39,7 +39,7 @@ listings package.
 # #+LATEX_HEADER:     showstringspaces=false,
 # #+LATEX_HEADER:     postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}}
 # #+LATEX_HEADER: }
-#+LATEX: \renewcommand \plaintitle{SP REST API Cookbook, SP v8.3, API v3} % keep the image out of the headers
+#+LATEX: \renewcommand \plaintitle{SP REST API Cookbook, SP v8.4, API v4} % keep the image out of the headers
 #+LATEX: \renewcommand{\ref}{\nameref}
 
 * Introduction
@@ -120,6 +120,26 @@ listings package.
    changes, modifications, etc. are all greatly appreciated.  Please
    see the section [[Contributing and other technical details]] for advice
    on ways to contribute.
+
+   The examples that were written for a version of SP and its REST API
+   will report their version in both their =meta= object and in the
+   URLs; those examples are not generally reproduced for the latest
+   version, but also should continue to work even on the latest
+   version (as well as on the prior version of the API in newer
+   versions of SP.  Put another way, if you see an example that uses a
+   URL with a specific =/v[VersionNumber]/= in it or example output
+   that includes a =meta= object like
+   #+BEGIN_EXAMPLE
+     "meta": {
+	 "api": "SP",
+	 "api_version": "3",
+	 "sp_build_id": "HGRD",
+	 "sp_version": "8.3"
+     }
+   #+END_EXAMPLE
+   you can, in probably all cases, use the latest version of SP and
+   the REST API safely.  Alternatively, you can use the latest version
+   of SP and the specified version of the REST API.[fn:8]
 
 ** SP APIs
 
@@ -1774,6 +1794,35 @@ listings package.
 
    #+INCLUDE: code-examples/mo-listing.c src c
 
+** Node
+   #+INDEX: node
+   #+INDEX: javascript
+   #+INDEX: dns
+   #+INDEX: filter\ list
+   #+INDEX: /tms\_filter\_list\_requests/ endpoint
+
+   In SP8.4 you can configure DNS Filter Lists by telling SP about a
+   DNS server from which you can do zone transfers and the domain or
+   subdomain containing the hosts you want to add to the DNS filter
+   list.  This can be a fast way of creating a DNS filter list for a
+   whole subdomain.
+
+   The following NodeJS API client requires a version of Node that is
+   at least 8.4.0 and can be run with the command:
+   #+BEGIN_EXAMPLE
+    node dns-filter-lists.js
+   #+END_EXAMPLE
+   and should simply print:
+   #+BEGIN_EXAMPLE
+   Successfully saved filter list content
+   #+END_EXAMPLE
+   when it is done.  You can then verify the results by looking in the
+   UI at Administration > Mitigation > Filter lists or by looking at
+   the =/api/sp/tms_filter_lists/= endpoint in the API.
+
+   #+INCLUDE: code-examples/dns-filter-lists.js src javascript
+
+
 * Appendices
 ** License
    #+INDEX: license
@@ -2013,3 +2062,9 @@ listings package.
 [fn:6] https://arrow.readthedocs.io/en/latest/
 
 [fn:7] https://github.com/fangyidong/json-simple
+
+[fn:8] Put another way, this relieves contributors to this document of
+the burden of updating all of the examples and descriptions every time
+a new version of SP is released.  So if you come across an example
+that is 8 versions old, be cautious or edit it and submit an update to
+this document.
