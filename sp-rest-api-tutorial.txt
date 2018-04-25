@@ -1676,7 +1676,7 @@ listings package.
    in the program, you can add a ="filters"= parameter that looks like
    this:
 
-   #+BEGIN_EXAMPLE
+   #+BEGIN_SRC json
 	 "filters": {
 	     "fields": [
 		 {
@@ -1692,7 +1692,7 @@ listings package.
 	     ],
 	     "type": "or"
 	 }
-   #+END_EXAMPLE
+   #+END_SRC
 
    This particular filter selects results where the Destination Port
    is either =443= or =80=.  You can create more complex filters to
@@ -1708,6 +1708,27 @@ listings package.
 
    #+INCLUDE: code-examples/download-insight-rawflows.py src python
 
+   An example of running this program is:
+   #+BEGIN_SRC sh :exports code
+     python download-insight-rawflows.py -s 2018-22-03 -e 2018-04-24 \
+	    -l leader.example.com \
+	    -k MySecretAPIkey \
+	    -n 1000000
+   #+END_SRC
+   #+BEGIN_EXAMPLE
+       Querying leader.example.com for 1000000 raw flows records
+       between 2018-03-22T00:00:00 and 2018-04-24T00:00:00...
+       Writing chunk #298 to raw_flows.csv
+     Query time:       25.5 seconds
+     Write time:       46.9 seconds
+     Total time:       72.4 seconds
+   #+END_EXAMPLE
+   and the file =raw_flows.csv= contains 1,000,000 flow records and
+   one header row:
+   #+BEGIN_EXAMPLE
+   $ wc -l raw_flows.csv
+   1000001 raw_flows.csv
+   #+END_EXAMPLE
 
 * Examples in Languages other than Python
 
