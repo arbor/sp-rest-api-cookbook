@@ -1608,14 +1608,107 @@ listings package.
    - may not be crucial because not everyone is a cloud signaling
      user; even so, i like this example because it is a unique
      programmatic thing in SP.  /--acaird/
-* Insight                                                          :noexport:
-** Example: Insight PDF Reports
+* Insight
+  #+INDEX: insight
+  SP Insight is an addition to SP that stores all of the Arbor
+  annotated flow records that SP sees and allows queries on that data
+  in many ways.  One notable feature of SP Insight when compared to SP
+  is that reports with more than two field types can be created.  For
+  example, SP supports reports that are "Customer by TCP Ports" but
+  does not support reports with more than two field types; SP Insight
+  supports reports like "Customer by TCP Ports by Source Country".
+
+  Another difference between SP and SP Insight is that the SP Insight
+  web page retrieves all of its data from the SP REST API, meaning
+  that any of the data visible on the SP Insight web page is available
+  to you via an API client.
+
+  The SP Insight API is documented in the API Reference Guide included
+  with SP.  In addition, there are some examples following.
+
+** Example: Insight PDF Reports                                    :noexport:
    - gather some data from Insight
    - make a graph of it, or some other nice looking report that is a
      PDF file
    - this is not a good idea because
      - it is difficult
      - not everyone has Insight
+** Example: Downloading Raw Flows with the SP Insight API
+   #+INDEX: raw flow
+   #+INDEX: insight!query
+   #+INDEX: insight!filters
+   #+INDEX: python
+   #+INDEX: csv
+
+   Because SP Insight stores all of the raw flow records that SP has
+   seen (up to the limits of your SP Insight cluster), you can
+   retrieve those raw flow records via the SP REST API.
+
+   The script below comprises mostly processing of command-line
+   options, but the heart of it is the JSON-formatted query:
+   #+BEGIN_SRC json
+     {
+	 "start": "<start>",
+	 "end": "<end>",
+	 "dimensions": [
+	     "IP_Protocol",
+	     "Source_IPv4_Address",
+	     "Source_Port",
+	     "Destination_IPv4_Address",
+	     "Destination_Port"
+	 ],
+	 "limit": "<num_records>",
+	 "perspective": "<perspective>",
+	 "view": "<view>"
+     }
+   #+END_SRC
+   which describes the data to be returned from the API.  The items in
+   =<>= are set in the program via command-line options or their
+   defaults.
+
+   You could add an option that took dimension names as the parameter
+   and create the ="dimensions"= list from the command line, too.  If
+   you simply delete the ="dimensions"= key and list, the API will
+   return all of the dimensions in the CSV file.  You will get better
+   performance if you request only the dimensions you need.
+
+   In addition to the keys and values in the query parameter above and
+   in the program, you can add a ="filters"= parameter that looks like
+   this:
+
+   #+BEGIN_EXAMPLE
+	 "filters": {
+	     "fields": [
+		 {
+		     "facet": "Destination_Port",
+		     "type": "selector",
+		     "value": "80"
+		 },
+		 {
+		     "facet": "Destination_Port",
+		     "type": "selector",
+		     "value": "443"
+		 }
+	     ],
+	     "type": "or"
+	 }
+   #+END_EXAMPLE
+
+   This particular filter selects results where the Destination Port
+   is either =443= or =80=.  You can create more complex filters to
+   retrieve only the data you need.
+
+   *Note:* As of the version of SP Insight that is shipped with SP 8.4
+   and earlier, the SP Insight filter specification does not support
+   the ="and"= operation between facets of the same type.
+
+   One way to find out how to structure an SP Insight query, including
+   filters, is to use your web browsers developer tools and inspect
+   the queries that the SP Insight is sending to the API.
+
+   #+INCLUDE: code-examples/download-insight-rawflows.py src python
+
+
 * Examples in Languages other than Python
 
   These examples are intentionally less sophisticated than those
