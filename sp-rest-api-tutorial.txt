@@ -1328,6 +1328,170 @@ listings package.
    - some really vague hand-wavey thing that looks at all of the
      things in the =/alert/<alert_id>/traffic= endpoint and does a
      thing with them
+** Example: Using Alert Details to create radar plots of alert characteristics
+   #+INDEX: /alerts/ endpoint
+   #+INDEX: plot!radar
+   #+INDEX: matplotlib
+   #+INDEX: pandas
+
+   As of SP8.4 APIv4 the =/alerts/= endpoint has the option of
+   including all of the information that SP collects about alerts.  If
+   you are familiar with the SP UI, this is the data that is used to
+   create the graphs and tables shown on the alert summary, traffic
+   details, routers, and annotation tabs of the alert page.
+
+   The =/alerts/= endpoint includes relationships to information about
+   the alert; the ="relationships"= object in the alert includes:
+   #+BEGIN_SRC json
+     {
+	 "relationships": {
+	     "packet_size_distribution": {
+		 "data": {
+		     "id": "packet-size-distribution-<alert_id>",
+		     "type": "alert_packet_size_distribution"
+		 },
+		 "links": {
+		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/packet_size_distribution"
+		 }
+	     },
+	     "patterns": {
+		 "links": {
+		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/patterns/"
+		 }
+	     },
+	     "router_traffic": {
+		 "links": {
+		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/router_traffic/"
+		 }
+	     },
+	     "source_ip_addresses": {
+		 "data": {
+		     "id": "source-ip-addresses-<alert_id>",
+		     "type": "alert_source_ip_addresses"
+		 },
+		 "links": {
+		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/source_ip_addresses"
+		 }
+	     },
+	     "thresholds": {
+		 "links": {
+		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/misuse_types_thresholds/"
+		 }
+	     },
+	     "traffic": {
+		 "data": {
+		     "id": "alert-traffic-<alert_id>",
+		     "type": "alert_traffic"
+		 },
+		 "links": {
+		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/traffic"
+		 }
+	     }
+	 }
+     }
+   #+END_SRC
+   each of those relationships can be referenced in turn but, to
+   minimize the number of HTTP requests required, the =/alerts/=
+   endpoint (among other endpoints; see the online API documentation)
+   also supports the =include= URL query parameter to include related
+   data in the first request to the API.  To use the =include= URL
+   query parameter append ~?include=rel_1,rel_2,rel_3~ to the API URL,
+   where each =rel_N= parameter is the name of the relationship (for
+   example, =source_ip_addresses=, =thresholds=, and =traffic=).  The
+   results of that API request will include a new list called
+   =included= that is objects that comprise the =attributes= and
+   =relationships= objects for each included element.  This list has a
+   format similar to:
+   #+BEGIN_SRC json
+     {
+	 "included": [
+	     {
+		 "relationships": {
+		     "router": {
+			 "data": {
+			     "type": "router",
+			     "id": "<router_id>"
+			 },
+			 "links": {
+			     "related": "<link_to_router>"
+			 }
+		     },
+		     "parent": {
+			 "data": {
+			     "type": "alert",
+			     "id": "<alert_id>"
+			 },
+			 "links": {
+			     "related": "<alert_id_url>"
+			 }
+		     }
+		 },
+		 "attributes": {
+		     "content": "<alert_pattern_data>"
+		 },
+		 "type": "alert_patterns",
+		 "id": "<alert_id>-router:<router_id+cidr_port",
+		 "links": {
+		     "self": "<self_link>"
+		 }
+	     },
+	     {
+		     "router": {
+			 "data": {
+			     "type": "router",
+			     "id": "<router_id>"
+			 },
+			 "links": {
+			     "related": "<link_to_router>"
+			 }
+		     },
+		     "parent": {
+			 "data": {
+			     "type": "alert",
+			     "id": "<alert_id>"
+			 },
+			 "links": {
+			     "related": "<alert_id_url>"
+			 }
+		     }
+		 "type": "alert_patterns",
+		 "id": "<alert_id>-router:<router_id+cidr_port",
+		 "links": {
+		     "self": "<self_link>"
+		 }
+	     }
+	 ]
+     }
+   #+END_SRC
+
+   For the alert endpoint, this additional data available via the API
+   can allow for different representations of alerts, and this example
+   gathers some of this data and creates radar or spider plots out of
+   that data, displaying 12 alerts on one page for quick visual
+   analysis of them.  It is easy to pick out the alerts that are
+   similar to each other, or those that are unique among the 12.
+
+   #+CAPTION: An example of using radar plots for comparing
+   #+CAPTION: characteristics of alerts; the alert characteristics
+   #+CAPTION: selected for this display are =impact_bps=,
+   #+CAPTION: =impact_pps=, =severity_percent=, =misuse_types=,
+   #+CAPTION: and =source_ips=.  The program that makes these
+   #+CAPTION: can be easily modified to show other alert details
+   #+CAPTION: in this format.
+   [[file:images/cookbook-radar.png]]
+
+   The Python program to make these plots makes use of a few extra
+   Python packages:
+     - matplotlib.pyplot
+     - pandas
+   both of these can be install using =easy_install= or =pip=.  For
+   more information, they each have their own websites:
+     - https://matplotlib.org/
+     - http://pandas.pydata.org/
+
+   #+INCLUDE: code-examples/radarplots.py src python
+
+
 * Configuration
 
   This chapter describes how to configure SP using the SP REST API.
