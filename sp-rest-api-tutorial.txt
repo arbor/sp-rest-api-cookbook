@@ -1797,6 +1797,19 @@ listings package.
    - this is not a good idea because
      - it is difficult
      - not everyone has Insight
+** Example: Creating Multidimensional Reports with the SP Insight API :noexport:
+
+   Traditional SP offers reports that have two dimensions---customers
+   and ports, or routers and customer---these are pre-computed by SP
+   as it analyzes the NETFLOW data that is collects and the reports
+   are very fast to produce because of this.
+
+   However, there are many reports that SP cannot make---the data
+   needed to make them isn't available.  However, SP Insight keeps all
+   of the data, which makes for very large storage requirements and,
+   possibly, very long query times when makeing report, but allows for
+   reports based on almost anything that is available in the raw data.
+
 ** Example: Downloading Raw Flows with the SP Insight API
    #+INDEX: raw flow
    #+INDEX: insight!query
@@ -1893,6 +1906,152 @@ listings package.
    $ wc -l raw_flows.csv
    1000001 raw_flows.csv
    #+END_EXAMPLE
+** Example: Creating Traffic Flow Diagrams with the SP Insight API
+   #+INDEX: insight!query
+   #+INDEX: insight!filters
+   #+INDEX: python
+   #+INDEX: dot
+   #+INDEX: graphviz
+   #+INDEX: networkx
+   #+INDEX: sankey
+   #+INDEX: flow
+   #+INDEX: insight!topn
+
+   SP Insight can represent information grouped together by many
+   aspects.  That is, you can ask the question "How much traffic left
+   a host and went out a particular source port destined for one of
+   several different ports on another host?" and Insight can answer
+   that question.
+
+   The question part of this is a query to the =insight/topn= that
+   looks similar to:
+   #+BEGIN_SRC json
+     {
+	 "limit": 10,
+	 "groupby": [
+	     "Source_IPv4_Address",
+	     "Source_Port",
+	     "Destination_Port",
+	     "Destination_IPv4_Address"
+	 ],
+	 "filters": {
+	     "type": "or",
+	     "fields": [
+		 {
+		     "type": "selector",
+		     "facet": "Destination_Port",
+		     "value": "80"
+		 },
+		 {
+		     "type": "selector",
+		     "facet": "Destination_Port",
+		     "value": "443"
+		 },
+		 {
+		     "type": "selector",
+		     "facet": "Destination_Port",
+		     "value": "25"
+		 },
+		 {
+		     "type": "selector",
+		     "facet": "Destination_Port",
+		     "value": "53"
+		 }
+	     ]
+	 },
+	 "start": "2018-05-20T16:44:00.000Z",
+	 "end": "2018-05-20T16:52:00.000Z",
+	 "view": "Network",
+	 "metric": "bps",
+	 "calculation": "average"
+     }
+   #+END_SRC
+   which asks the specfic question "For destination ports of web
+   servers (80 and 443), SMTP servers (port 25), and DNS servers (port
+   53), what sort of traffic is going to what hosts and from where?"
+
+
+   The results are a list of objects each looking similar to those
+   in this short list of two:
+   #+BEGIN_SRC json
+     [
+	 {
+	     "Destination_IPv4_Address": "216.175.102.23",
+	     "Destination_Port": "80",
+	     "Source_IPv4_Address": "163.193.0.1",
+	     "Source_Port": "44456",
+	     "bps": {
+		 "average": {
+		     "in": 2500,
+		     "out": 0,
+		     "total": 2500
+		 }
+	     }
+	 },
+	 {
+	     "Destination_IPv4_Address": "216.175.102.23",
+	     "Destination_Port": "80",
+	     "Source_IPv4_Address": "163.193.0.2",
+	     "Source_Port": "45666",
+	     "bps": {
+		 "average": {
+		     "in": 500,
+		     "out": 0,
+		     "total": 500
+		 }
+	     }
+	 }
+     ]
+   #+END_SRC
+   If you want to see a visualization of the relationships between
+   source hosts, source ports, destination ports, and destination
+   hosts you can construct a directed graph with each of those four
+   elements as nodes in the graph, adding up the average traffic total
+   for each edge.  In the case of the example above,  =163.193.0.1= is
+   sending 2500bps out of port =44456= to port =80= on host
+   =216.175.102.23= and similar for =163.193.0.2=, but with 500bps of
+   traffic.  So the total traffic to port 80 is 3000bps and the total
+   traffic to =216.175.102.23= is also 3000bps.
+
+   One way to represent this is to gather the data from Insight and
+   represent it using a graph library in Python, with the nodes and
+   edges having properties relevant to them.  The example below uses
+   the [[https://networkx.github.io/][networkx]] Python library to manage the graph elements and then
+   produces a file that can be processed using the =dot= program that
+   comes in the free [[http://graphviz.org/][GraphViz]] package.
+
+   #+INCLUDE: code-examples/sp-insight-sankey.py src python
+
+   That program will write a file called =traffic-flow.dot= in the
+   directory from which you run it.  Once you have that file and you
+   have Graphviz installed, you should run =dot -Tpdf -O
+   traffic-flow.dot= to produce a file called =traffic-flow.dot.pdf=.
+
+   Using some highly contrived test data, this produces a graphic that
+   looks like:
+   #+CAPTION: Using contrived test Netflow data to populate SP Insight,
+   #+CAPTION: the Python program in this section, and Graphviz =dot=
+   #+CAPTION: we can see a visual representation of the flow of
+   #+CAPTION: traffic from a source host, out a source port, into a
+   #+CAPTION: destination port, and on to the destination host.  From
+   #+CAPTION: this picture you can see that most of the traffic to the
+   #+CAPTION: host is web traffic (port 80), there isn't any HTTPs
+   #+CAPTION: (port 443) traffic at all, and there is a little bit of
+   #+CAPTION: SMTP (port 25) and DNS (port 53) traffic.  Depending
+   #+CAPTION: on the services you expect on that host, the SMTP and
+   #+CAPTION: DNS traffic might be suspicious.
+   [[file:images/traffic-flow.dot.pdf]]
+
+   The example here can be constructed using the SP Insight UI page,
+   but this example can be extended to show data that the current
+   version of Insight cannot.  For example, if you wanted to get
+   traffic that matches the destination ports 80 and 443 *or* traffic
+   to 10.12.14.16 you can use the Python program above to make two
+   queries, one for each condition, and put all of the results into
+   the results graph (the variable =G= in the example program).  In
+   Insight parlance, this is an /or between two facets/, which is not
+   supported in the UI or API, but can be done with your own API
+   client.
 
 * Examples in Languages other than Python
 
