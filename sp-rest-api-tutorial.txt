@@ -1491,6 +1491,53 @@ listings package.
 
    #+INCLUDE: code-examples/radarplots.py src python
 
+** Example: Attacks Grouped by CIDR Block
+   #+INDEX: /alerts/ endpoint
+   #+INDEX: cidrs
+   #+INDEX: python!ipaddress
+   #+INDEX: paging!recursion
+
+   Arbor Networks SP accumulates and stores a lot of data about
+   network traffic and distributed denial of service (DDoS) attacks
+   and presents this data in ways that have proven useful to network
+   engineers and network security analysts.  That data can be used in
+   many other ways by extracting it via the REST API and applying
+   information specific to your needs.
+
+   This example simply takes IP addresses from the alert data,
+   aggregates them into CIDR blocks of a configurable size, and prints
+   a simple report.  It uses the =ipaddress=[fn:9] Python library and
+   is written for Python2; =ipaddress= is included with Python3, so
+   this program is easily adapted for Python3.
+
+   When run, this program recursively calls its function
+   =get_attacked_addresses= to step through the pages of data from the
+   =/alerts/= endpoint until the last item in the list of alerts on
+   the current page is outside of the specified date rang, then puts
+   those addresses into IPv4 or IPv6 CIDR blocks and counts them,
+   finally printing a simple report.  All of that looks like this:
+   #+BEGIN_EXAMPLE
+     paging to page 2; # addresses so far: 0
+     paging to page 3; # addresses so far: 35
+     paging to page 4; # addresses so far: 72
+     paging to page 5; # addresses so far: 100
+     paging to page 6; # addresses so far: 108
+     paging to page 7; # addresses so far: 126
+     # addresses found between 2018-05-23T12:00:00+00:00 and 2018-05-23T23:00:00+00:00: 126
+     --------------------------+----------
+                        Subnet | # Attacks
+     --------------------------+----------
+                 10.100.2.0/24 |        1
+                 149.39.0.0/24 |        6
+                149.81.12.0/24 |       11
+                151.107.2.0/24 |        5
+              216.175.102.0/24 |       18
+            3ffe:1:14:20::/116 |       60
+               70.107.137.0/24 |       10
+                85.94.160.0/24 |       15
+   #+END_EXAMPLE
+
+   #+INCLUDE: code-examples/attacked-cidrs.py src python
 
 * Configuration
 
@@ -2505,3 +2552,5 @@ the burden of updating all of the examples and descriptions every time
 a new version of SP is released.  So if you come across an example
 that is 8 versions old, be cautious or edit it and submit an update to
 this document.
+
+[fn:9] https://github.com/phihag/ipaddress
