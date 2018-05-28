@@ -1539,6 +1539,99 @@ listings package.
 
    #+INCLUDE: code-examples/attacked-cidrs.py src python
 
+** Example: Differences in output between accounts with different authorization
+   #+INDEX: /alerts/ endpoint
+   #+INDEX: authorization
+   #+INDEX: token
+
+   As of SP 8.4 and API version 4, the REST API supports some amount
+   of authorization based on the account used in the generation of the
+   API token.  For example, if you have an MSSP user called
+   =mssp_user= you can create an API token for them with the CLI
+   command:
+   #+BEGIN_SRC sh
+   services aaa local apitoken generate mssp_user "mssp user - 26May2018"
+   #+END_SRC
+   note that the user name occurs right after the =generate= part of
+   the command.
+
+   After generating an API token for the =mssp_user= account, you also
+   need create a capability group that has the =sp_restapi= token
+   enabled.  This cannot be done with the =ms_user= (the default
+   non-administrative capability group for managed services accounts)
+   capability group because it is immutable, but that group can be
+   duplicated using the =Copy= link in the UI, and the =sp_restapi=
+   token can be enabled in the new capability group.  After that, you
+   can add that as the user capability group to the account group that
+   is associated with the =mssp_user= account.
+
+   Not all of the endpoints are available to users without
+   administrative access (tokens created with the user =admin=), and
+   if an endpoint isn't available, your API client will receive the
+   HTTP status =404 NOT FOUND=; this was intentionally chosen instead
+   of =401 UNAUTHORIZED= or =403 FORBIDDEN= in order not to disclose
+   parts of the API to unauthorized clients.
+
+   To demonstrate the difference between accessing the same endpoint
+   with different levels of authorization, this Python program makes
+   the same request to the =/alerts/= endpoint but with different
+   tokens, an =admin= token and a token for an MSSP user:
+
+   #+INCLUDE: code-examples/authorization-example.py src python
+
+   the output of this on a test system is:
+   #+BEGIN_EXAMPLE
+     Getting alerts for the admin account
+     52458	collector_down
+     52457	collector_down
+     52456	dos_profiled_router
+     52455	dos_profiled_router
+     52454	collector_down
+     52453	collector_down
+     52452	collector_down
+     52451	collector_down
+     52450	collector_down
+     52449	collector_down
+     52448	collector_down
+     52447	collector_down
+     52446	collector_down
+     52445	collector_down
+     52444	collector_down
+     Getting alerts for the mssp_user account
+     52414	dos_host_detection	IP Fragmentation, Total Traffic, UDP
+     52405	dos_host_detection	TCP SYN, Total Traffic
+     52404	dos_host_detection	TCP SYN, Total Traffic
+     52401	dos_host_detection	TCP SYN, Total Traffic
+     52400	dos_host_detection	TCP SYN, Total Traffic
+     52313	dos_host_detection	TCP SYN, Total Traffic
+     52312	dos_host_detection	TCP SYN, Total Traffic
+     52309	dos_host_detection	TCP SYN, Total Traffic
+     52308	dos_host_detection	TCP SYN, Total Traffic
+     52220	dos_host_detection	TCP SYN, Total Traffic
+     52219	dos_host_detection	TCP SYN, Total Traffic
+     52216	dos_host_detection	TCP SYN, Total Traffic
+     52215	dos_host_detection	TCP SYN, Total Traffic
+     52203	dos_host_detection	IP Fragmentation, Total Traffic, UDP
+     52127	dos_host_detection	TCP SYN, Total Traffic
+   #+END_EXAMPLE
+
+   The system alerts are only available to the administrative account,
+   and the MSSP user account only sees the  =dos_host_detection=
+   alerts for the managed objects it is scoped to.
+
+   Because subobjects of the results of endpoints are not yet scoped,
+   if any part of the results from an endpoint are restricted from
+   view by a non-administrative user, the entirety of the results of
+   the endpoint are not displayed, and instead a =404 NOT FOUND= HTTP
+   status code is returned.  This behavior extends to use of the
+   =?include= query parameter; if your API query requests the
+   inclusion of data from an endpoint it is not authorized to access,
+   the entire query will result in a =404 NOT FOUND= HTTP status code
+   and no data will be returned.
+
+   This is documented in more detail at
+   https://spleader.example.com/api/sp/doc/v4/endpoints.html#authorization.
+
 * Configuration
 
   This chapter describes how to configure SP using the SP REST API.
