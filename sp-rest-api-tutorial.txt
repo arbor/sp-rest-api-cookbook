@@ -11,6 +11,7 @@
 #+LATEX_HEADER: \usepackage{xcolor}
 #+LATEX_HEADER: \usepackage{minted}
 #+LATEX_HEADER: \usepackage{makeidx}
+#+LATEX_HEADER: \usepackage{grffile}
 #+LATEX_HEADER: \setcounter{tocdepth}{1}
 #+LATEX_HEADER: \makeindex
 #+LATEX_HEADER: \newsavebox{\titleimage}
