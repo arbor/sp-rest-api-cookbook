@@ -130,7 +130,7 @@ In addition, there is a rendered HTML version available at
     if you're using `hub`:
 
     ```sh
-    hub pull-request -b arbor/sp-rest-api-cookbook:master -h <your_git_id>/<your_branch_name>
+    hub pull-request -b arbor/sp-rest-api-cookbook:master -h <your_git_id>:<your_branch_name>
     ```
 
     and fill out the message and title in the editor that starts up
