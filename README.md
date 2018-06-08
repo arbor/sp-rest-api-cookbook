@@ -102,7 +102,12 @@ In addition, there is a rendered HTML version available at
 
     You may need to make changes to your branch to get the merge to
     complete cleanly
-10. Next type:
+10. (This and the next step are a convenience for the maintainers of
+    the SP REST API Cookbook, however, they are somewhat complicated
+    and can be risky; you may skip them if you aren't comfortable with
+    them and the maintainers will do this step for you)
+
+    Rebase your changes against the `master` branch by typing:
 
     ```sh
     git rebase -i master
