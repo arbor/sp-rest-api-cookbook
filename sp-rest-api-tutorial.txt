@@ -1743,6 +1743,238 @@ listings package.
 
    #+INCLUDE: code-examples/ragu-python-appliance-limit-ex.py src python
 
+** Example: Combining IPv4 and IPv6 Managed Objects
+   #+INDEX: /managed\_objects/ endpoint
+   #+INDEX: managed objects!combining
+   As of SP 8.4 managed objects using the =cidr_match= match type can
+   match on IPv4 and IPv6 addresses in the same managed object.
+
+   These combined managed objects can simplify your configuration and
+   save on managed object licensing.  If you have customers or
+   properties (for example, a collection of web servers) with both
+   IPv4 and IPv6 address space you needed to managed objects to
+   monitor and protect them.  This results in more complicated
+   management (changes to, for example, the IPv4 MO needed to also be
+   made to the IPv6 MO) and in a doubling of your managed object
+   count[fn:10].  Combining managed objects where possible can
+   simplify the management of them and save you money on licensing
+   costs.
+
+   However, as an example of the complexity of having two managed
+   objects (one IPv4 and one IPv6) for the same entity in your
+   network, combining the managed objects is also complicated and can
+   be error-prone.  Automating this process will add consistency and
+   reduce the manual effort in combining managed objects.
+
+   The Python program below (called =combine-v4-v6-MOs.py= in the
+   =code-examples= directory) is very rudimentary and should be enhaced
+   where the comments indicate (and, probably, in other places) before
+   you use it in production.  The program follows these basic steps:
+    - gather the MOs from the SP deployment
+    - if there is a file called =mos_to_merge.json= read that file
+    - check that the MOs in =mos_to_merge.json= exist
+    - compare the IPv4 and IPv6 MOs against a set of rules to see if
+      they qualify to be combined
+    - output the REST API commands to delete the two old MOs and
+      create the new combined MO
+    - if the file =mos_to_merge.json= doesn't exist, simply print a
+      list of the managed objects on the SP system
+
+   The format of the =mos_to_merge.json= file is:
+   #+BEGIN_SRC json
+     [
+	 {
+	     "v4": "cust01_v4",
+	     "v6": "cust01_v6"
+	 },
+	 {
+	     "v4": "cust02",
+	     "v6": "cust02_v6"
+	 },
+	 {
+	     "v4": "cust03-4",
+	     "v6": "cust04"
+	 },
+	 {
+	     "v4": "cust-04",
+	     "v6": "cust6-04"
+	 },
+	 {
+	     "v4": "cust4-05",
+	     "v6": "cust6-05"
+	 }
+     ]
+   #+END_SRC
+
+   When =combine-v5-v6-MOs.py= is run and the file =mos_to_merge.json=
+   is not present, the output looks like:
+   #+LATEX: \footnotesize
+   #+BEGIN_EXAMPLE
+     $ ./combine-v4-v6-MOs.py
+     Collecting information on managed objects from spleader.example.com
+     There are 50 MOs.
+     There are 4 out of 37 MOs with CIDR matches that are IPv6 matches.
+
+     Please create a file called mos_to_merge.json and populate it with
+     a JSON-formatted list of names of MOs to evaluate for
+     combining.
+     The list should look like:
+     [
+	 {
+	     "v4": "mo1_name_v4",
+	     "v6": "mo1_name_v6"
+	 },
+	 {
+	     "v4": "mo2_name_v4",
+	     "v6": "mo2_name_v6"
+	 }
+     ]
+     Your MOs are:
+     cidr_blocks     cust01_v4
+     cidr_blocks     cust02
+     cidr_blocks     cust03-4
+     cidr_blocks     cust-04
+     cidr_blocks     cust4-05
+     cidr_blocks     web_servers-v4
+     cidr_blocks     cust12
+     cidr_v6_blocks  cust01_v6
+     cidr_v6_blocks  cust02_v6
+     cidr_v6_blocks  cust04
+     cidr_v6_blocks  cust6-04
+     cidr_v6_blocks  cust6-05
+   #+END_EXAMPLE
+   #+LATEX: \normalsize
+
+   After you've created the =mos_to_merge.json= file to describe the
+   MOs you would like to merge, running the Python program results in
+   output that should look like:
+   #+LATEX: \footnotesize
+   #+BEGIN_EXAMPLE
+     $ ./combine-v4-v6-MOs.py
+     Collecting information on managed objects from spleader.example.com.
+     There are 50 MOs.
+     There are 4 out of 37 MOs with CIDR matches that are IPv6 matches.
+     <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+     The following MO will not be evaluated for combining because one
+     or both of the MO names is not configured on the SP system.
+     {
+	 "v4": "isp_1",
+	 "v6": "not_isp_1"
+     }
+     >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+     ('cust01_v4', 'cust01_v6'):
+       - Shared Host Detection Sets do not match
+     ('cust02', 'cust02_v6'):
+       - Shared Host Detection Sets do not match
+     ('cust03-4', 'cust04'):
+       - Shared Host Detection Sets do not match
+     MOs that can be combined: [('cust-04', 'cust6-04')]
+     DELETE http://spleader.example.com/api/sp/managed_objects/278
+     DELETE http://spleader.example.com/api/sp/managed_objects/284
+     POST http://spleader.example.com/api/sp/managed_objects <<
+     {
+	 "data": {
+	     "relationships": {
+		 "mitigation_templates_manual_ipv4": {
+		     "data": {
+			 "type": "mitigation_template",
+			 "id": "1"
+		     },
+		     "links": {
+			 "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/1"
+		     }
+		 },
+		 "shared_host_detection_settings": {
+		     "data": {
+			 "type": "shared_host_detection_settings",
+			 "id": "114"
+		     },
+		     "links": {
+			 "related": "https://spleader.example.com/api/sp/v5/shared_host_detection_settings/114"
+		     }
+		 },
+		 "mitigation_templates_manual_ipv6": {
+		     "data": {
+			 "type": "mitigation_template",
+			 "id": "8"
+		     },
+		     "links": {
+			 "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/8"
+		     }
+		 },
+		 "mitigation_templates_auto_ipv6": {
+		     "data": {
+			 "type": "mitigation_template",
+			 "id": "9"
+		     },
+		     "links": {
+			 "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/9"
+		     }
+		 },
+		 "mitigation_templates_auto_ipv4": {
+		     "data": {
+			 "type": "mitigation_template",
+			 "id": "2"
+		     },
+		     "links": {
+			 "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/2"
+		     }
+		 }
+	     },
+	     "attributes": {
+		 "detection_profiled_severity_snmp_enabled": false,
+		 "match_type": "cidr_blocks",
+		 "family": "customer",
+		 "autodetected": false,
+		 "mitigation_blackhole_auto_enabled": false,
+		 "detection_network_country_enabled": false,
+		 "detection_profiled_fast_detection_enabled": false,
+		 "detection_profiled_threshold_bandwidth": 2,
+		 "parent_editable": false,
+		 "mitigation_automitigation_tms_enabled": false,
+		 "detection_profiled_autorate": false,
+		 "mitigation_flowspec_auto_enabled": false,
+		 "num_children": 0,
+		 "detection_profiled_severity_duration": 300,
+		 "mitigation_automitigation_stop_event": "after_alert_ends",
+		 "detection_profiled_threshold_packet_rate": 2,
+		 "mitigation_automitigation_stop_minutes": 0,
+		 "detection_profiled_threshold_protocol": 2,
+		 "match": "32.174.0.0/24 3ffe:32:17:4abc::/119",
+		 "intf_boundary": [
+		     "16384004"
+		 ],
+		 "description": "gggg ---Combined Managed Object--- ",
+		 "tags": [
+		     "customer",
+		     "auto-combined"
+		 ],
+		 "editable": true,
+		 "detection_profiled_outgoing_enabled": true,
+		 "name": "cust-04 + cust6-04",
+		 "mitigation_automitigation": false,
+		 "detection_profiled_enabled": false,
+		 "detection_network_enabled": false
+	     },
+	     "type": "managed_object"
+	 }
+     }
+   #+END_EXAMPLE
+   #+LATEX: \normalsize
+   Notice that, at the end of the output, the JSON that can be POSTed
+   to create the new managed object has some combined and some new
+   properties:
+    - the ="match"= value is the combined IPv4 and IPv6 match values
+    - there is a new tag called ="auto-combined"= so you can easily
+      search for MOs that were created this way
+    - the name is new and is the combination of the two old names
+    - the description has the string =---Combined Managed Object---=
+      in it
+    - the various =mitigation_templates_[manual|auto]_[ipv4|ipv6]=
+      relationships are taken from the original two MOs
+
+   #+INCLUDE: code-examples/combine-v4-v6-MOs.py  src python
+
 ** Example: Adding a new TMS                                       :noexport:
    - we might not be able to do this in a reasonable way in SP8.3v3
 ** Example: Moving Routers between Collectors                      :noexport:
@@ -2400,7 +2632,6 @@ listings package.
 
    #+INCLUDE: code-examples/dns-filter-lists.js src javascript
 
-
 * Appendices
 ** License
    #+INDEX: license
@@ -2626,6 +2857,11 @@ listings package.
    - might want to show this to the SEs at the SE Summit in October
 
 * Footnotes
+
+[fn:10] Managed Objects are licensed quantities in SP, see the
+Deployment Status page
+(http://sp.example.com/page?id=deployment_status) for how many managed
+objects your license contains and how many you are using.
 
 [fn:1] http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 
