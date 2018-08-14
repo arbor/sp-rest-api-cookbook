@@ -1633,6 +1633,589 @@ listings package.
    This is documented in more detail at
    https://spleader.example.com/api/sp/doc/v4/endpoints.html#authorization.
 
+** Using the SP REST API to write a client that supports caching (or Why the Sub-Object JSON is so Deeply Nested)
+   #+INDEX: /alerts/ endpoint
+   #+INDEX: /alerts/ endpoint!sub-objects
+   #+INDEX: cache
+   #+INDEX: caching
+   #+INDEX: design
+
+   The SP REST API is written so that its output for objects that have
+   multiple sub-endpoints or whose output is affected by URL
+   parameters can be combined without having to restructure the data
+   that you already have or the new data that was just returned.  This
+   is useful when your client needs to cache data or wants to create
+   data sets by assembling the relevant data from API sub-endpoints or
+   different URL parameters.  We aren't going to provide a full
+   example of a caching client in this section, but we will describe
+   how this could be done using the SP REST API and you will see how
+   the data from the sub-endpoints or different URL parameters fits
+   into the JSON object that comes from the top-level endpoint.
+
+   The general idea is that the SP REST API can return data that is
+   different based on URL parameters and can return partial data if
+   the =?include= parameter isn't used or if not all of the
+   sub-endpoint relationships are retrieved.  The data returned in
+   either of those cases can be added to the initial data returned by
+   the =/alerts/<alert_id>= endpoint without the need to restructure
+   the data from either API call.
+
+   The ease of combining data simplfies the process of making an API
+   client that caches data for improved client responsiveness.  The
+   logic flow is shown in the flowchart below.
+   #+NAME: cachingflow
+   #+BEGIN_SRC ditaa :file ./images/cachingflow.png :exports results
+
+     +---------------+
+     |               |
+     |   End User    |<--+-+
+     |               |   | |
+     +-------+-------+   | |
+             |           | |
+             |           | |
+          Request      Response
+             |           | |
+             v           | |
+     +---------------+   | |
+     |               |   | |
+     |   API Client  |   | |
+     |    Program    |   | |
+     |               |   | |
+     +---------------+   | |
+             |           | |
+             |           | |
+             |           | |
+      Has the requested  | |
+         record been     | |
+     recently retrieved? | |
+             |           | |
+             +--Yes------+ |
+             |             |
+             |             |
+            No             |
+             |             |
+             v             |
+     +---------------+     |
+     |               |     |
+     | Make an API   |     |
+     | request and   +-----+
+     | add the data  |
+     | the cache     |
+     |               |
+     +---------------+
+   #+END_SRC
+
+   #+CAPTION: The high-level data flow for a caching client is illustrated
+   #+CAPTION: in this flow chart, which shows how the cache would be
+   #+CAPTION: updated by a client so the data can be returned to the client
+   #+CAPTION: without making an API call for data that hasn't changed.
+   #+CAPTION: Keeping track of the age of items in the cache so the client
+   #+CAPTION: doesn't get old data and the cache can be updated is not
+   #+CAPTION: illustrated here.
+   #+attr_html: :width 150px
+   #+attr_latex: :width 150px
+   #+NAME: fig:cachingflow
+   #+RESULTS: cachingflow
+   [[file:./images/cachingflow.png]]
+
+*** Combining data that changes based on URL parameters
+
+    In SP 8.4 Arbor Networks introduced time-series data relating to
+    alerts.  One of these time-series data sets is in the =/alerts/=
+    endpoint, for example requesting
+    =api/sp/alerts/<alert_id>/traffic/dest_prefixes/= will report the
+    traffic rates for given prefixes, a simplified representation is:
+    #+BEGIN_SRC json
+      {
+	"data": [
+	    "attributes": {
+	      "view": {
+		"network": {
+		  "unit": {
+		    "bps": {
+		      "name": "149.81.12.203/32",
+		      "pct95_value": 5495466,
+		      "avg_value": 3747293,
+		      "max_value": 5497066,
+		      "timeseries_start": "2018-07-30T18:08:15+00:00",
+		      "step": 60,
+		      "timeseries": [
+			0,
+			279466,
+			"[...]",
+			5142133
+		      ],
+		      "current_value": 5142133
+		    }
+		  }
+		}
+	      }
+	    },
+	    "type": "alert_traffic_dest_prefixes",
+	    "id": "<alert_id>-dest_prefixes-149.81.12.203/32"
+	  }
+	],
+	"links": {
+	  "self": "https://spleader.example.com/api/sp/v5/alerts/<alert_id>/traffic/dest_prefixes/"
+	}
+      }
+    #+END_SRC
+    requesting the same data with the query parameter
+    ~?query_unit=bps~ the results are similar, except the key below
+    ="unit":= has changed:
+    #+BEGIN_SRC json
+      {
+	  "data": [
+	      {
+		  "attributes": {
+		      "view": {
+			  "network": {
+			      "unit": {
+				  "pps": {
+				      "name": "149.81.12.203/32",
+				      "pct95_value": 1803,
+				      "avg_value": 1265,
+				      "max_value": 1806,
+				      "timeseries_start": "2018-07-30T18:08:15+00:00",
+				      "step": 60,
+				      "timeseries": [
+					  0,
+					  100,
+					  "[...]",
+					  100
+				      ],
+				      "current_value": 100
+				  }
+			      }
+			  }
+		      }
+		  },
+		  "type": "alert_traffic_dest_prefixes",
+		  "id": "<alert_id>-dest_prefixes-149.81.12.203/32"
+	      }
+	  ],
+	  "links": {
+	      "self": "https://spleader.example.com/api/sp/v5/alerts/<alert_id>/traffic/dest_prefixes/?query_unit=pps&query_view=network"
+	  }
+      }
+    #+END_SRC
+
+    The two sets of results can be easily combined into:
+    #+BEGIN_SRC json
+      {
+	  "data": [
+	      {
+		  "attributes": {
+		      "view": {
+			  "network": {
+			      "unit": {
+				  "bps": {
+				      "name": "149.81.12.203/32",
+				      "pct95_value": 5495466,
+				      "avg_value": 3747293,
+				      "max_value": 5497066,
+				      "timeseries_start": "2018-07-30T18:08:15+00:00",
+				      "step": 60,
+				      "timeseries": [
+					  0,
+					  279466,
+					  "[...]",
+					  5142133
+				      ],
+				      "current_value": 5142133
+				  },
+				  "pps": {
+				      "name": "149.81.12.203/32",
+				      "pct95_value": 1803,
+				      "avg_value": 1265,
+				      "max_value": 1806,
+				      "timeseries_start": "2018-07-30T18:08:15+00:00",
+				      "step": 60,
+				      "timeseries": [
+					  0,
+					  100,
+					  "[...]",
+					  100
+				      ],
+				      "current_value": 100
+				  }
+			      }
+			  }
+		      }
+		  },
+		  "type": "alert_traffic_dest_prefixes",
+		  "id": "<alert_id>-dest_prefixes-149.81.12.203/32"
+	      }
+	  ]
+      }
+    #+END_SRC
+
+    For an API end user who is using the API client to show views
+    based on bits-per-second (=bps=) and packets-per-second (=pps=),
+    the client has only to check for the keys =bps= and =pps= in the
+    =unit= object; once these are retrieved from the API server once,
+    the are useful to the client either forever (if the alert has
+    ended) or for some acceptable amount of time (if the alert is
+    ongoing).
+
+*** Combining data from sub-endpoints
+    In SP 8.4 the endpoint that has the most sub-endpoints is the
+    =/alerts/= endpoint, so we will use that as the example.  Starting
+    with the alert having ID 172784 (and trimming out some of the
+    response in the interest of space) the API request response for
+    that alert is
+    #+BEGIN_SRC json
+      {
+	"data": {
+	  "attributes": {
+	    "alert_class": "dos",
+	    "alert_type": "dos_profiled_router",
+	    "ongoing": false,
+	    "start_time": "2018-07-04T01:04:00+00:00",
+	    "stop_time": "2018-07-04T01:28:36+00:00",
+	    "subobject": {
+	      "direction": "Outgoing",
+	      "fast_detected": false,
+	      "impact_bps": 6376742,
+	      "impact_pps": 1883,
+	      "ip_version": 4,
+	      "protocols": [],
+	      "severity_percent": 127.53,
+	      "severity_threshold": 5000000.0,
+	      "severity_unit": "bps"
+	    }
+	  },
+	  "id": "172784",
+	  "relationships": {
+	    "packet_size_distribution": {
+	      "data": {
+		"id": "packet-size-distribution-172784",
+		"type": "alert_packet_size_distribution"
+	      },
+	      "links": {
+		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/packet_size_distribution"
+	      }
+	    },
+	    "patterns": {
+	      "links": {
+		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/patterns/"
+	      }
+	    },
+	    "router_traffic": {
+	      "links": {
+		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/"
+	      }
+	    },
+	    "source_ip_addresses": {
+	      "data": {
+		"id": "source-ip-addresses-172784",
+		"type": "alert_source_ip_addresses"
+	      },
+	      "links": {
+		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/source_ip_addresses"
+	      }
+	    },
+	    "thresholds": {
+	      "links": {
+		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/interface_traffic_thresholds/"
+	      }
+	    },
+	    "traffic": {
+	      "data": {
+		"id": "alert-traffic-172784",
+		"type": "alert_traffic"
+	      },
+	      "links": {
+		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/traffic"
+	      }
+	    }
+	  },
+	  "type": "alert"
+	}
+      }
+    #+END_SRC
+
+    The relationships shown in that output are all sub-objects of the
+    =/alerts/172784= object.  Taking =source_ip_addresses= as an
+    example, the API response for that object (again, with some data
+    trimmed) looks like
+    #+BEGIN_SRC json
+      {
+	  "data": {
+	      "attributes": {
+		  "source_ips": [
+		      "130.182.0.0",
+		      "130.182.0.1",
+		      "130.182.0.2",
+		      "130.182.0.3",
+		      "130.182.0.4",
+		      "130.182.0.5",
+		      "130.182.0.6",
+		      "130.182.0.7",
+		      "130.182.0.8",
+		      "130.182.0.9"
+		  ]
+	      },
+	      "id": "source-ip-addresses-172784",
+	      "links": {
+		  "self": "https://spleader.example.com/api/sp/v5/alerts/172784/source_ip_addresses"
+	      },
+	      "relationships": {
+		  "parent": {
+		      "data": {
+			  "id": "172784",
+			  "type": "alert"
+		      },
+		      "links": {
+			  "related": "https://spleader.example.com/api/sp/v5/alerts/172784"
+		      }
+		  }
+	      },
+	      "type": "alert_source_ip_addresses"
+	  }
+      }
+    #+END_SRC
+
+    A more complicated example is one of the sub-endpoints that has
+    more than one object, =router_traffic= (which has been greatly
+    simplified so it can be seen):
+    #+BEGIN_SRC json
+      {
+	  "data": [
+	      {
+		  "attributes": {
+		      "view": {
+			  "router-245": {
+			      "unit": {
+				  "bps": {
+				      "avg_value": 4386058,
+				      "current_value": 815626,
+				      "max_value": 6244499,
+				      "pct95_value": 6019565,
+				      "severity": 2,
+				      "step": 60,
+				      "timeseries": [
+					  5853386,
+					  5842086,
+					  6244499,
+					  5878551,
+					  5842066,
+					  5849164
+				      ],
+				      "timeseries_start": "2018-07-04T01:03:15+00:00"
+				  }
+			      }
+			  }
+		      }
+		  },
+		  "id": "172784-245",
+		  "links": {
+		      "self": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/172784-245?query_unit=bps"
+		  },
+		  "type": "alert_router_traffic"
+	      },
+	      {
+		  "attributes": {
+		      "view": {
+			  "router-246": {
+			      "unit": {
+				  "bps": {
+				      "avg_value": 4363147,
+				      "current_value": 874213,
+				      "max_value": 6290026,
+				      "pct95_value": 6178240,
+				      "severity": 2,
+				      "step": 60,
+				      "timeseries": [
+					  5948880,
+					  5504565,
+					  5907508,
+					  5786937,
+					  6061942,
+					  5686562
+				      ],
+				      "timeseries_start": "2018-07-04T01:03:15+00:00"
+				  }
+			      }
+			  }
+		      }
+		  },
+		  "id": "172784-246",
+		  "links": {
+		      "self": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/172784-246?query_unit=bps"
+		  },
+		  "type": "alert_router_traffic"
+	      }
+	  ]
+      }
+    #+END_SRC
+
+    Given those three pieces of data, the client starts by retrieving
+    the alert information, but none of the related information.  As the
+    user of the client requests more details, they can be added to the
+    data structure for the original alert and referenced after that.
+    The pseudo-code for this looks like
+    #+BEGIN_SRC python
+      if 'user_requested_key' is not in results['alert_id'] then:
+              make_api_request_for['user_requested_key']for['alert_id']
+      endif
+
+      return results['alert_id']['user_requested_key']
+    #+END_SRC
+    which means the first request for any particular data in a
+    sub-endpoint will be slightly slower as the API request is made,
+    but any subsequent request will already be in memory.  Of course,
+    you could add information about how old the data is and refresh the
+    data using API calls if it is older than your threshold.
+
+    Using the example results data from above we can use pseudo-code
+    that looks like this (and only handles one level of depth)
+    #+BEGIN_SRC python
+      for key in results_from_source_ip_addresses['data']['attributes']:
+	  do:
+	      results['data']['attributes']['key'] =
+		  results_from_source_ip_addresses['data']['attributes']
+    #+END_SRC
+    to populate the original alert data results.  This then looks like
+    (with the =relationships= links removed for brevity) this
+    #+BEGIN_SRC json
+      {
+	  "data": {
+	      "attributes": {
+		  "alert_class": "dos",
+		  "alert_type": "dos_profiled_router",
+		  "ongoing": false,
+		  "start_time": "2018-07-04T01:04:00+00:00",
+		  "stop_time": "2018-07-04T01:28:36+00:00",
+		  "subobject": {
+		      "direction": "Outgoing",
+		      "fast_detected": false,
+		      "impact_bps": 6376742,
+		      "impact_pps": 1883,
+		      "ip_version": 4,
+		      "protocols": [],
+		      "severity_percent": 127.53,
+		      "severity_threshold": 5000000.0,
+		      "severity_unit": "bps"
+		  },
+		  "source_ips": [
+		      "130.182.0.0",
+		      "130.182.0.1",
+		      "130.182.0.2",
+		      "130.182.0.3",
+		      "130.182.0.4",
+		      "130.182.0.5",
+		      "130.182.0.6",
+		      "130.182.0.7",
+		      "130.182.0.8",
+		      "130.182.0.9"
+		  ]
+	      },
+	      "id": "172784",
+	      "type": "alert"
+	  }
+      }
+    #+END_SRC
+    allowing for code that can handle more levels of depth than the
+    pseudo-code above, the data from the =router_traffic= endpoint
+    integrates into the alert data to result in
+    #+BEGIN_SRC json
+      {
+	  "data": {
+	      "attributes": {
+		  "alert_class": "dos",
+		  "alert_type": "dos_profiled_router",
+		  "ongoing": false,
+		  "start_time": "2018-07-04T01:04:00+00:00",
+		  "stop_time": "2018-07-04T01:28:36+00:00",
+		  "subobject": {
+		      "direction": "Outgoing",
+		      "fast_detected": false,
+		      "impact_bps": 6376742,
+		      "impact_pps": 1883,
+		      "ip_version": 4,
+		      "protocols": [],
+		      "severity_percent": 127.53,
+		      "severity_threshold": 5000000.0,
+		      "severity_unit": "bps"
+		  },
+		  "source_ips": [
+		      "130.182.0.0",
+		      "130.182.0.1",
+		      "130.182.0.2",
+		      "130.182.0.3",
+		      "130.182.0.4",
+		      "130.182.0.5",
+		      "130.182.0.6",
+		      "130.182.0.7",
+		      "130.182.0.8",
+		      "130.182.0.9"
+		  ],
+		  "view": {
+		      "router-245": {
+			  "unit": {
+			      "bps": {
+				  "avg_value": 4386058,
+				  "current_value": 815626,
+				  "max_value": 6244499,
+				  "pct95_value": 6019565,
+				  "severity": 2,
+				  "step": 60,
+				  "timeseries": [
+				      5853386,
+				      5842086,
+				      6244499,
+				      5878551,
+				      5842066,
+				      5849164
+				  ],
+				  "timeseries_start": "2018-07-04T01:03:15+00:00"
+			      }
+			  }
+		      },
+		      "router-246": {
+			  "unit": {
+			      "bps": {
+				  "avg_value": 4363147,
+				  "current_value": 874213,
+				  "max_value": 6290026,
+				  "pct95_value": 6178240,
+				  "severity": 2,
+				  "step": 60,
+				  "timeseries": [
+				      5948880,
+				      5504565,
+				      5907508,
+				      5786937,
+				      6061942,
+				      5686562
+				  ],
+				  "timeseries_start": "2018-07-04T01:03:15+00:00"
+			      }
+			  }
+		      }
+		  }
+	      },
+	      "id": "172784",
+	      "type": "alert"
+	  }
+      }
+    #+END_SRC
+
+    Staring at JSON data doesn't always lead to clarity, but a close
+    enough look at it shows that adding data to the original JSON
+    output from the =/alerts/<alert_id>= endpoint is done with
+    extraction of data from the sub-endpoints and direct insertion into
+    the original results without any reformatting or refactoring of the
+    data; the only real effort is knowing which level of data from the
+    sub-endpoints should go into which level of the data from the
+    top-level endpoint.
+
+    The structure of the data from the sub-endpoints might look
+    unnecessarily nested or complicated when taken out of context,
+    however, this structure allows for simple construction of the
+    entirety of the alert data into one JSON object.
+
 * Configuration
 
   This chapter describes how to configure SP using the SP REST API.

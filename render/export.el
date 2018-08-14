@@ -27,4 +27,9 @@
                                  ("breakafter" "+")
                                  ))
 
+(setq org-confirm-babel-evaluate 'nil)
+(org-babel-do-load-languages
+      'org-babel-load-languages
+      '((ditaa .t)
+       ))
 (setq org-export-with-smart-quotes t)
