@@ -1,8 +1,19 @@
-# Using the Arbor Networks SP REST API: SP v8.3 API v3
+# Using the Arbor Networks SP REST API: SP v8.4 API v4
 
 This repository contains the source material for a document that is
 intended to be a gentle, user-facing introduction to the Arbor
 Networks SP REST API.
+
+## Releases
+
+Rendered versions will be released periodically at this Github site;
+unless you are intending to contribute or want to render your own
+version, the rendered releases are probably the best option for you.  The
+releases are at
+<a href=https://github.com/arbor/sp-rest-api-cookbook/releases>https://github.com/arbor/sp-rest-api-cookbook/releases</a>
+
+In addition, there is a rendered HTML version available at
+<a href=https://arbor.github.io/sp-rest-api-cookbook/sp-rest-api-tutorial.html>https://arbor.github.io/sp-rest-api-cookbook/sp-rest-api-tutorial.html</a>.
 
 ## Formatting
 
@@ -75,17 +86,6 @@ can run the commands:
 
 to produce a PDF file.
 
-
-## Releases
-
-Rendered versions will be released periodically at this Github site;
-unless you are intending to contribute or want to render your own
-version, the rendered releases are probably the best option for you.  The
-releases are at
-<a href=https://github.com/arbor/sp-rest-api-cookbook/releases>https://github.com/arbor/sp-rest-api-cookbook/releases</a>
-
-In addition, there is a rendered HTML version available at
-<a href=https://arbor.github.io/sp-rest-api-cookbook/sp-rest-api-tutorial.html>https://arbor.github.io/sp-rest-api-cookbook/sp-rest-api-tutorial.html</a>.
 
 ## Working with Github forks, branches, and pull requests
 
