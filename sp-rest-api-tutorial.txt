@@ -25,8 +25,8 @@ To use the minted package, you should also add these lines to your
                                  ("fontsize" "\\scriptsize")
                                  ("xleftmargin" "\\parindent")
                                  ("linenos" "")
-				 ("breaklines" "")
-				 ("breakafter" "+")
+                                 ("breaklines" "")
+                                 ("breakafter" "+")
                                  ))
  -------
 if that is untenable to you, comment out the \usepackage{minted} line
@@ -132,10 +132,10 @@ listings package.
    that includes a =meta= object like
    #+BEGIN_EXAMPLE
      "meta": {
-	 "api": "SP",
-	 "api_version": "3",
-	 "sp_build_id": "HGRD",
-	 "sp_version": "8.3"
+         "api": "SP",
+         "api_version": "3",
+         "sp_build_id": "HGRD",
+         "sp_version": "8.3"
      }
    #+END_EXAMPLE
    you can, in probably all cases, use the latest version of SP and
@@ -382,22 +382,22 @@ listings package.
      In order of appearance, the options used in the =curl= command
      above are:
       - =--cacert certfile= tells =curl= to use the SSL certificate
-	called =certfile= (more on this later)
+        called =certfile= (more on this later)
       - =--ssl= tells =curl= to use Secure Sockets Layer (SSL) for its
-	connection
+        connection
       - =-X GET= tells =curl= to issue an HTTP =GET= command (more on
-	this later, too)
+        this later, too)
       - =-H "Content-Type:application/vnd.api+json"= sends the HTTP
-	header =Content-Type= set to the value of
-	=application/vnd.api+json=.  Other than the endpoints at
-	=/insight/=, all of the SP API uses this content type
+        header =Content-Type= set to the value of
+        =application/vnd.api+json=.  Other than the endpoints at
+        =/insight/=, all of the SP API uses this content type
       - =-H
-	"X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
-	sends the HTTP header =X-Arbux-APIToken= set to the value of
-	the API key that was set via the SP command line
+        "X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
+        sends the HTTP header =X-Arbux-APIToken= set to the value of
+        the API key that was set via the SP command line
       - =https://leader.example.com/api/sp/= which is the URL
-	(hostname and endpoint) that is requested.  In this case, it is
-	the index endpoint for the API.
+        (hostname and endpoint) that is requested.  In this case, it is
+        the index endpoint for the API.
 
      The output of this particular command is the index of the SP REST
      API represented as a JSON object (defined by the outer-most curly
@@ -437,23 +437,23 @@ listings package.
      In order of appearance, the options used in the =curl= command
      above are:
       - =--cacert certfile= tells =curl= to use the SSL certificate
-	called =certfile= (more on this later)
+        called =certfile= (more on this later)
       - =--ssl= tells =curl= to use Secure Sockets Layer (SSL) for its
-	connection
+        connection
       - =-X POST= tells =curl= to issue an HTTP =POST= command (more
         on this later, too)
       - =-H "Content-Type:application/vnd.api+json"= sends the HTTP
-	header =Content-Type= set to the value of
-	=application/vnd.api+json=.  Other than the endpoints at
-	=/insight/=, all of the SP API uses this content type
+        header =Content-Type= set to the value of
+        =application/vnd.api+json=.  Other than the endpoints at
+        =/insight/=, all of the SP API uses this content type
       - =-H
-	"X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
-	sends the HTTP header =X-Arbux-APIToken= set to the value of
-	the API key that was set via the SP command line
+        "X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
+        sends the HTTP header =X-Arbux-APIToken= set to the value of
+        the API key that was set via the SP command line
       - =-d @input.json= tells cURL that the data to be sent can be
         found in the file named =input.json=
       - =https://leader.example.com/api/sp/alerts/12519/annotations/=
-	#+INDEX: /alerts/ endpoint!annotations
+        #+INDEX: /alerts/ endpoint!annotations
         which is the URL (hostname and endpoint) to which the data
         will be sent.  In this case, it is an alert annotation for the
         alert with id 12519.
@@ -463,12 +463,12 @@ listings package.
      the contents of the file =input.json=) is:
      #+BEGIN_SRC json
        {
-	   "data": {
-	       "attributes": {
-		   "author": "The name of the author",
-		   "text": "The text of the annotation"
-	       }
-	   }
+           "data": {
+               "attributes": {
+                   "author": "The name of the author",
+                   "text": "The text of the annotation"
+               }
+           }
        }
      #+END_SRC
 
@@ -491,21 +491,21 @@ listings package.
      In order of appearance, the options used in the =curl= command
      above are:
       - =--cacert certfile= tells =curl= to use the SSL certificate
-	called =certfile= (more on this later)
+        called =certfile= (more on this later)
       - =--ssl= tells =curl= to use Secure Sockets Layer (SSL) for its
-	connection
+        connection
       - =-X DELETE= tells =curl= to issue an HTTP =DELETE= command
         (more on this later, too)
       - =-H "Content-Type:application/vnd.api+json"= sends the HTTP
-	header =Content-Type= set to the value of
-	=application/vnd.api+json=.  Other than the endpoints at
-	=/insight/=, all of the SP API uses this content type
+        header =Content-Type= set to the value of
+        =application/vnd.api+json=.  Other than the endpoints at
+        =/insight/=, all of the SP API uses this content type
       - =-H
-	"X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
-	sends the HTTP header =X-Arbux-APIToken= set to the value of
-	the API key that was set via the SP command line
+        "X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
+        sends the HTTP header =X-Arbux-APIToken= set to the value of
+        the API key that was set via the SP command line
       - =https://leader.example.com/api/sp/routers/132= which is the
-	#+INDEX: /routers/ endpoint
+        #+INDEX: /routers/ endpoint
         URL (hostname and endpoint) that identifies what resource in
         SP will be deleted.  In this case, it is the router with
         id 132.
@@ -543,17 +543,17 @@ listings package.
      start for configuration is:
      #+BEGIN_SRC json
        {
-	   "__meta__": {
-	       "about": "HTTPie configuration file",
-	       "help": "https://github.com/jkbrzt/httpie#config",
-	       "httpie": "0.9.4"
-	   },
-	   "default_options": [
-	       "--verify=/path/to/a/ssl/certfile",
-	       "--session=spleader.my.example.com",
-	       "--timeout=60",
-	       "--follow"
-	   ]
+           "__meta__": {
+               "about": "HTTPie configuration file",
+               "help": "https://github.com/jkbrzt/httpie#config",
+               "httpie": "0.9.4"
+           },
+           "default_options": [
+               "--verify=/path/to/a/ssl/certfile",
+               "--session=spleader.my.example.com",
+               "--timeout=60",
+               "--follow"
+           ]
        }
      #+END_SRC
      The ="__meta__"= section comes with HTTPie, and the default
@@ -864,28 +864,28 @@ listings package.
      will print a list that looks something like:
      #+BEGIN_SRC json
        {
-	   "routers": [
-	       {
-		   "id": "121",
-		   "name": "rtr1.nyc",
-		   "description": "a router in New York"
-	       },
-	       {
-		   "id": "122",
-		   "name": "rtr2.chi",
-		   "description": "a router in Chicago"
-	       },
-	       {
-		   "id": "123",
-		   "name": "rtr3.lax",
-		   "description": "a router in Los Angeles"
-	       },
-	       {
-		   "id": "124",
-		   "name": "pigeon.net",
-		   "description": "See RFC 1149"
-	       }
-	   ]
+           "routers": [
+               {
+                   "id": "121",
+                   "name": "rtr1.nyc",
+                   "description": "a router in New York"
+               },
+               {
+                   "id": "122",
+                   "name": "rtr2.chi",
+                   "description": "a router in Chicago"
+               },
+               {
+                   "id": "123",
+                   "name": "rtr3.lax",
+                   "description": "a router in Los Angeles"
+               },
+               {
+                   "id": "124",
+                   "name": "pigeon.net",
+                   "description": "See RFC 1149"
+               }
+           ]
        }
      #+END_SRC
 
@@ -902,127 +902,127 @@ listings package.
      For example, a typical alert from the SP REST API looks like:
      #+BEGIN_SRC json
        {
-	   "data": {
-	       "attributes": {
-		   "alert_class": "dos",
-		   "alert_type": "dos_host_detection",
-		   "classification": "Possible Attack",
-		   "importance": 2,
-		   "ongoing": true,
-		   "start_time": "2017-08-01T19:44:45+00:00",
-		   "subobject": {
-		       "fast_detected": false,
-		       "host_address": "192.168.12.203",
-		       "impact_boundary": "rtr1.nyc",
-		       "impact_bps": 8251040,
-		       "impact_pps": 3010,
-		       "ip_version": 4,
-		       "misuse_types": [
-			   "icmp",
-			   "total",
-			   "dns",
-			   "udp"
-		       ],
-		       "severity_percent": 153,
-		       "severity_threshold": 1000,
-		       "severity_unit": "bps",
-		       "summary_url": "/page?id=profile_summary&gid=154"
-		   }
-	       },
-	       "id": "799318",
-	       "links": {
-		   "self": "https://leader.example.com/api/sp/v3/alerts/799318"
-	       },
-	       "relationships": {
-		   "annotations": {
-		       "data": [
-			   {
-			       "id": "1492098",
-			       "type": "alert_annotation"
-			   },
-			   {
-			       "id": "1492097",
-			       "type": "alert_annotation"
-			   },
-			   {
-			       "id": "1492096",
-			       "type": "alert_annotation"
-			   },
-			   {
-			       "id": "1492095",
-			       "type": "alert_annotation"
-			   },
-			   {
-			       "id": "1492094",
-			       "type": "alert_annotation"
-			   },
-			   {
-			       "id": "1492093",
-			       "type": "alert_annotation"
-			   }
-		       ],
-		       "links": {
-			   "related": "https://leader.example.com/api/sp/v3/alerts/799318/annotations/"
-		       }
-		   },
-		   "device": {
-		       "data": {
-			   "id": "115",
-			   "type": "device"
-		       },
-		       "links": {
-			   "related": "https://leader.example.com/api/sp/v3/devices/115"
-		       }
-		   },
-		   "managed_object": {
-		       "data": {
-			   "id": "154",
-			   "type": "managed_object"
-		       },
-		       "links": {
-			   "related": "https://leader.example.com/api/sp/v3/managed_objects/154"
-		       }
-		   },
-		   "packet_size_distribution": {
-		       "data": {
-			   "id": "packet-size-distribution-799318",
-			   "type": "alert_packet_size_distribution"
-		       },
-		       "links": {
-			   "related": "https://leader.example.com/api/sp/v3/alerts/799318/packet_size_distribution"
-		       }
-		   },
-		   "patterns": {
-		       "links": {
-			   "related": "https://leader.example.com/api/sp/v3/alerts/799318/patterns/"
-		       }
-		   },
-		   "router_traffic": {
-		       "links": {
-			   "related": "https://leader.example.com/api/sp/v3/alerts/799318/router_traffic/"
-		       }
-		   },
-		   "traffic": {
-		       "data": {
-			   "id": "alert-traffic-799318",
-			   "type": "alert_traffic"
-		       },
-		       "links": {
-			   "related": "https://leader.example.com/api/sp/v3/alerts/799318/traffic"
-		       }
-		   }
-	       },
-	       "type": "alert"
-	   },
-	   "links": {
-	       "self": "https://leader.example.com/api/sp/v3/alerts/799318"
-	   },
-	   "meta": {
-	       "api": "SP",
-	       "api_version": "2",
-	       "sp_build_id": "HHAB",
-	       "sp_version": "8.3"
-	   }
+           "data": {
+               "attributes": {
+                   "alert_class": "dos",
+                   "alert_type": "dos_host_detection",
+                   "classification": "Possible Attack",
+                   "importance": 2,
+                   "ongoing": true,
+                   "start_time": "2017-08-01T19:44:45+00:00",
+                   "subobject": {
+                       "fast_detected": false,
+                       "host_address": "192.168.12.203",
+                       "impact_boundary": "rtr1.nyc",
+                       "impact_bps": 8251040,
+                       "impact_pps": 3010,
+                       "ip_version": 4,
+                       "misuse_types": [
+                           "icmp",
+                           "total",
+                           "dns",
+                           "udp"
+                       ],
+                       "severity_percent": 153,
+                       "severity_threshold": 1000,
+                       "severity_unit": "bps",
+                       "summary_url": "/page?id=profile_summary&gid=154"
+                   }
+               },
+               "id": "799318",
+               "links": {
+                   "self": "https://leader.example.com/api/sp/v3/alerts/799318"
+               },
+               "relationships": {
+                   "annotations": {
+                       "data": [
+                           {
+                               "id": "1492098",
+                               "type": "alert_annotation"
+                           },
+                           {
+                               "id": "1492097",
+                               "type": "alert_annotation"
+                           },
+                           {
+                               "id": "1492096",
+                               "type": "alert_annotation"
+                           },
+                           {
+                               "id": "1492095",
+                               "type": "alert_annotation"
+                           },
+                           {
+                               "id": "1492094",
+                               "type": "alert_annotation"
+                           },
+                           {
+                               "id": "1492093",
+                               "type": "alert_annotation"
+                           }
+                       ],
+                       "links": {
+                           "related": "https://leader.example.com/api/sp/v3/alerts/799318/annotations/"
+                       }
+                   },
+                   "device": {
+                       "data": {
+                           "id": "115",
+                           "type": "device"
+                       },
+                       "links": {
+                           "related": "https://leader.example.com/api/sp/v3/devices/115"
+                       }
+                   },
+                   "managed_object": {
+                       "data": {
+                           "id": "154",
+                           "type": "managed_object"
+                       },
+                       "links": {
+                           "related": "https://leader.example.com/api/sp/v3/managed_objects/154"
+                       }
+                   },
+                   "packet_size_distribution": {
+                       "data": {
+                           "id": "packet-size-distribution-799318",
+                           "type": "alert_packet_size_distribution"
+                       },
+                       "links": {
+                           "related": "https://leader.example.com/api/sp/v3/alerts/799318/packet_size_distribution"
+                       }
+                   },
+                   "patterns": {
+                       "links": {
+                           "related": "https://leader.example.com/api/sp/v3/alerts/799318/patterns/"
+                       }
+                   },
+                   "router_traffic": {
+                       "links": {
+                           "related": "https://leader.example.com/api/sp/v3/alerts/799318/router_traffic/"
+                       }
+                   },
+                   "traffic": {
+                       "data": {
+                           "id": "alert-traffic-799318",
+                           "type": "alert_traffic"
+                       },
+                       "links": {
+                           "related": "https://leader.example.com/api/sp/v3/alerts/799318/traffic"
+                       }
+                   }
+               },
+               "type": "alert"
+           },
+           "links": {
+               "self": "https://leader.example.com/api/sp/v3/alerts/799318"
+           },
+           "meta": {
+               "api": "SP",
+               "api_version": "2",
+               "sp_build_id": "HHAB",
+               "sp_version": "8.3"
+           }
        }
      #+END_SRC
      which is a lot of information to parse; using =jq= you can filter
@@ -1135,15 +1135,15 @@ listings package.
       >>> <Response [200]>
       >>> rg.headers
       >>> {'Content-Length': '4740', 'X-XSS-Protection': '1; mode=block',
-	  'Content-Encoding': 'gzip', 'Set-Cookie':
-	  'NID=110=BXSpW6kxChyqif9p3Q0yFhL75QRsh0-C3vjFY_uTwpS-ANLlJsTjpC_9LypwgClOwL36COwCH6oAIBPfgcP-vZ4mwhpSqwM_UuG0pOpEGfDMDSKEtpK0mdHDaIqsEjR7;
-	  expires=Sat, 24-Feb-2018 05:12:11 GMT; path=/;
-	  domain=.google.co.nz; HttpOnly', 'Expires': '-1', 'Server': 'gws',
-	  'Cache-Control': 'private, max-age=0', 'Date': 'Fri, 25 Aug 2017
-	  05:12:11 GMT', 'P3P': 'CP="This is not a P3P policy! See
-	  https://www.google.com/support/accounts/answer/151657?hl=en for
-	  more info."', 'Content-Type': 'text/html; charset=ISO-8859-1',
-	  'X-Frame-Options': 'SAMEORIGIN'}
+          'Content-Encoding': 'gzip', 'Set-Cookie':
+          'NID=110=BXSpW6kxChyqif9p3Q0yFhL75QRsh0-C3vjFY_uTwpS-ANLlJsTjpC_9LypwgClOwL36COwCH6oAIBPfgcP-vZ4mwhpSqwM_UuG0pOpEGfDMDSKEtpK0mdHDaIqsEjR7;
+          expires=Sat, 24-Feb-2018 05:12:11 GMT; path=/;
+          domain=.google.co.nz; HttpOnly', 'Expires': '-1', 'Server': 'gws',
+          'Cache-Control': 'private, max-age=0', 'Date': 'Fri, 25 Aug 2017
+          05:12:11 GMT', 'P3P': 'CP="This is not a P3P policy! See
+          https://www.google.com/support/accounts/answer/151657?hl=en for
+          more info."', 'Content-Type': 'text/html; charset=ISO-8859-1',
+          'X-Frame-Options': 'SAMEORIGIN'}
     #+END_EXAMPLE
     #+LATEX: \normalsize
     If you get an error after you type =import requests= you haven't
@@ -1275,11 +1275,11 @@ listings package.
    #+LATEX: \tiny
    #+BEGIN_EXAMPLE
      ==== System Alert Count ===== Device Name ======== Device Type ======== IP Address =========
-	  79                       my-leader            pi                   192.168.3.14
-	  42                       my-tra1              cp                   192.168.3.15
-	  19                       my-tra2              cp                   192.168.3.16
-	  14                       my-tms               tms                  192.168.3.17
-	  7                        my-backupleader      pi                   192.168.26.32
+          79                       my-leader            pi                   192.168.3.14
+          42                       my-tra1              cp                   192.168.3.15
+          19                       my-tra2              cp                   192.168.3.16
+          14                       my-tms               tms                  192.168.3.17
+          7                        my-backupleader      pi                   192.168.26.32
    #+END_EXAMPLE
    #+LATEX: \normalsize
 ** Example: Plotting Alert Data
@@ -1345,50 +1345,50 @@ listings package.
    the alert; the ="relationships"= object in the alert includes:
    #+BEGIN_SRC json
      {
-	 "relationships": {
-	     "packet_size_distribution": {
-		 "data": {
-		     "id": "packet-size-distribution-<alert_id>",
-		     "type": "alert_packet_size_distribution"
-		 },
-		 "links": {
-		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/packet_size_distribution"
-		 }
-	     },
-	     "patterns": {
-		 "links": {
-		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/patterns/"
-		 }
-	     },
-	     "router_traffic": {
-		 "links": {
-		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/router_traffic/"
-		 }
-	     },
-	     "source_ip_addresses": {
-		 "data": {
-		     "id": "source-ip-addresses-<alert_id>",
-		     "type": "alert_source_ip_addresses"
-		 },
-		 "links": {
-		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/source_ip_addresses"
-		 }
-	     },
-	     "thresholds": {
-		 "links": {
-		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/misuse_types_thresholds/"
-		 }
-	     },
-	     "traffic": {
-		 "data": {
-		     "id": "alert-traffic-<alert_id>",
-		     "type": "alert_traffic"
-		 },
-		 "links": {
-		     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/traffic"
-		 }
-	     }
-	 }
+         "relationships": {
+             "packet_size_distribution": {
+                 "data": {
+                     "id": "packet-size-distribution-<alert_id>",
+                     "type": "alert_packet_size_distribution"
+                 },
+                 "links": {
+                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/packet_size_distribution"
+                 }
+             },
+             "patterns": {
+                 "links": {
+                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/patterns/"
+                 }
+             },
+             "router_traffic": {
+                 "links": {
+                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/router_traffic/"
+                 }
+             },
+             "source_ip_addresses": {
+                 "data": {
+                     "id": "source-ip-addresses-<alert_id>",
+                     "type": "alert_source_ip_addresses"
+                 },
+                 "links": {
+                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/source_ip_addresses"
+                 }
+             },
+             "thresholds": {
+                 "links": {
+                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/misuse_types_thresholds/"
+                 }
+             },
+             "traffic": {
+                 "data": {
+                     "id": "alert-traffic-<alert_id>",
+                     "type": "alert_traffic"
+                 },
+                 "links": {
+                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/traffic"
+                 }
+             }
+         }
      }
    #+END_SRC
    each of those relationships can be referenced in turn but, to
@@ -1405,63 +1405,63 @@ listings package.
    format similar to:
    #+BEGIN_SRC json
      {
-	 "included": [
-	     {
-		 "relationships": {
-		     "router": {
-			 "data": {
-			     "type": "router",
-			     "id": "<router_id>"
-			 },
-			 "links": {
-			     "related": "<link_to_router>"
-			 }
-		     },
-		     "parent": {
-			 "data": {
-			     "type": "alert",
-			     "id": "<alert_id>"
-			 },
-			 "links": {
-			     "related": "<alert_id_url>"
-			 }
-		     }
-		 },
-		 "attributes": {
-		     "content": "<alert_pattern_data>"
-		 },
-		 "type": "alert_patterns",
-		 "id": "<alert_id>-router:<router_id+cidr_port",
-		 "links": {
-		     "self": "<self_link>"
-		 }
-	     },
-	     {
-		     "router": {
-			 "data": {
-			     "type": "router",
-			     "id": "<router_id>"
-			 },
-			 "links": {
-			     "related": "<link_to_router>"
-			 }
-		     },
-		     "parent": {
-			 "data": {
-			     "type": "alert",
-			     "id": "<alert_id>"
-			 },
-			 "links": {
-			     "related": "<alert_id_url>"
-			 }
-		     }
-		 "type": "alert_patterns",
-		 "id": "<alert_id>-router:<router_id+cidr_port",
-		 "links": {
-		     "self": "<self_link>"
-		 }
-	     }
-	 ]
+         "included": [
+             {
+                 "relationships": {
+                     "router": {
+                         "data": {
+                             "type": "router",
+                             "id": "<router_id>"
+                         },
+                         "links": {
+                             "related": "<link_to_router>"
+                         }
+                     },
+                     "parent": {
+                         "data": {
+                             "type": "alert",
+                             "id": "<alert_id>"
+                         },
+                         "links": {
+                             "related": "<alert_id_url>"
+                         }
+                     }
+                 },
+                 "attributes": {
+                     "content": "<alert_pattern_data>"
+                 },
+                 "type": "alert_patterns",
+                 "id": "<alert_id>-router:<router_id+cidr_port",
+                 "links": {
+                     "self": "<self_link>"
+                 }
+             },
+             {
+                     "router": {
+                         "data": {
+                             "type": "router",
+                             "id": "<router_id>"
+                         },
+                         "links": {
+                             "related": "<link_to_router>"
+                         }
+                     },
+                     "parent": {
+                         "data": {
+                             "type": "alert",
+                             "id": "<alert_id>"
+                         },
+                         "links": {
+                             "related": "<alert_id_url>"
+                         }
+                     }
+                 "type": "alert_patterns",
+                 "id": "<alert_id>-router:<router_id+cidr_port",
+                 "links": {
+                     "self": "<self_link>"
+                 }
+             }
+         ]
      }
    #+END_SRC
 
@@ -1583,37 +1583,37 @@ listings package.
    the output of this on a test system is:
    #+BEGIN_EXAMPLE
      Getting alerts for the admin account
-     52458	collector_down
-     52457	collector_down
-     52456	dos_profiled_router
-     52455	dos_profiled_router
-     52454	collector_down
-     52453	collector_down
-     52452	collector_down
-     52451	collector_down
-     52450	collector_down
-     52449	collector_down
-     52448	collector_down
-     52447	collector_down
-     52446	collector_down
-     52445	collector_down
-     52444	collector_down
+     52458      collector_down
+     52457      collector_down
+     52456      dos_profiled_router
+     52455      dos_profiled_router
+     52454      collector_down
+     52453      collector_down
+     52452      collector_down
+     52451      collector_down
+     52450      collector_down
+     52449      collector_down
+     52448      collector_down
+     52447      collector_down
+     52446      collector_down
+     52445      collector_down
+     52444      collector_down
      Getting alerts for the mssp_user account
-     52414	dos_host_detection	IP Fragmentation, Total Traffic, UDP
-     52405	dos_host_detection	TCP SYN, Total Traffic
-     52404	dos_host_detection	TCP SYN, Total Traffic
-     52401	dos_host_detection	TCP SYN, Total Traffic
-     52400	dos_host_detection	TCP SYN, Total Traffic
-     52313	dos_host_detection	TCP SYN, Total Traffic
-     52312	dos_host_detection	TCP SYN, Total Traffic
-     52309	dos_host_detection	TCP SYN, Total Traffic
-     52308	dos_host_detection	TCP SYN, Total Traffic
-     52220	dos_host_detection	TCP SYN, Total Traffic
-     52219	dos_host_detection	TCP SYN, Total Traffic
-     52216	dos_host_detection	TCP SYN, Total Traffic
-     52215	dos_host_detection	TCP SYN, Total Traffic
-     52203	dos_host_detection	IP Fragmentation, Total Traffic, UDP
-     52127	dos_host_detection	TCP SYN, Total Traffic
+     52414      dos_host_detection      IP Fragmentation, Total Traffic, UDP
+     52405      dos_host_detection      TCP SYN, Total Traffic
+     52404      dos_host_detection      TCP SYN, Total Traffic
+     52401      dos_host_detection      TCP SYN, Total Traffic
+     52400      dos_host_detection      TCP SYN, Total Traffic
+     52313      dos_host_detection      TCP SYN, Total Traffic
+     52312      dos_host_detection      TCP SYN, Total Traffic
+     52309      dos_host_detection      TCP SYN, Total Traffic
+     52308      dos_host_detection      TCP SYN, Total Traffic
+     52220      dos_host_detection      TCP SYN, Total Traffic
+     52219      dos_host_detection      TCP SYN, Total Traffic
+     52216      dos_host_detection      TCP SYN, Total Traffic
+     52215      dos_host_detection      TCP SYN, Total Traffic
+     52203      dos_host_detection      IP Fragmentation, Total Traffic, UDP
+     52127      dos_host_detection      TCP SYN, Total Traffic
    #+END_EXAMPLE
 
    The system alerts are only available to the administrative account,
@@ -1727,37 +1727,37 @@ listings package.
     traffic rates for given prefixes, a simplified representation is:
     #+BEGIN_SRC json
       {
-	"data": [
-	    "attributes": {
-	      "view": {
-		"network": {
-		  "unit": {
-		    "bps": {
-		      "name": "149.81.12.203/32",
-		      "pct95_value": 5495466,
-		      "avg_value": 3747293,
-		      "max_value": 5497066,
-		      "timeseries_start": "2018-07-30T18:08:15+00:00",
-		      "step": 60,
-		      "timeseries": [
-			0,
-			279466,
-			"[...]",
-			5142133
-		      ],
-		      "current_value": 5142133
-		    }
-		  }
-		}
-	      }
-	    },
-	    "type": "alert_traffic_dest_prefixes",
-	    "id": "<alert_id>-dest_prefixes-149.81.12.203/32"
-	  }
-	],
-	"links": {
-	  "self": "https://spleader.example.com/api/sp/v5/alerts/<alert_id>/traffic/dest_prefixes/"
-	}
+        "data": [
+            "attributes": {
+              "view": {
+                "network": {
+                  "unit": {
+                    "bps": {
+                      "name": "149.81.12.203/32",
+                      "pct95_value": 5495466,
+                      "avg_value": 3747293,
+                      "max_value": 5497066,
+                      "timeseries_start": "2018-07-30T18:08:15+00:00",
+                      "step": 60,
+                      "timeseries": [
+                        0,
+                        279466,
+                        "[...]",
+                        5142133
+                      ],
+                      "current_value": 5142133
+                    }
+                  }
+                }
+              }
+            },
+            "type": "alert_traffic_dest_prefixes",
+            "id": "<alert_id>-dest_prefixes-149.81.12.203/32"
+          }
+        ],
+        "links": {
+          "self": "https://spleader.example.com/api/sp/v5/alerts/<alert_id>/traffic/dest_prefixes/"
+        }
       }
     #+END_SRC
     requesting the same data with the query parameter
@@ -1765,88 +1765,88 @@ listings package.
     ="unit":= has changed:
     #+BEGIN_SRC json
       {
-	  "data": [
-	      {
-		  "attributes": {
-		      "view": {
-			  "network": {
-			      "unit": {
-				  "pps": {
-				      "name": "149.81.12.203/32",
-				      "pct95_value": 1803,
-				      "avg_value": 1265,
-				      "max_value": 1806,
-				      "timeseries_start": "2018-07-30T18:08:15+00:00",
-				      "step": 60,
-				      "timeseries": [
-					  0,
-					  100,
-					  "[...]",
-					  100
-				      ],
-				      "current_value": 100
-				  }
-			      }
-			  }
-		      }
-		  },
-		  "type": "alert_traffic_dest_prefixes",
-		  "id": "<alert_id>-dest_prefixes-149.81.12.203/32"
-	      }
-	  ],
-	  "links": {
-	      "self": "https://spleader.example.com/api/sp/v5/alerts/<alert_id>/traffic/dest_prefixes/?query_unit=pps&query_view=network"
-	  }
+          "data": [
+              {
+                  "attributes": {
+                      "view": {
+                          "network": {
+                              "unit": {
+                                  "pps": {
+                                      "name": "149.81.12.203/32",
+                                      "pct95_value": 1803,
+                                      "avg_value": 1265,
+                                      "max_value": 1806,
+                                      "timeseries_start": "2018-07-30T18:08:15+00:00",
+                                      "step": 60,
+                                      "timeseries": [
+                                          0,
+                                          100,
+                                          "[...]",
+                                          100
+                                      ],
+                                      "current_value": 100
+                                  }
+                              }
+                          }
+                      }
+                  },
+                  "type": "alert_traffic_dest_prefixes",
+                  "id": "<alert_id>-dest_prefixes-149.81.12.203/32"
+              }
+          ],
+          "links": {
+              "self": "https://spleader.example.com/api/sp/v5/alerts/<alert_id>/traffic/dest_prefixes/?query_unit=pps&query_view=network"
+          }
       }
     #+END_SRC
 
     The two sets of results can be easily combined into:
     #+BEGIN_SRC json
       {
-	  "data": [
-	      {
-		  "attributes": {
-		      "view": {
-			  "network": {
-			      "unit": {
-				  "bps": {
-				      "name": "149.81.12.203/32",
-				      "pct95_value": 5495466,
-				      "avg_value": 3747293,
-				      "max_value": 5497066,
-				      "timeseries_start": "2018-07-30T18:08:15+00:00",
-				      "step": 60,
-				      "timeseries": [
-					  0,
-					  279466,
-					  "[...]",
-					  5142133
-				      ],
-				      "current_value": 5142133
-				  },
-				  "pps": {
-				      "name": "149.81.12.203/32",
-				      "pct95_value": 1803,
-				      "avg_value": 1265,
-				      "max_value": 1806,
-				      "timeseries_start": "2018-07-30T18:08:15+00:00",
-				      "step": 60,
-				      "timeseries": [
-					  0,
-					  100,
-					  "[...]",
-					  100
-				      ],
-				      "current_value": 100
-				  }
-			      }
-			  }
-		      }
-		  },
-		  "type": "alert_traffic_dest_prefixes",
-		  "id": "<alert_id>-dest_prefixes-149.81.12.203/32"
-	      }
-	  ]
+          "data": [
+              {
+                  "attributes": {
+                      "view": {
+                          "network": {
+                              "unit": {
+                                  "bps": {
+                                      "name": "149.81.12.203/32",
+                                      "pct95_value": 5495466,
+                                      "avg_value": 3747293,
+                                      "max_value": 5497066,
+                                      "timeseries_start": "2018-07-30T18:08:15+00:00",
+                                      "step": 60,
+                                      "timeseries": [
+                                          0,
+                                          279466,
+                                          "[...]",
+                                          5142133
+                                      ],
+                                      "current_value": 5142133
+                                  },
+                                  "pps": {
+                                      "name": "149.81.12.203/32",
+                                      "pct95_value": 1803,
+                                      "avg_value": 1265,
+                                      "max_value": 1806,
+                                      "timeseries_start": "2018-07-30T18:08:15+00:00",
+                                      "step": 60,
+                                      "timeseries": [
+                                          0,
+                                          100,
+                                          "[...]",
+                                          100
+                                      ],
+                                      "current_value": 100
+                                  }
+                              }
+                          }
+                      }
+                  },
+                  "type": "alert_traffic_dest_prefixes",
+                  "id": "<alert_id>-dest_prefixes-149.81.12.203/32"
+              }
+          ]
       }
     #+END_SRC
 
@@ -1866,72 +1866,72 @@ listings package.
     that alert is
     #+BEGIN_SRC json
       {
-	"data": {
-	  "attributes": {
-	    "alert_class": "dos",
-	    "alert_type": "dos_profiled_router",
-	    "ongoing": false,
-	    "start_time": "2018-07-04T01:04:00+00:00",
-	    "stop_time": "2018-07-04T01:28:36+00:00",
-	    "subobject": {
-	      "direction": "Outgoing",
-	      "fast_detected": false,
-	      "impact_bps": 6376742,
-	      "impact_pps": 1883,
-	      "ip_version": 4,
-	      "protocols": [],
-	      "severity_percent": 127.53,
-	      "severity_threshold": 5000000.0,
-	      "severity_unit": "bps"
-	    }
-	  },
-	  "id": "172784",
-	  "relationships": {
-	    "packet_size_distribution": {
-	      "data": {
-		"id": "packet-size-distribution-172784",
-		"type": "alert_packet_size_distribution"
-	      },
-	      "links": {
-		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/packet_size_distribution"
-	      }
-	    },
-	    "patterns": {
-	      "links": {
-		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/patterns/"
-	      }
-	    },
-	    "router_traffic": {
-	      "links": {
-		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/"
-	      }
-	    },
-	    "source_ip_addresses": {
-	      "data": {
-		"id": "source-ip-addresses-172784",
-		"type": "alert_source_ip_addresses"
-	      },
-	      "links": {
-		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/source_ip_addresses"
-	      }
-	    },
-	    "thresholds": {
-	      "links": {
-		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/interface_traffic_thresholds/"
-	      }
-	    },
-	    "traffic": {
-	      "data": {
-		"id": "alert-traffic-172784",
-		"type": "alert_traffic"
-	      },
-	      "links": {
-		"related": "https://spleader.example.com/api/sp/v5/alerts/172784/traffic"
-	      }
-	    }
-	  },
-	  "type": "alert"
-	}
+        "data": {
+          "attributes": {
+            "alert_class": "dos",
+            "alert_type": "dos_profiled_router",
+            "ongoing": false,
+            "start_time": "2018-07-04T01:04:00+00:00",
+            "stop_time": "2018-07-04T01:28:36+00:00",
+            "subobject": {
+              "direction": "Outgoing",
+              "fast_detected": false,
+              "impact_bps": 6376742,
+              "impact_pps": 1883,
+              "ip_version": 4,
+              "protocols": [],
+              "severity_percent": 127.53,
+              "severity_threshold": 5000000.0,
+              "severity_unit": "bps"
+            }
+          },
+          "id": "172784",
+          "relationships": {
+            "packet_size_distribution": {
+              "data": {
+                "id": "packet-size-distribution-172784",
+                "type": "alert_packet_size_distribution"
+              },
+              "links": {
+                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/packet_size_distribution"
+              }
+            },
+            "patterns": {
+              "links": {
+                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/patterns/"
+              }
+            },
+            "router_traffic": {
+              "links": {
+                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/"
+              }
+            },
+            "source_ip_addresses": {
+              "data": {
+                "id": "source-ip-addresses-172784",
+                "type": "alert_source_ip_addresses"
+              },
+              "links": {
+                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/source_ip_addresses"
+              }
+            },
+            "thresholds": {
+              "links": {
+                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/interface_traffic_thresholds/"
+              }
+            },
+            "traffic": {
+              "data": {
+                "id": "alert-traffic-172784",
+                "type": "alert_traffic"
+              },
+              "links": {
+                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/traffic"
+              }
+            }
+          },
+          "type": "alert"
+        }
       }
     #+END_SRC
 
@@ -1941,38 +1941,38 @@ listings package.
     trimmed) looks like
     #+BEGIN_SRC json
       {
-	  "data": {
-	      "attributes": {
-		  "source_ips": [
-		      "130.182.0.0",
-		      "130.182.0.1",
-		      "130.182.0.2",
-		      "130.182.0.3",
-		      "130.182.0.4",
-		      "130.182.0.5",
-		      "130.182.0.6",
-		      "130.182.0.7",
-		      "130.182.0.8",
-		      "130.182.0.9"
-		  ]
-	      },
-	      "id": "source-ip-addresses-172784",
-	      "links": {
-		  "self": "https://spleader.example.com/api/sp/v5/alerts/172784/source_ip_addresses"
-	      },
-	      "relationships": {
-		  "parent": {
-		      "data": {
-			  "id": "172784",
-			  "type": "alert"
-		      },
-		      "links": {
-			  "related": "https://spleader.example.com/api/sp/v5/alerts/172784"
-		      }
-		  }
-	      },
-	      "type": "alert_source_ip_addresses"
-	  }
+          "data": {
+              "attributes": {
+                  "source_ips": [
+                      "130.182.0.0",
+                      "130.182.0.1",
+                      "130.182.0.2",
+                      "130.182.0.3",
+                      "130.182.0.4",
+                      "130.182.0.5",
+                      "130.182.0.6",
+                      "130.182.0.7",
+                      "130.182.0.8",
+                      "130.182.0.9"
+                  ]
+              },
+              "id": "source-ip-addresses-172784",
+              "links": {
+                  "self": "https://spleader.example.com/api/sp/v5/alerts/172784/source_ip_addresses"
+              },
+              "relationships": {
+                  "parent": {
+                      "data": {
+                          "id": "172784",
+                          "type": "alert"
+                      },
+                      "links": {
+                          "related": "https://spleader.example.com/api/sp/v5/alerts/172784"
+                      }
+                  }
+              },
+              "type": "alert_source_ip_addresses"
+          }
       }
     #+END_SRC
 
@@ -1981,72 +1981,72 @@ listings package.
     simplified so it can be seen):
     #+BEGIN_SRC json
       {
-	  "data": [
-	      {
-		  "attributes": {
-		      "view": {
-			  "router-245": {
-			      "unit": {
-				  "bps": {
-				      "avg_value": 4386058,
-				      "current_value": 815626,
-				      "max_value": 6244499,
-				      "pct95_value": 6019565,
-				      "severity": 2,
-				      "step": 60,
-				      "timeseries": [
-					  5853386,
-					  5842086,
-					  6244499,
-					  5878551,
-					  5842066,
-					  5849164
-				      ],
-				      "timeseries_start": "2018-07-04T01:03:15+00:00"
-				  }
-			      }
-			  }
-		      }
-		  },
-		  "id": "172784-245",
-		  "links": {
-		      "self": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/172784-245?query_unit=bps"
-		  },
-		  "type": "alert_router_traffic"
-	      },
-	      {
-		  "attributes": {
-		      "view": {
-			  "router-246": {
-			      "unit": {
-				  "bps": {
-				      "avg_value": 4363147,
-				      "current_value": 874213,
-				      "max_value": 6290026,
-				      "pct95_value": 6178240,
-				      "severity": 2,
-				      "step": 60,
-				      "timeseries": [
-					  5948880,
-					  5504565,
-					  5907508,
-					  5786937,
-					  6061942,
-					  5686562
-				      ],
-				      "timeseries_start": "2018-07-04T01:03:15+00:00"
-				  }
-			      }
-			  }
-		      }
-		  },
-		  "id": "172784-246",
-		  "links": {
-		      "self": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/172784-246?query_unit=bps"
-		  },
-		  "type": "alert_router_traffic"
-	      }
-	  ]
+          "data": [
+              {
+                  "attributes": {
+                      "view": {
+                          "router-245": {
+                              "unit": {
+                                  "bps": {
+                                      "avg_value": 4386058,
+                                      "current_value": 815626,
+                                      "max_value": 6244499,
+                                      "pct95_value": 6019565,
+                                      "severity": 2,
+                                      "step": 60,
+                                      "timeseries": [
+                                          5853386,
+                                          5842086,
+                                          6244499,
+                                          5878551,
+                                          5842066,
+                                          5849164
+                                      ],
+                                      "timeseries_start": "2018-07-04T01:03:15+00:00"
+                                  }
+                              }
+                          }
+                      }
+                  },
+                  "id": "172784-245",
+                  "links": {
+                      "self": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/172784-245?query_unit=bps"
+                  },
+                  "type": "alert_router_traffic"
+              },
+              {
+                  "attributes": {
+                      "view": {
+                          "router-246": {
+                              "unit": {
+                                  "bps": {
+                                      "avg_value": 4363147,
+                                      "current_value": 874213,
+                                      "max_value": 6290026,
+                                      "pct95_value": 6178240,
+                                      "severity": 2,
+                                      "step": 60,
+                                      "timeseries": [
+                                          5948880,
+                                          5504565,
+                                          5907508,
+                                          5786937,
+                                          6061942,
+                                          5686562
+                                      ],
+                                      "timeseries_start": "2018-07-04T01:03:15+00:00"
+                                  }
+                              }
+                          }
+                      }
+                  },
+                  "id": "172784-246",
+                  "links": {
+                      "self": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/172784-246?query_unit=bps"
+                  },
+                  "type": "alert_router_traffic"
+              }
+          ]
       }
     #+END_SRC
 
@@ -2072,48 +2072,48 @@ listings package.
     that looks like this (and only handles one level of depth)
     #+BEGIN_SRC python
       for key in results_from_source_ip_addresses['data']['attributes']:
-	  do:
-	      results['data']['attributes']['key'] =
-		  results_from_source_ip_addresses['data']['attributes']
+          do:
+              results['data']['attributes']['key'] =
+                  results_from_source_ip_addresses['data']['attributes']
     #+END_SRC
     to populate the original alert data results.  This then looks like
     (with the =relationships= links removed for brevity) this
     #+BEGIN_SRC json
       {
-	  "data": {
-	      "attributes": {
-		  "alert_class": "dos",
-		  "alert_type": "dos_profiled_router",
-		  "ongoing": false,
-		  "start_time": "2018-07-04T01:04:00+00:00",
-		  "stop_time": "2018-07-04T01:28:36+00:00",
-		  "subobject": {
-		      "direction": "Outgoing",
-		      "fast_detected": false,
-		      "impact_bps": 6376742,
-		      "impact_pps": 1883,
-		      "ip_version": 4,
-		      "protocols": [],
-		      "severity_percent": 127.53,
-		      "severity_threshold": 5000000.0,
-		      "severity_unit": "bps"
-		  },
-		  "source_ips": [
-		      "130.182.0.0",
-		      "130.182.0.1",
-		      "130.182.0.2",
-		      "130.182.0.3",
-		      "130.182.0.4",
-		      "130.182.0.5",
-		      "130.182.0.6",
-		      "130.182.0.7",
-		      "130.182.0.8",
-		      "130.182.0.9"
-		  ]
-	      },
-	      "id": "172784",
-	      "type": "alert"
-	  }
+          "data": {
+              "attributes": {
+                  "alert_class": "dos",
+                  "alert_type": "dos_profiled_router",
+                  "ongoing": false,
+                  "start_time": "2018-07-04T01:04:00+00:00",
+                  "stop_time": "2018-07-04T01:28:36+00:00",
+                  "subobject": {
+                      "direction": "Outgoing",
+                      "fast_detected": false,
+                      "impact_bps": 6376742,
+                      "impact_pps": 1883,
+                      "ip_version": 4,
+                      "protocols": [],
+                      "severity_percent": 127.53,
+                      "severity_threshold": 5000000.0,
+                      "severity_unit": "bps"
+                  },
+                  "source_ips": [
+                      "130.182.0.0",
+                      "130.182.0.1",
+                      "130.182.0.2",
+                      "130.182.0.3",
+                      "130.182.0.4",
+                      "130.182.0.5",
+                      "130.182.0.6",
+                      "130.182.0.7",
+                      "130.182.0.8",
+                      "130.182.0.9"
+                  ]
+              },
+              "id": "172784",
+              "type": "alert"
+          }
       }
     #+END_SRC
     allowing for code that can handle more levels of depth than the
@@ -2121,84 +2121,84 @@ listings package.
     integrates into the alert data to result in
     #+BEGIN_SRC json
       {
-	  "data": {
-	      "attributes": {
-		  "alert_class": "dos",
-		  "alert_type": "dos_profiled_router",
-		  "ongoing": false,
-		  "start_time": "2018-07-04T01:04:00+00:00",
-		  "stop_time": "2018-07-04T01:28:36+00:00",
-		  "subobject": {
-		      "direction": "Outgoing",
-		      "fast_detected": false,
-		      "impact_bps": 6376742,
-		      "impact_pps": 1883,
-		      "ip_version": 4,
-		      "protocols": [],
-		      "severity_percent": 127.53,
-		      "severity_threshold": 5000000.0,
-		      "severity_unit": "bps"
-		  },
-		  "source_ips": [
-		      "130.182.0.0",
-		      "130.182.0.1",
-		      "130.182.0.2",
-		      "130.182.0.3",
-		      "130.182.0.4",
-		      "130.182.0.5",
-		      "130.182.0.6",
-		      "130.182.0.7",
-		      "130.182.0.8",
-		      "130.182.0.9"
-		  ],
-		  "view": {
-		      "router-245": {
-			  "unit": {
-			      "bps": {
-				  "avg_value": 4386058,
-				  "current_value": 815626,
-				  "max_value": 6244499,
-				  "pct95_value": 6019565,
-				  "severity": 2,
-				  "step": 60,
-				  "timeseries": [
-				      5853386,
-				      5842086,
-				      6244499,
-				      5878551,
-				      5842066,
-				      5849164
-				  ],
-				  "timeseries_start": "2018-07-04T01:03:15+00:00"
-			      }
-			  }
-		      },
-		      "router-246": {
-			  "unit": {
-			      "bps": {
-				  "avg_value": 4363147,
-				  "current_value": 874213,
-				  "max_value": 6290026,
-				  "pct95_value": 6178240,
-				  "severity": 2,
-				  "step": 60,
-				  "timeseries": [
-				      5948880,
-				      5504565,
-				      5907508,
-				      5786937,
-				      6061942,
-				      5686562
-				  ],
-				  "timeseries_start": "2018-07-04T01:03:15+00:00"
-			      }
-			  }
-		      }
-		  }
-	      },
-	      "id": "172784",
-	      "type": "alert"
-	  }
+          "data": {
+              "attributes": {
+                  "alert_class": "dos",
+                  "alert_type": "dos_profiled_router",
+                  "ongoing": false,
+                  "start_time": "2018-07-04T01:04:00+00:00",
+                  "stop_time": "2018-07-04T01:28:36+00:00",
+                  "subobject": {
+                      "direction": "Outgoing",
+                      "fast_detected": false,
+                      "impact_bps": 6376742,
+                      "impact_pps": 1883,
+                      "ip_version": 4,
+                      "protocols": [],
+                      "severity_percent": 127.53,
+                      "severity_threshold": 5000000.0,
+                      "severity_unit": "bps"
+                  },
+                  "source_ips": [
+                      "130.182.0.0",
+                      "130.182.0.1",
+                      "130.182.0.2",
+                      "130.182.0.3",
+                      "130.182.0.4",
+                      "130.182.0.5",
+                      "130.182.0.6",
+                      "130.182.0.7",
+                      "130.182.0.8",
+                      "130.182.0.9"
+                  ],
+                  "view": {
+                      "router-245": {
+                          "unit": {
+                              "bps": {
+                                  "avg_value": 4386058,
+                                  "current_value": 815626,
+                                  "max_value": 6244499,
+                                  "pct95_value": 6019565,
+                                  "severity": 2,
+                                  "step": 60,
+                                  "timeseries": [
+                                      5853386,
+                                      5842086,
+                                      6244499,
+                                      5878551,
+                                      5842066,
+                                      5849164
+                                  ],
+                                  "timeseries_start": "2018-07-04T01:03:15+00:00"
+                              }
+                          }
+                      },
+                      "router-246": {
+                          "unit": {
+                              "bps": {
+                                  "avg_value": 4363147,
+                                  "current_value": 874213,
+                                  "max_value": 6290026,
+                                  "pct95_value": 6178240,
+                                  "severity": 2,
+                                  "step": 60,
+                                  "timeseries": [
+                                      5948880,
+                                      5504565,
+                                      5907508,
+                                      5786937,
+                                      6061942,
+                                      5686562
+                                  ],
+                                  "timeseries_start": "2018-07-04T01:03:15+00:00"
+                              }
+                          }
+                      }
+                  }
+              },
+              "id": "172784",
+              "type": "alert"
+          }
       }
     #+END_SRC
 
@@ -2366,26 +2366,26 @@ listings package.
    The format of the =mos_to_merge.json= file is:
    #+BEGIN_SRC json
      [
-	 {
-	     "v4": "cust01_v4",
-	     "v6": "cust01_v6"
-	 },
-	 {
-	     "v4": "cust02",
-	     "v6": "cust02_v6"
-	 },
-	 {
-	     "v4": "cust03-4",
-	     "v6": "cust04"
-	 },
-	 {
-	     "v4": "cust-04",
-	     "v6": "cust6-04"
-	 },
-	 {
-	     "v4": "cust4-05",
-	     "v6": "cust6-05"
-	 }
+         {
+             "v4": "cust01_v4",
+             "v6": "cust01_v6"
+         },
+         {
+             "v4": "cust02",
+             "v6": "cust02_v6"
+         },
+         {
+             "v4": "cust03-4",
+             "v6": "cust04"
+         },
+         {
+             "v4": "cust-04",
+             "v6": "cust6-04"
+         },
+         {
+             "v4": "cust4-05",
+             "v6": "cust6-05"
+         }
      ]
    #+END_SRC
 
@@ -2403,14 +2403,14 @@ listings package.
      combining.
      The list should look like:
      [
-	 {
-	     "v4": "mo1_name_v4",
-	     "v6": "mo1_name_v6"
-	 },
-	 {
-	     "v4": "mo2_name_v4",
-	     "v6": "mo2_name_v6"
-	 }
+         {
+             "v4": "mo1_name_v4",
+             "v6": "mo1_name_v6"
+         },
+         {
+             "v4": "mo2_name_v4",
+             "v6": "mo2_name_v6"
+         }
      ]
      Your MOs are:
      cidr_blocks     cust01_v4
@@ -2441,8 +2441,8 @@ listings package.
      The following MO will not be evaluated for combining because one
      or both of the MO names is not configured on the SP system.
      {
-	 "v4": "isp_1",
-	 "v6": "not_isp_1"
+         "v4": "isp_1",
+         "v6": "not_isp_1"
      }
      >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
      ('cust01_v4', 'cust01_v6'):
@@ -2456,91 +2456,91 @@ listings package.
      DELETE http://spleader.example.com/api/sp/managed_objects/284
      POST http://spleader.example.com/api/sp/managed_objects <<
      {
-	 "data": {
-	     "relationships": {
-		 "mitigation_templates_manual_ipv4": {
-		     "data": {
-			 "type": "mitigation_template",
-			 "id": "1"
-		     },
-		     "links": {
-			 "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/1"
-		     }
-		 },
-		 "shared_host_detection_settings": {
-		     "data": {
-			 "type": "shared_host_detection_settings",
-			 "id": "114"
-		     },
-		     "links": {
-			 "related": "https://spleader.example.com/api/sp/v5/shared_host_detection_settings/114"
-		     }
-		 },
-		 "mitigation_templates_manual_ipv6": {
-		     "data": {
-			 "type": "mitigation_template",
-			 "id": "8"
-		     },
-		     "links": {
-			 "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/8"
-		     }
-		 },
-		 "mitigation_templates_auto_ipv6": {
-		     "data": {
-			 "type": "mitigation_template",
-			 "id": "9"
-		     },
-		     "links": {
-			 "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/9"
-		     }
-		 },
-		 "mitigation_templates_auto_ipv4": {
-		     "data": {
-			 "type": "mitigation_template",
-			 "id": "2"
-		     },
-		     "links": {
-			 "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/2"
-		     }
-		 }
-	     },
-	     "attributes": {
-		 "detection_profiled_severity_snmp_enabled": false,
-		 "match_type": "cidr_blocks",
-		 "family": "customer",
-		 "autodetected": false,
-		 "mitigation_blackhole_auto_enabled": false,
-		 "detection_network_country_enabled": false,
-		 "detection_profiled_fast_detection_enabled": false,
-		 "detection_profiled_threshold_bandwidth": 2,
-		 "parent_editable": false,
-		 "mitigation_automitigation_tms_enabled": false,
-		 "detection_profiled_autorate": false,
-		 "mitigation_flowspec_auto_enabled": false,
-		 "num_children": 0,
-		 "detection_profiled_severity_duration": 300,
-		 "mitigation_automitigation_stop_event": "after_alert_ends",
-		 "detection_profiled_threshold_packet_rate": 2,
-		 "mitigation_automitigation_stop_minutes": 0,
-		 "detection_profiled_threshold_protocol": 2,
-		 "match": "32.174.0.0/24 3ffe:32:17:4abc::/119",
-		 "intf_boundary": [
-		     "16384004"
-		 ],
-		 "description": "gggg ---Combined Managed Object--- ",
-		 "tags": [
-		     "customer",
-		     "auto-combined"
-		 ],
-		 "editable": true,
-		 "detection_profiled_outgoing_enabled": true,
-		 "name": "cust-04 + cust6-04",
-		 "mitigation_automitigation": false,
-		 "detection_profiled_enabled": false,
-		 "detection_network_enabled": false
-	     },
-	     "type": "managed_object"
-	 }
+         "data": {
+             "relationships": {
+                 "mitigation_templates_manual_ipv4": {
+                     "data": {
+                         "type": "mitigation_template",
+                         "id": "1"
+                     },
+                     "links": {
+                         "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/1"
+                     }
+                 },
+                 "shared_host_detection_settings": {
+                     "data": {
+                         "type": "shared_host_detection_settings",
+                         "id": "114"
+                     },
+                     "links": {
+                         "related": "https://spleader.example.com/api/sp/v5/shared_host_detection_settings/114"
+                     }
+                 },
+                 "mitigation_templates_manual_ipv6": {
+                     "data": {
+                         "type": "mitigation_template",
+                         "id": "8"
+                     },
+                     "links": {
+                         "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/8"
+                     }
+                 },
+                 "mitigation_templates_auto_ipv6": {
+                     "data": {
+                         "type": "mitigation_template",
+                         "id": "9"
+                     },
+                     "links": {
+                         "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/9"
+                     }
+                 },
+                 "mitigation_templates_auto_ipv4": {
+                     "data": {
+                         "type": "mitigation_template",
+                         "id": "2"
+                     },
+                     "links": {
+                         "related": "https://spleader.example.com/api/sp/v5/mitigation_templates/2"
+                     }
+                 }
+             },
+             "attributes": {
+                 "detection_profiled_severity_snmp_enabled": false,
+                 "match_type": "cidr_blocks",
+                 "family": "customer",
+                 "autodetected": false,
+                 "mitigation_blackhole_auto_enabled": false,
+                 "detection_network_country_enabled": false,
+                 "detection_profiled_fast_detection_enabled": false,
+                 "detection_profiled_threshold_bandwidth": 2,
+                 "parent_editable": false,
+                 "mitigation_automitigation_tms_enabled": false,
+                 "detection_profiled_autorate": false,
+                 "mitigation_flowspec_auto_enabled": false,
+                 "num_children": 0,
+                 "detection_profiled_severity_duration": 300,
+                 "mitigation_automitigation_stop_event": "after_alert_ends",
+                 "detection_profiled_threshold_packet_rate": 2,
+                 "mitigation_automitigation_stop_minutes": 0,
+                 "detection_profiled_threshold_protocol": 2,
+                 "match": "32.174.0.0/24 3ffe:32:17:4abc::/119",
+                 "intf_boundary": [
+                     "16384004"
+                 ],
+                 "description": "gggg ---Combined Managed Object--- ",
+                 "tags": [
+                     "customer",
+                     "auto-combined"
+                 ],
+                 "editable": true,
+                 "detection_profiled_outgoing_enabled": true,
+                 "name": "cust-04 + cust6-04",
+                 "mitigation_automitigation": false,
+                 "detection_profiled_enabled": false,
+                 "detection_network_enabled": false
+             },
+             "type": "managed_object"
+         }
      }
    #+END_EXAMPLE
    #+LATEX: \normalsize
@@ -2562,6 +2562,57 @@ listings package.
    - we might not be able to do this in a reasonable way in SP8.3v3
 ** Example: Moving Routers between Collectors                      :noexport:
    - this doesn't work at all, so we shouldn't do it
+
+** Example: Triggering Smart Alerts with Smart Alert Settings
+  #+INDEX: /smart\_alert\_settings/ endpoint
+  #+INDEX: /alerts/ endpoint
+  #+INDEX: insight
+  Smart alerts are new in Sightline 9.0 and are a way of generating
+  traffic-based alerts using Insight data instead of managed objects.
+  Smart alerts look at the last 5 minutes of Insight traffic data
+  nearly continuously and use a varient of the Insight filter language
+  to select specific traffic which is then compared to the thresholds
+  configured in the smart alert settings.  If the threshold is
+  exceeded a Sightline alert is started; if the traffic later drops
+  below the threshold, the alert is ended.  Unfortunately, in
+  Sightline 9.0 there is no way to directly get alert data using the
+  query that is returned in the alert; this will be addressed in later
+  versions of Sightline.  See the Sightline documentation for more
+  details on smart alerts.
+
+  The SP REST API can be used to create, edit, and delete smart alert settings
+  which will trigger smart alerts (of alert type =smart_thresh=) whenever
+  traffic meets the settings in a smart alert setting.
+
+  There are two parts to a smart alert setting: the attributes that define what
+  will trigger a smart alert, and the settings to pass to the smart alert. The
+  settings passed to the smart alert are in the =alert_view= attribute in a
+  smart alert. They are what, when loaded into the Insight UI, dicate what
+  settings will be shown. For example, if =unit= is =pps=, then when the
+  smart alert is loaded into Insight, the unit toggle will be set to =pps=.
+
+  Note: Traffic is checked in five minute windows, so, when traffic has met the
+  settings in the smart alert setting, a smart alert will be triggered.
+
+  There are two ways to load a smart alert into the Insight UI:
+   - Go to the alerts listing page, click on a smart alert
+   - Add =&alert_id={alert_id}= to the Insight URL. I.e.:
+     #+BEGIN_EXAMPLE
+     https://spleader.example.com/page?id=insight&alert_id=48227
+     #+END_EXAMPLE
+
+  In the example below, a user creates a smart alert setting that will trigger
+  a smart alert of importance (aka severity) of =medium= when traffic exceeds
+  the set threshold of =4567= with unit =bps= when filtered on the =Protocol=
+  facet with view =Network=.
+
+  In the example below the triggered smart alert will contain information such
+  that, when loaded into the insight UI, the unit toggle will be set to =pps=,
+  the view will be set to =Peer=, the =Relationships= tab will be
+  predominant on the page, the =importance= will be =1=. along with other
+  information such as the start time.
+
+  #+INCLUDE: code-examples/smart_alert_setting.py src python
 
 * Operations
 
@@ -2664,44 +2715,44 @@ listings package.
    And the annotation text, via the API looks like:
    #+BEGIN_SRC json
      {
-	 "meta": {
-	     "sp_version": "8.3",
-	     "api": "SP",
-	     "api_version": "3",
-	     "sp_build_id": "HIT4"
-	 },
-	 "data": [
-	     {
-		 "attributes": {
-		     "text": "Impact on boundary 'rtr1.nyc'; Impact in bps: 10558611; Impact in pps: 1707;",
-		     "added": "2017-09-25T19:34:12+00:00",
-		     "author": "API-Client"
-		 },
-		 "type": "alert_annotation",
-		 "id": "21168"
-	     },
-	     {
-		 "attributes": {
-		     "text": "Impact on boundary 'rtr1.nyc'; Impact in bps: 10558611; Impact in pps: 1707;",
-		     "added": "2017-09-25T19:33:34+00:00",
-		     "author": "API-Client"
-		 },
-		 "type": "alert_annotation",
-		 "id": "21157"
-	     },
-	     {
-		 "attributes": {
-		     "text": "The \"TCP NULL\" host alert signature severity rate configured for \"Customer\" has been exceeded for 2 minutes, changing Severity Level from medium to high  (expected rate: 1.00 Kpps, observed rate: 1.70 Kpps)",
-		     "added": "2017-09-25T19:18:45+00:00",
-		     "author": "auto-annotation"
-		 },
-		 "type": "alert_annotation",
-		 "id": "21155"
-	     }
-	 ],
-	 "links": {
-	     "self": "https://leader.example.com/api/sp/v3/alerts/8067/annotations/"
-	 }
+         "meta": {
+             "sp_version": "8.3",
+             "api": "SP",
+             "api_version": "3",
+             "sp_build_id": "HIT4"
+         },
+         "data": [
+             {
+                 "attributes": {
+                     "text": "Impact on boundary 'rtr1.nyc'; Impact in bps: 10558611; Impact in pps: 1707;",
+                     "added": "2017-09-25T19:34:12+00:00",
+                     "author": "API-Client"
+                 },
+                 "type": "alert_annotation",
+                 "id": "21168"
+             },
+             {
+                 "attributes": {
+                     "text": "Impact on boundary 'rtr1.nyc'; Impact in bps: 10558611; Impact in pps: 1707;",
+                     "added": "2017-09-25T19:33:34+00:00",
+                     "author": "API-Client"
+                 },
+                 "type": "alert_annotation",
+                 "id": "21157"
+             },
+             {
+                 "attributes": {
+                     "text": "The \"TCP NULL\" host alert signature severity rate configured for \"Customer\" has been exceeded for 2 minutes, changing Severity Level from medium to high  (expected rate: 1.00 Kpps, observed rate: 1.70 Kpps)",
+                     "added": "2017-09-25T19:18:45+00:00",
+                     "author": "auto-annotation"
+                 },
+                 "type": "alert_annotation",
+                 "id": "21155"
+             }
+         ],
+         "links": {
+             "self": "https://leader.example.com/api/sp/v3/alerts/8067/annotations/"
+         }
      }
    #+END_SRC
 
@@ -2781,18 +2832,18 @@ listings package.
    options, but the heart of it is the JSON-formatted query:
    #+BEGIN_SRC json
      {
-	 "start": "<start>",
-	 "end": "<end>",
-	 "dimensions": [
-	     "IP_Protocol",
-	     "Source_IPv4_Address",
-	     "Source_Port",
-	     "Destination_IPv4_Address",
-	     "Destination_Port"
-	 ],
-	 "limit": "<num_records>",
-	 "perspective": "<perspective>",
-	 "view": "<view>"
+         "start": "<start>",
+         "end": "<end>",
+         "dimensions": [
+             "IP_Protocol",
+             "Source_IPv4_Address",
+             "Source_Port",
+             "Destination_IPv4_Address",
+             "Destination_Port"
+         ],
+         "limit": "<num_records>",
+         "perspective": "<perspective>",
+         "view": "<view>"
      }
    #+END_SRC
    which describes the data to be returned from the API.  The items in
@@ -2810,21 +2861,21 @@ listings package.
    this:
 
    #+BEGIN_SRC json
-	 "filters": {
-	     "fields": [
-		 {
-		     "facet": "Destination_Port",
-		     "type": "selector",
-		     "value": "80"
-		 },
-		 {
-		     "facet": "Destination_Port",
-		     "type": "selector",
-		     "value": "443"
-		 }
-	     ],
-	     "type": "or"
-	 }
+         "filters": {
+             "fields": [
+                 {
+                     "facet": "Destination_Port",
+                     "type": "selector",
+                     "value": "80"
+                 },
+                 {
+                     "facet": "Destination_Port",
+                     "type": "selector",
+                     "value": "443"
+                 }
+             ],
+             "type": "or"
+         }
    #+END_SRC
 
    This particular filter selects results where the Destination Port
@@ -2844,9 +2895,9 @@ listings package.
    An example of running this program is:
    #+BEGIN_SRC sh :exports code
      python download-insight-rawflows.py -s 2018-22-03 -e 2018-04-24 \
-	    -l leader.example.com \
-	    -k MySecretAPIkey \
-	    -n 1000000
+            -l leader.example.com \
+            -k MySecretAPIkey \
+            -n 1000000
    #+END_SRC
    #+BEGIN_EXAMPLE
        Querying leader.example.com for 1000000 raw flows records
@@ -2883,43 +2934,43 @@ listings package.
    looks similar to:
    #+BEGIN_SRC json
      {
-	 "limit": 10,
-	 "groupby": [
-	     "Source_IPv4_Address",
-	     "Source_Port",
-	     "Destination_Port",
-	     "Destination_IPv4_Address"
-	 ],
-	 "filters": {
-	     "type": "or",
-	     "fields": [
-		 {
-		     "type": "selector",
-		     "facet": "Destination_Port",
-		     "value": "80"
-		 },
-		 {
-		     "type": "selector",
-		     "facet": "Destination_Port",
-		     "value": "443"
-		 },
-		 {
-		     "type": "selector",
-		     "facet": "Destination_Port",
-		     "value": "25"
-		 },
-		 {
-		     "type": "selector",
-		     "facet": "Destination_Port",
-		     "value": "53"
-		 }
-	     ]
-	 },
-	 "start": "2018-05-20T16:44:00.000Z",
-	 "end": "2018-05-20T16:52:00.000Z",
-	 "view": "Network",
-	 "metric": "bps",
-	 "calculation": "average"
+         "limit": 10,
+         "groupby": [
+             "Source_IPv4_Address",
+             "Source_Port",
+             "Destination_Port",
+             "Destination_IPv4_Address"
+         ],
+         "filters": {
+             "type": "or",
+             "fields": [
+                 {
+                     "type": "selector",
+                     "facet": "Destination_Port",
+                     "value": "80"
+                 },
+                 {
+                     "type": "selector",
+                     "facet": "Destination_Port",
+                     "value": "443"
+                 },
+                 {
+                     "type": "selector",
+                     "facet": "Destination_Port",
+                     "value": "25"
+                 },
+                 {
+                     "type": "selector",
+                     "facet": "Destination_Port",
+                     "value": "53"
+                 }
+             ]
+         },
+         "start": "2018-05-20T16:44:00.000Z",
+         "end": "2018-05-20T16:52:00.000Z",
+         "view": "Network",
+         "metric": "bps",
+         "calculation": "average"
      }
    #+END_SRC
    which asks the specfic question "For destination ports of web
@@ -2931,32 +2982,32 @@ listings package.
    in this short list of two:
    #+BEGIN_SRC json
      [
-	 {
-	     "Destination_IPv4_Address": "216.175.102.23",
-	     "Destination_Port": "80",
-	     "Source_IPv4_Address": "163.193.0.1",
-	     "Source_Port": "44456",
-	     "bps": {
-		 "average": {
-		     "in": 2500,
-		     "out": 0,
-		     "total": 2500
-		 }
-	     }
-	 },
-	 {
-	     "Destination_IPv4_Address": "216.175.102.23",
-	     "Destination_Port": "80",
-	     "Source_IPv4_Address": "163.193.0.2",
-	     "Source_Port": "45666",
-	     "bps": {
-		 "average": {
-		     "in": 500,
-		     "out": 0,
-		     "total": 500
-		 }
-	     }
-	 }
+         {
+             "Destination_IPv4_Address": "216.175.102.23",
+             "Destination_Port": "80",
+             "Source_IPv4_Address": "163.193.0.1",
+             "Source_Port": "44456",
+             "bps": {
+                 "average": {
+                     "in": 2500,
+                     "out": 0,
+                     "total": 2500
+                 }
+             }
+         },
+         {
+             "Destination_IPv4_Address": "216.175.102.23",
+             "Destination_Port": "80",
+             "Source_IPv4_Address": "163.193.0.2",
+             "Source_Port": "45666",
+             "bps": {
+                 "average": {
+                     "in": 500,
+                     "out": 0,
+                     "total": 500
+                 }
+             }
+         }
      ]
    #+END_SRC
    If you want to see a visualization of the relationships between
@@ -3105,10 +3156,10 @@ listings package.
    Running that script with the =-t= option produces output that looks
    like:
    #+BEGIN_SRC sh :exports source
-     type	start	description
-     tms_fault	2017-09-22T16:26:26+00:00	Hardware Sensor 'Power Draw (PS2)' is 'Critical' (Triggering value: 0 Watts)
-     tms_fault	2017-09-22T16:25:26+00:00	Hardware Device 'Power Supply PS2' is 'Error' (Presence detected, Power Supply AC lost)
-     collector_down	2017-09-21T19:39:21+00:00
+     type       start   description
+     tms_fault  2017-09-22T16:26:26+00:00       Hardware Sensor 'Power Draw (PS2)' is 'Critical' (Triggering value: 0 Watts)
+     tms_fault  2017-09-22T16:25:26+00:00       Hardware Device 'Power Supply PS2' is 'Error' (Presence detected, Power Supply AC lost)
+     collector_down     2017-09-21T19:39:21+00:00
    #+END_SRC
 
 ** PHP
@@ -3267,12 +3318,12 @@ listings package.
 
    #+BEGIN_SRC json
      {
-	 "meta": {
-	     "sp_version": "8.3",
-	     "api": "SP",
-	     "api_version": "3",
-	     "sp_build_id": "HIT4"
-	 }
+         "meta": {
+             "sp_version": "8.3",
+             "api": "SP",
+             "api_version": "3",
+             "sp_build_id": "HIT4"
+         }
      }
    #+END_SRC
 
@@ -3298,13 +3349,13 @@ listings package.
 
    #+BEGIN_SRC json
      {
-	 "meta": {
-	     "sp_build_id": "HIT4",
-	     "sp_version": "8.3",
-	     "api": "SP",
-	     "api_version": "1",
-	     "sp_api_version": "1.0.0"
-	 }
+         "meta": {
+             "sp_build_id": "HIT4",
+             "sp_version": "8.3",
+             "api": "SP",
+             "api_version": "1",
+             "sp_api_version": "1.0.0"
+         }
      }
    #+END_SRC
 
