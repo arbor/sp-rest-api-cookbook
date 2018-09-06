@@ -2563,6 +2563,41 @@ listings package.
 ** Example: Moving Routers between Collectors                      :noexport:
    - this doesn't work at all, so we shouldn't do it
 
+** Example: Triggering Smart Alerts with Smart Alert Settings
+  #+INDEX: /smart\_alert\_settings/ endpoint
+  #+INDEX: /alerts/ endpoint
+  The SP REST API can be used to create, edit, and delete smart alert settings
+  which will trigger smart alerts (of alert type `smart_thresh`) whenever
+  traffic meets the settings in a smart alert setting.
+
+  There are two parts to a smart alert setting: the attributes that define what
+  will trigger a smart alert, and the settings to pass to the smart alert. The
+  settings passed to the smart alert are in the `alert_view` attribute in a
+  smart alert. They are what, when loaded into the Insight UI, dicate what
+  settingsa will be shown. For example, if `unit` is `pps`, then when the
+  smart alert is loaded into Insight, the unit toggle will be set to `pps`.
+
+  Note: Traffic is checked in five minute windows, so, when traffic has met the
+  settings in the smart alert setting, a smart alert will be triggered.
+
+  Two ways to load a smart alert into the Insight UI:
+   - Go to the alerts listing page, click on a smart alert
+   - Add `&alert_id={alert_id}` to the Insight URL. I.e.:
+     `https://example.com/page?id=insight&alert_id=48227`
+
+  In the example below, a user creates a smart alert setting that will trigger
+  a smart alert of importance (aka severity) of `medium` when traffic exceeds
+  the set threshold of `4567` with unit `bps` when filtered on the `Protocol`
+  facet with view `Network`.
+
+  In the example below the triggered smart alert will contain information such
+  that, when loaded into the insight UI, the unit toggle will be set to `pps`,
+  the view will be set to `Peer`, the `Relationships` tab will be
+  predominant on the page, the `importance` will be `1`. along with other
+  information such as the start time.
+
+  #+INCLUDE: code-examples/smart_alert_setting.py src python
+
 * Operations
 
   This chapter will describe how to use the SP REST API
