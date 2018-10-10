@@ -2,9 +2,9 @@
 #+OPTIONS: toc:t
 #+MACRO: NEWLINE @@latex:\\@@ @@html:<br>@@
 #+MACRO: IMAGE @@latex:\\ \vspace{8cm} \hfill \usebox{\titleimage}@@
-#+TITLE: Sightline REST API Cookbook {{{NEWLINE}}} Sightline v9.0 {{{NEWLINE}}} API v5 {{{IMAGE}}}
+#+TITLE: Sightline REST API Cookbook {{{NEWLINE}}} Sightline v9.0 {{{NEWLINE}}} API v5
 #+DATE: <2018-10-10 Wed>
-#+AUTHOR: Arbor Networks
+#+AUTHOR: NETSCOUT|Arbor Networks
 #+LATEX_CLASS: tufte-book
 # #+LATEX_CLASS: memoir
 #+LaTeX_CLASS_OPTIONS: [koma,utopia,12pt,symmetric,notoc]
@@ -640,8 +640,8 @@ listings package.
 **** Deleting data with HTTPie
 
      Repeating the example of deleting data from the cURL section, the
-     syntax for using HTTPie to delete data from Sightline via the SP
-     REST API is:
+     syntax for using HTTPie to delete data from Sightline via the
+     Sightline REST API is:
      #+BEGIN_SRC sh :results output :exports code
        http DELETE https://sightline-leader.example.com/api/sp/routers/132
      #+END_SRC
@@ -2226,13 +2226,13 @@ listings package.
 
 * Configuration
 
-  This chapter describes how to configure Sightline using the SP REST
-  API.  The difference between configuration and operations is that
-  configuration doesn't assume that Sightline is collecting flow from
-  any routers.  While the example programs in this chapter will change
-  the state of your Sightline deployment, they can do so without
-  having any information about or effect on the traffic on your
-  network.
+  This chapter describes how to configure Sightline using the
+  Sightline REST API.  The difference between configuration and
+  operations is that configuration doesn't assume that Sightline is
+  collecting flow from any routers.  While the example programs in
+  this chapter will change the state of your Sightline deployment,
+  they can do so without having any information about or effect on the
+  traffic on your network.
 
 ** Example: Adding a Managed Object using business information
    #+INDEX: /managed\_objects/ endpoint
@@ -3265,11 +3265,11 @@ listings package.
    #+INDEX: filter\ list
    #+INDEX: /tms\_filter\_list\_requests/ endpoint
 
-   In SP8.4 you can configure DNS Filter Lists by telling Sightline
-   about a DNS server from which you can do zone transfers and the
-   domain or subdomain containing the hosts you want to add to the DNS
-   filter list.  This can be a fast way of creating a DNS filter list
-   for a whole subdomain.
+   In SP8.4 and later you can configure DNS Filter Lists by telling
+   Sightline about a DNS server from which you can do zone transfers
+   and the domain or subdomain containing the hosts you want to add to
+   the DNS filter list.  This can be a fast way of creating a DNS
+   filter list for a whole subdomain.
 
    The following NodeJS API client requires a version of Node that is
    at least 8.4.0 and can be run with the command:
@@ -3402,9 +3402,9 @@ listings package.
 
 ** Reference Manual
 
-   The SP REST API endpoint reference manual is available from the
-   Sightline web interface by going to the "Administration" menu and
-   choosing "REST API Documentation".
+   The Sightline REST API endpoint reference manual is available from
+   the Sightline web interface by going to the "Administration" menu
+   and choosing "REST API Documentation".
 
 ** Reporting Errors to Arbor
    #+INDEX: errors
