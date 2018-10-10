@@ -2,8 +2,8 @@
 #+OPTIONS: toc:t
 #+MACRO: NEWLINE @@latex:\\@@ @@html:<br>@@
 #+MACRO: IMAGE @@latex:\\ \vspace{8cm} \hfill \usebox{\titleimage}@@
-#+TITLE: SP REST API Cookbook {{{NEWLINE}}} SP v8.4 {{{NEWLINE}}} API v4 {{{IMAGE}}}
-#+DATE: <2017-07-14 Fri>
+#+TITLE: Sightline REST API Cookbook {{{NEWLINE}}} Sightline v9.0 {{{NEWLINE}}} API v5 {{{IMAGE}}}
+#+DATE: <2018-10-10 Wed>
 #+AUTHOR: Arbor Networks
 #+LATEX_CLASS: tufte-book
 # #+LATEX_CLASS: memoir
@@ -40,73 +40,74 @@ listings package.
 # #+LATEX_HEADER:     showstringspaces=false,
 # #+LATEX_HEADER:     postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}}
 # #+LATEX_HEADER: }
-#+LATEX: \renewcommand \plaintitle{SP REST API Cookbook, SP v8.4, API v4} % keep the image out of the headers
+#+LATEX: \renewcommand \plaintitle{Sightline REST API Cookbook, Sightline v8.4, API v5} % keep the image out of the headers
 #+LATEX: \renewcommand{\ref}{\nameref}
 
 * Introduction
 
-  Arbor Networks SP is a very sophisticated piece of software that
-  gives visibility into the network traffic on networks ranging up to
-  those that are massively large; SP support hundreds of configuration
-  parameters for defining what exactly visibility means and the
-  reported data from SP is very rich and very broad.  Almost no
-  network operators who use SP make use of the entire range of its
-  capabilities.
+  NETSCOUT Sightline (formerly Arbor Networks SP) is a very
+  sophisticated piece of software that gives visibility into the
+  network traffic on networks ranging up to those that are massively
+  large; Sightline supports hundreds of configuration parameters for
+  defining what exactly visibility means and the reported data from
+  Sightline is very rich and very broad.  Almost no network operators
+  who use Sightline make use of the entire range of its capabilities.
 
-  The configuration of SP and the management of its data is done in
-  two ways: the SP web-based UI and the web-based API interfaces to
-  SP.  While SP has had APIs for many versions, the versions starting
-  with 8.1 have had a REST API as one of the options for configuration
-  and data retrieval.
+  The configuration of Sightline and the management of its data is
+  done in two ways: the Sightline web-based UI and the web-based API
+  interfaces to Sightline.  While Sightline (and SP before it) has had
+  APIs for many versions, the versions starting with SP 8.1 have had a
+  REST API as one of the options for configuration and data retrieval.
 
-  This book describes how to programmatically configure SP and get
-  data about your network from SP using a json:api-based REST API to
-  SP.
+  This book describes how to programmatically configure Sightline and
+  get data about your network from Sightline using a json:api-based
+  REST API to Sightline.
 
   #+INDEX: REST
   #+INDEX: SOAP API
   REST is a common, HTTP-based protocol that defines web-based
   services that allow clients (sometimes called "requesting systems")
-  to access and manipulate textual representations (in the case of SP,
-  JSON representations) of SP configuration and reporting data
-  (generically called "Web resources") using a uniform and predefined
-  set of stateless, from the client's perspective, operations.  All of
-  the state, configuration and data, is maintained within SP, not by
-  the API client.  The API described here is the SP REST API.  SP has
-  other APIs (SOAP and WebServices) that are documented in other SP
-  documentation.  The intent of the SP REST API is to, over time,
-  include all of the functionality of the SOAP and WebServices API, at
-  which point those will be deprecated.
+  to access and manipulate textual representations (in the case of
+  Sightline, JSON representations) of Sightline configuration and
+  reporting data (generically called "Web resources") using a uniform
+  and predefined set of stateless, from the client's perspective,
+  operations.  All of the state, configuration and data, is maintained
+  within Sightline, not by the API client.  The API described here is
+  the Sightline REST API.  Sightline has other APIs (SOAP and
+  WebServices) that are documented in other Sightline documentation.
+  The intent of the Sightline REST API is to, over time, include all
+  of the functionality of the SOAP and WebServices API, at which point
+  those will be deprecated.
 
   #+INDEX: jsonapi
-  The SP REST API uses a particular API-focused JavaScript Object
-  Notation (JSON) format to represent its data.  JSON is a textual
-  representation of data in collections (Python calls these
+  The Sightline REST API uses a particular API-focused JavaScript
+  Object Notation (JSON) format to represent its data.  JSON is a
+  textual representation of data in collections (Python calls these
   dictionaries, C calls them structures, Go calls them maps, Ruby and
   Perl call them hashes) and lists (Python and Perl also calls them
   lists, Go calls them slices, C and Ruby call them arrays).  The
   elements in collections and lists are other collections, other
-  lists, Boolean values, numeric values, or string values as
-  described by the JSON specification (http://www.json.org/).  The
-  particular JSON representation that the SP REST API adheres to is
-  called json:api (http://jsonapi.org/); the rules and guidelines
-  described in Version 1.0 of the json:api specification are
-  implemented for the SP REST API.
+  lists, Boolean values, numeric values, or string values as described
+  by the JSON specification (http://www.json.org/).  The particular
+  JSON representation that the Sightline REST API adheres to is called
+  json:api (http://jsonapi.org/); the rules and guidelines described
+  in Version 1.0 of the json:api specification are implemented for the
+  Sightline REST API.
 
-  The SP REST API is under development.  Each release of Arbor
-  Networks SP after version 8.0 includes a REST API that has more
-  features than the prior release.  Arbor Networks expects that the
-  REST API will not be complete for several years, but incremental
-  steps will be included in each version of SP.  This book describes
-  Version 3 of the API that is included in SP 8.3.  (The versioning
-  mechanism is described in more detail in the section [[Guiding
-  Principles of the SP REST API]].)
+  The Sightline REST API is under development.  Each release of Arbor
+  Networks SP or Sightline after SP version 8.0 includes a REST API
+  that has more features than the prior release.  Arbor Networks
+  expects that the REST API will not be complete for several years,
+  but incremental steps will be included in each version of Sightline.
+  This book describes Version 5 of the API that is included in
+  Sightline 9.0.  (The versioning mechanism is described in more
+  detail in the section [[Guiding Principles of the Sightline REST API]].)
 
-  This book is intended for the SP administrator or advanced user who
-  has some programming or shell scripting experience and who wants to
-  automate network management or reporting tasks, or combine SP data
-  with other sources of data for reporting, configuration, or decision
-  making.
+  This book is intended for the Sightline administrator or advanced
+  user who has some programming or shell scripting experience and who
+  wants to automate network management or reporting tasks, or combine
+  Sightline data with other sources of data for reporting,
+  configuration, or decision making.
 
 
 ** Conventions Used in this Book
@@ -122,14 +123,14 @@ listings package.
    see the section [[Contributing and other technical details]] for advice
    on ways to contribute.
 
-   The examples that were written for a version of SP and its REST API
-   will report their version in both their =meta= object and in the
-   URLs; those examples are not generally reproduced for the latest
-   version, but also should continue to work even on the latest
+   The examples that were written for a version of Sightline and its
+   REST API will report their version in both their =meta= object and
+   in the URLs; those examples are not generally reproduced for the
+   latest version, but also should continue to work even on the latest
    version (as well as on the prior version of the API in newer
-   versions of SP.  Put another way, if you see an example that uses a
-   URL with a specific =/v[VersionNumber]/= in it or example output
-   that includes a =meta= object like
+   versions of Sightline.  Put another way, if you see an example that
+   uses a URL with a specific =/v[VersionNumber]/= in it or example
+   output that includes a =meta= object like
    #+BEGIN_EXAMPLE
      "meta": {
          "api": "SP",
@@ -138,36 +139,38 @@ listings package.
          "sp_version": "8.3"
      }
    #+END_EXAMPLE
-   you can, in probably all cases, use the latest version of SP and
-   the REST API safely.  Alternatively, you can use the latest version
-   of SP and the specified version of the REST API.[fn:8]
+   you can, in probably all cases, use the latest version of Sightline
+   and the REST API safely.  Alternatively, you can use the latest
+   version of Sightline and the specified version of the REST
+   API.[fn:8]
 
-** SP APIs
+** Sightline APIs
 
    #+INDEX: SOAP API
-   Arbor Networks SP has three officially supported types of APIs: the
-   SOAP API, the WebServices API, and the REST API.
+   NETSCOUT Sightline has three officially supported types of APIs:
+   the SOAP API, the WebServices API, and the REST API.
 
-   The SOAP and WebServices API are documented in the online SP
+   The SOAP and WebServices API are documented in the online Sightline
    documentation and in the API software development kit available
-   from the SP web UI at the Administration > Download Arbor API SDK
-   menu item.
+   from the Sightline web UI at the Administration > Download Arbor
+   API SDK menu item.
 
    Arbor Networks has decided to focus on the REST API (the topic of
    this book) for its future development with the goal of encompassing
-   the functionality of the other APIs, the SP command-line interface,
-   and all of the functionality provided by the web-based UI that is
-   the most familiar to SP users.
+   the functionality of the other APIs, the Sightline command-line
+   interface, and all of the functionality provided by the web-based
+   UI that is the most familiar to Sightline users.
 
-   As you develop clients for SP's APIs, keep in mind that the REST
-   API is the officially preferred API for SP.  However, in this
-   version (and, likely, several upcoming versions), the REST API does
-   not provide all of the functionality of the SOAP and WebServices
-   APIs.  Arbor recommends using the REST API where you can in your
-   clients, and augmenting it with API requests to the other APIs,
-   replacing those requests as the REST API gains functionality.
+   As you develop clients for Sightline's APIs, keep in mind that the
+   REST API is the officially preferred API for Sightline.  However,
+   in this version (and, likely, several upcoming versions), the REST
+   API does not provide all of the functionality of the SOAP and
+   WebServices APIs.  Arbor recommends using the REST API where you
+   can in your clients, and augmenting it with API requests to the
+   other APIs, replacing those requests as the REST API gains
+   functionality.
 
-** Guiding Principles of the SP REST API
+** Guiding Principles of the Sightline REST API
 
    As Arbor Networks develops the REST API, we abide by some standards
    and principles that you can rely on as you you create API clients.
@@ -176,16 +179,16 @@ listings package.
     The first of these guidelines is that the structure of the JSON
     that is used for input and output from the API follows the JSON
     API specification ([[http://jsonapi.org/]]).  While you don't need to
-    understand the specification to use the SP REST API, it may help
-    answer some questions about why things are the way they are in the
-    API, and how Arbor is likely to handle future additions to the
-    API.
+    understand the specification to use the Sightline REST API, it may
+    help answer some questions about why things are the way they are
+    in the API, and how Arbor is likely to handle future additions to
+    the API.
 *** Useful Errors for Humans and Computers
     #+INDEX: errors
-    The second guideline is that the SP REST API should provide you
-    with useful error messages that can be interpreted by both a human
-    and a computer program.  Arbor makes use of a combination of HTTP
-    response codes as described in Section 10 of RFC 2616
+    The second guideline is that the Sightline REST API should provide
+    you with useful error messages that can be interpreted by both a
+    human and a computer program.  Arbor makes use of a combination of
+    HTTP response codes as described in Section 10 of RFC 2616
     (https://www.ietf.org/rfc/rfc2616.txt) and error objects that
     contain some or all of an error title string, an error detail
     string, an HTTP status code string, and a pointer to the error in
@@ -214,28 +217,29 @@ listings package.
 
 *** Backward compatibility
     Another guideline is that the REST API will maintain
-    backward-compatibility as it increases in version.  The version for
-    the API is a combination of the SP version and the API version
-    number; in the example above the API version would be reported as
-    "SP v8.3, API v2".  It is possible that there will be an API v2
-    for SP v8.2.3 that is different from the API v2 for SP v8.3.
-    Arbor Networks will retain at least one prior version of the API
-    in each version of SP so if you have written clients that use v3
-    of the API in SP v8.4 and upgrade to SP v8.5 that defaults API v4,
-    you can still access API v3 in SP v8.5 with your clients while you
-    work to migrate them to the latest version.  API version increases
-    will happen when Arbor Networks introduces a change in the API
-    that could potentially break existing clients; this includes
-    things like changing the name of an API key, changing the type of
-    an API value, or removing an API endpoint.  Adding keys and
-    endpoints is not considered breaking, as well-written API clients
-    should ignore extra data returned to them.
+    backward-compatibility as it increases in version.  The version
+    for the API is a combination of the Sightline version and the API
+    version number; in the example above the API version would be
+    reported as "SP v8.3, API v2".  It is possible that there will be
+    an API v2 for SP v8.2.3 that is different from the API v2 for SP
+    v8.3.  NETSCOUT|Arbor will retain at least one prior version of
+    the API in each version of SP so if you have written clients that
+    use v3 of the API in SP v8.4 and upgrade to Sightline v9.0 that
+    defaults API v4, you can still access API v3 in Sightline v9.0
+    with your clients while you work to migrate them to the latest
+    version.  API version increases will happen when Arbor Networks
+    introduces a change in the API that could potentially break
+    existing clients; this includes things like changing the name of
+    an API key, changing the type of an API value, or removing an API
+    endpoint.  Adding keys and endpoints is not considered breaking,
+    as well-written API clients should ignore extra data returned to
+    them.
 *** Discoverability
     #+INDEX: HATEOAS
     #+INDEX: Fielding, Roy
-    Arbor Networks makes every effort to ensure the SP REST API is
-    fully discoverable from the root URL, =/api/sp/=.  Starting there,
-    every response you receive may contain an object called
+    Arbor Networks makes every effort to ensure the Sightline REST API
+    is fully discoverable from the root URL, =/api/sp/=.  Starting
+    there, every response you receive may contain an object called
     =relationships= that will lead you to the related objects.  There
     are no detached nodes of the API tree.  This is called Hypermedia
     as the Engine of Application State (HATEOAS) and is defined[fn:1]
@@ -253,19 +257,19 @@ listings package.
     communication mechanisms, both of which may be improved on-the-fly
     (e.g., code-on-demand).
     #+END_QUOTE
-    In the case of the SP REST API, the "initial URI" is
-    https://sp-leader.example.com/api/sp/ and following that
+    In the case of the Sightline REST API, the "initial URI" is
+    https://sightline-leader.example.com/api/sp/ and following that
     the elements in the =links= objects provide connectivity to the
     rest of the API.
 
 ** Online Reference Manual
 
-   The SP REST API includes a reference manual for each endpoint with
-   a description of each key in that endpoint; there are very few
-   examples of using the API in the reference manual (hence this
-   book), but all of the endpoints and their properties are listed for
-   all of the versions of the API supported on the installed version
-   of SP.
+   The Sightline REST API includes a reference manual for each
+   endpoint with a description of each key in that endpoint; there are
+   very few examples of using the API in the reference manual (hence
+   this book), but all of the endpoints and their properties are
+   listed for all of the versions of the API supported on the
+   installed version of Sightline.
 
    In addition, changes between versions are in the Deprecation Policy
    section of the reference manual.
@@ -273,20 +277,17 @@ listings package.
    This book will often make reference to the online reference manual;
    having access to that manual will be helpful as you develop
    clients.  The online reference manual is available from the Arbor
-   SP UI by selecting the "REST API Documentation" from the
+   Sightline UI by selecting the "REST API Documentation" from the
    "Administration" menu.  A PDF copy of this is available from your
    local engineer or from the Arbor Technical Assistance Center.
 
 * Set-up
 ** Permissions, Access Tokens, and SSL Certificates
 
-   The current version of the SP REST API does not support
-   authorization.  That is, granting someone an API access token is
-   the same as granting them "=admin=" access to the SP deployment.
 *** Access Tokens
     #+INDEX: token
-    SP REST API tokens are created from the SP command line interface
-    with the command:
+    Sightline REST API tokens are created from the Sightline command
+    line interface with the command:
     #+BEGIN_SRC sh
     / services aaa local apitoken generate admin "comment"
     #+END_SRC
@@ -319,21 +320,22 @@ listings package.
     #+END_SRC
 *** SSL Certificates
     #+INDEX: ssl
-    All SP REST API requests should use the secure HTTP transport
-    (=https=).  This will ensure that your API key and the contents of
-    requests and responses are encrypted.  In addition, SP will
-    attempt to redirect unencrypted HTTP requests to the encrypted
-    port, but that can affect the use of the POST and PATCH options.
+    All Sightline REST API requests should use the secure HTTP
+    transport (=https=).  This will ensure that your API key and the
+    contents of requests and responses are encrypted.  In addition,
+    Sightline will attempt to redirect unencrypted HTTP requests to
+    the encrypted port, but that can affect the use of the POST and
+    PATCH options.
 
-    SP comes with its own SSL certificate, and your organization may
-    also add their own; to verify that your communications are secure,
-    you will need a copy of that certificate.  The person who
-    maintains your SP deployment should be able to provide that to
-    you; if you have shell access to the SP leader, the file
-    containing the certificates is at =/etc/ca-bundle.crt=.  Copying
-    that file to your API client's environment will allow you to refer
-    to it.  In the examples in this book that file is referred to at
-    =certfile= in most places.
+    Sightline comes with its own SSL certificate, and your
+    organization may also add their own; to verify that your
+    communications are secure, you will need a copy of that
+    certificate.  The person who maintains your Sightline deployment
+    should be able to provide that to you; if you have shell access to
+    the Sightline leader, the file containing the certificates is at
+    =/etc/ca-bundle.crt=.  Copying that file to your API client's
+    environment will allow you to refer to it.  In the examples in
+    this book that file is referred to at =certfile= in most places.
 ** Useful Tools
 
    When working with REST APIs there are several common actions that
@@ -342,21 +344,22 @@ listings package.
    that can help you do this in an interactive way.  This can be
    useful during development of more complicated programs, for quick
    API queries that don't require a whole program, for use in a shell
-   script, or for interactively working the SP REST API.
+   script, or for interactively working the Sightline REST API.
 
    Examples later in this book will make use of at least some of these
    tools.
 
 *** Any web browser
 
-    The SP API is available via any web browser by simply going to a
-    URL of the form =https//spleader.example.com/api/sp/=; this
-    will present a nicely formatted web page showing the request and
-    the results.  It's not as convenient as other tools (cURL or
-    HTTPie, see the following section) for actions other than GET, but
-    as a quick test of an API request, it can be very handy.  An
-    example of how it looks is in Figure [[fig:api-results-web-browser]].
-     #+CAPTION: The SP REST API can be accessed using a web browser
+    The Sightline API is available via any web browser by simply going
+    to a URL of the form
+    =https//sightline-leader.example.com/api/sp/=; this will present a
+    nicely formatted web page showing the request and the results.
+    It's not as convenient as other tools (cURL or HTTPie, see the
+    following section) for actions other than GET, but as a quick test
+    of an API request, it can be very handy.  An example of how it
+    looks is in Figure [[fig:api-results-web-browser]].
+     #+CAPTION: The Sightline REST API can be accessed using a web browser
      #+CAPTION: and the query and results are displayed nicely.
      #+NAME:    fig:api-results-web-browser
      [[./images/api-results-web-browser.png]]
@@ -373,8 +376,8 @@ listings package.
     ubiquitous.
 **** Getting data with cURL
 
-     An example of using cURL to get data from SP via the SP REST API
-     is:
+     An example of using cURL to get data from Sightline via the
+     Sightline REST API is:
      #+BEGIN_SRC sh :exports code
      curl --cacert certfile --ssl -X GET -H "Content-Type:application/vnd.api+json" -H "X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O" https://leader.example.com/api/sp/
      #+END_SRC
@@ -390,44 +393,47 @@ listings package.
       - =-H "Content-Type:application/vnd.api+json"= sends the HTTP
         header =Content-Type= set to the value of
         =application/vnd.api+json=.  Other than the endpoints at
-        =/insight/=, all of the SP API uses this content type
+        =/insight/=, all of the Sightline API uses this content type
       - =-H
         "X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
         sends the HTTP header =X-Arbux-APIToken= set to the value of
-        the API key that was set via the SP command line
+        the API key that was set via the Sightline command line
       - =https://leader.example.com/api/sp/= which is the URL
         (hostname and endpoint) that is requested.  In this case, it is
         the index endpoint for the API.
 
-     The output of this particular command is the index of the SP REST
-     API represented as a JSON object (defined by the outer-most curly
-     braces) with two JSON objects in it, =meta= and =links=.
+     The output of this particular command is the index of the
+     Sightline REST API represented as a JSON object (defined by the
+     outer-most curly braces) with two JSON objects in it, =meta= and
+     =links=.
 
-     Successful requests for data from the SP REST API will return the
-     requested data along with the HTTP status code =200 OK=.
+     Successful requests for data from the Sightline REST API will
+     return the requested data along with the HTTP status code =200
+     OK=.
 
      #+BEGIN_COMMENT
      #+BEGIN_QUOTE
      A brief aside:
 
-     The =meta= object tells you a little about the version of SP and
-     the API on the SP leader you are connecting to.  This is most
-     useful when writing clients that need to work with more than one
-     version of SP and when submitting questions to the Arbor
-     Technical Assistance Center (ATAC).  The =links= object contains
-     a map between the endpoint type (for example, =alert=) and the
-     URL where that data is accessible in this version (in the case of
-     =alert=, that is =https://leader.example.com/api/sp/v3/alerts/=).
+     The =meta= object tells you a little about the version of
+     Sightline and the API on the Sightline leader you are connecting
+     to.  This is most useful when writing clients that need to work
+     with more than one version of Sightline and when submitting
+     questions to the Arbor Technical Assistance Center (ATAC).  The
+     =links= object contains a map between the endpoint type (for
+     example, =alert=) and the URL where that data is accessible in
+     this version (in the case of =alert=, that is
+     =https://leader.example.com/api/sp/v3/alerts/=).
      #+INDEX: /alerts/ endpoint
      You should try to write your clients using this mapping; the key
      names will not change, but the URLs may and if your program uses
-     the key names, this won't affect you as you upgrade SP.
+     the key names, this won't affect you as you upgrade Sightline.
      #+END_QUOTE
      #+END_COMMENT
 **** Sending data with cURL
 
-     An example of using cURL to send data to SP via the SP REST API
-     is:
+     An example of using cURL to send data to Sightline via the
+     Sightline REST API is:
      #+INDEX: /alerts/ endpoint
      #+INDEX: /alerts/ endpoint!annotations
      #+BEGIN_SRC sh :results output :exports code
@@ -445,11 +451,11 @@ listings package.
       - =-H "Content-Type:application/vnd.api+json"= sends the HTTP
         header =Content-Type= set to the value of
         =application/vnd.api+json=.  Other than the endpoints at
-        =/insight/=, all of the SP API uses this content type
+        =/insight/=, all of the Sightline API uses this content type
       - =-H
         "X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
         sends the HTTP header =X-Arbux-APIToken= set to the value of
-        the API key that was set via the SP command line
+        the API key that was set via the Sightline command line
       - =-d @input.json= tells cURL that the data to be sent can be
         found in the file named =input.json=
       - =https://leader.example.com/api/sp/alerts/12519/annotations/=
@@ -481,8 +487,8 @@ listings package.
 
 **** Deleting data with cURL
 
-     An example of using cURL to delete data from SP via the SP REST
-     API is:
+     An example of using cURL to delete data from Sightline via the
+     Sightline REST API is:
      #+INDEX: /routers/ endpoint
      #+BEGIN_SRC sh :results output :exports code
        curl --cacert certfile --ssl -X DELETE -H "Content-Type:application/vnd.api+json" -H "X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O" https://leader.example.com/api/sp/routers/132
@@ -499,20 +505,20 @@ listings package.
       - =-H "Content-Type:application/vnd.api+json"= sends the HTTP
         header =Content-Type= set to the value of
         =application/vnd.api+json=.  Other than the endpoints at
-        =/insight/=, all of the SP API uses this content type
+        =/insight/=, all of the Sightline API uses this content type
       - =-H
         "X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O"=
         sends the HTTP header =X-Arbux-APIToken= set to the value of
-        the API key that was set via the SP command line
+        the API key that was set via the Sightline command line
       - =https://leader.example.com/api/sp/routers/132= which is the
         #+INDEX: /routers/ endpoint
         URL (hostname and endpoint) that identifies what resource in
-        SP will be deleted.  In this case, it is the router with
-        id 132.
+        Sightline will be deleted.  In this case, it is the router
+        with id 132.
 
-     API delete requests do not return any data, since the SP object
-     you were acting on is now gone.  The HTTP status code that will
-     be returned for successfully deletions is =204 No Content=.
+     API delete requests do not return any data, since the Sightline
+     object you were acting on is now gone.  The HTTP status code that
+     will be returned for successfully deletions is =204 No Content=.
 
 *** HTTPie
     #+INDEX: httpie
@@ -550,7 +556,7 @@ listings package.
            },
            "default_options": [
                "--verify=/path/to/a/ssl/certfile",
-               "--session=spleader.my.example.com",
+               "--session=sightline-leader.my.example.com",
                "--timeout=60",
                "--follow"
            ]
@@ -566,17 +572,17 @@ listings package.
 
      Once you have created =config.json= you can add some information
      to the saved session by typing all of the information once on the
-     command line.  The information the SP REST API needs is the
-     =Content-Type= and =X-Arbux-APIToken= headers; this is entered by
-     typing:
+     command line.  The information the Sightline REST API needs is
+     the =Content-Type= and =X-Arbux-APIToken= headers; this is
+     entered by typing:
      #+BEGIN_SRC sh :results output :exports code
-     http https://spleader.example.com/api/sp X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O Content-Type:application/vnd.api+json
+     http https://sightline-leader.example.com/api/sp X-Arbux-APIToken:wz8SmD3JRSKz_0kNbdSejSQ_Jk92EVOqRU6CPU_O Content-Type:application/vnd.api+json
      #+END_SRC
      (replacing, of course, the hostname and API token in that example
      with your own hostname and API token).  After you do that once,
      you can then type:
      #+BEGIN_SRC sh :results output :exports code
-     http https://spleader.my.comany.com/api/sp
+     http https://sightline-leader.my.comany.com/api/sp
      #+END_SRC
      and the configuration will read the data from the saved file.
      Save session information is in the =.httpie/sessions/= directory
@@ -584,11 +590,11 @@ listings package.
 
 **** Getting data with HTTPie
 
-     Replicating the cURL example from earlier, getting the SP REST
-     API index using HTTPie, after following the configuration steps,
-     is done using the command:
+     Replicating the cURL example from earlier, getting the Sightline
+     REST API index using HTTPie, after following the configuration
+     steps, is done using the command:
      #+BEGIN_SRC sh :results output :exports code
-     http GET https://spleader.example.com/api/sp/
+     http GET https://sightline-leader.example.com/api/sp/
      #+END_SRC
 
      When HTTPie detects that is is writing to the terminal, it will
@@ -613,34 +619,34 @@ listings package.
 
 **** Sending data with HTTPie
 
-     An example of using HTTPie to send the same data to SP we sent
-     via the SP REST API is using cURL earlier is (see =input.json=
-     in the cURL example of sending data to SP):
+     An example of using HTTPie to send the same data to Sightline we
+     sent via the Sightline REST API is using cURL earlier is (see
+     =input.json= in the cURL example of sending data to Sightline):
      #+BEGIN_SRC sh :results output :exports code
-     cat input.json | http POST http https://spleader.example.com/api/sp/alerts/12519/annotations/
+     cat input.json | http POST http https://sightline-leader.example.com/api/sp/alerts/12519/annotations/
      #+END_SRC
 
-     The two differences between getting and sending data to SP via
-     the REST API using HTTPie are:
+     The two differences between getting and sending data to Sightline
+     via the REST API using HTTPie are:
       - using the =POST= verb instead of the =GET= verb before the URL
-      - the data you want to send to SP via the REST API is in the
-        same format as in the cURL example, but it is piped into the
-        =http= command
+      - the data you want to send to Sightline via the REST API is in
+        the same format as in the cURL example, but it is piped into
+        the =http= command
 
-     To make changes to SP via the REST API, you can use the =PATCH=
-     verb to HTTPie instead of =POST=.  There will be more examples of
-     this later.
+     To make changes to Sightline via the REST API, you can use the
+     =PATCH= verb to HTTPie instead of =POST=.  There will be more
+     examples of this later.
 
 **** Deleting data with HTTPie
 
      Repeating the example of deleting data from the cURL section, the
-     syntax for using HTTPie to delete data from SP via the SP REST
-     API is:
+     syntax for using HTTPie to delete data from Sightline via the SP
+     REST API is:
      #+BEGIN_SRC sh :results output :exports code
-       http DELETE https://spleader.example.com/api/sp/routers/132
+       http DELETE https://sightline-leader.example.com/api/sp/routers/132
      #+END_SRC
 
-     The SP REST API will return the HTTP status code =204 No Content=
+     The Sightline REST API will return the HTTP status code =204 No Content=
      and HTTPie will print this if you aren't piping or redirecting
      the output somewhere else.
 
@@ -660,22 +666,22 @@ listings package.
 
      If you are installing the Postman client there are three
      configuration settings you need to make before using it with the
-     SP REST API; adding the certificate bundle and adding the
+     Sightline REST API; adding the certificate bundle and adding the
      =Content-Type= and =X-Arbux-APIToken= headers.  If you are using
      the Postman Chrome app, you don't need to add the certificates;
      Postman will use those in your browser, but you may still have to
      add them to your browser.
 
-     To add the SP certificate bundle to the Postman application,
-     select the wrench icon in the upper right part of the Postman
-     window and choose Settings from the menu.  In the resulting
-     window, choose the Certificates option from the top row of
-     options, then click Add Certificate. In the Host text entry
+     To add the Sightline certificate bundle to the Postman
+     application, select the wrench icon in the upper right part of
+     the Postman window and choose Settings from the menu.  In the
+     resulting window, choose the Certificates option from the top row
+     of options, then click Add Certificate. In the Host text entry
      field, type =*.mydomain.com= (replacing =mydomain.com= with the
-     domain where your SP leader is), and in the CRT File text entry
-     field type the path to the certificate bundle for your SP
-     environment.  It should look something like what is shown in
-     Figure [[fig:postman-cert-config]].
+     domain where your Sightline leader is), and in the CRT File text
+     entry field type the path to the certificate bundle for your
+     Sightline environment.  It should look something like what is
+     shown in Figure [[fig:postman-cert-config]].
      #+CAPTION: The Postman certificate configuration window should
      #+CAPTION: look similar to this, with your information filled in;
      #+CAPTION: if you are using the Chrome app, you won't see the
@@ -689,22 +695,22 @@ listings package.
      the Headers section that is immediately below the URL entry field
      (after making a request, there will be another Headers section
      for the response).  You simply type in each key and the values
-     for them.  For all of the SP REST API endpoints /except/ those
-     under =/insight/= you must set =Content-Type= to
+     for them.  For all of the Sightline REST API endpoints /except/
+     those under =/insight/= you must set =Content-Type= to
      =application/vnd+api.json=; for the endpoints under =/insight/=
      you must set =Content-Type= to =application/json=.
 
 **** Getting data with Postman
 
-     Following the cURL and HTTPie examples, to get the SP REST API
-     index using Postman you make sure that =GET= is selected to the
-     left of the text entry box that says "Enter request URL", then
-     enter the URL for the index endpoint
-     (=https://spleader.example.com/api/sp/=) and press the Send
+     Following the cURL and HTTPie examples, to get the Sightline REST
+     API index using Postman you make sure that =GET= is selected to
+     the left of the text entry box that says "Enter request URL",
+     then enter the URL for the index endpoint
+     (=https://sightline-leader.example.com/api/sp/=) and press the Send
      button. The results (the body, cookies, and headers) will appear
      in the bottom pane.  It will look something like what is shown in
      Figure [[fig:postman-GET-index]].
-     #+CAPTION: Retrieving data from the SP REST API using Postman
+     #+CAPTION: Retrieving data from the Sightline REST API using Postman
      #+CAPTION: is done by setting the two headers shown, entering
      #+CAPTION: a URL, and pressing the Send button.  The data
      #+CAPTION: retrieved is displayed in the lower pane.
@@ -728,7 +734,7 @@ listings package.
 
      Having done all of those steps, you should have something that
      looks like Figure [[fig:postman-POST-annotation]].
-     #+CAPTION: Sending data to SP using the REST API and Postman
+     #+CAPTION: Sending data to Sightline using the REST API and Postman
      #+CAPTION: is done by setting the HTTP verb to POST, filling
      #+CAPTION: in the URL, selecting the Body option, then the raw
      #+CAPTION: option and the JSON type, and filling in the JSON
@@ -742,17 +748,17 @@ listings package.
 **** Deleting data with Postman
 
      Repeating the example of deleting data from the cURL and HTTPie
-     sections, the method for using Postman to delete data from SP via
-     the SP REST API is to enter the URL for the object you want to
-     delete, change the HTTP verb to Delete, and press the Send
-     button.
+     sections, the method for using Postman to delete data from
+     Sightline via the Sightline REST API is to enter the URL for the
+     object you want to delete, change the HTTP verb to Delete, and
+     press the Send button.
 
-     The SP REST API will return the HTTP status code =204 No Content=
-     and no body content.
+     The Sightline REST API will return the HTTP status code =204 No
+     Content= and no body content.
 
      After a successful DELETE operation you should have something
      that looks like Figure [[fig:postman-DELETE-router]].
-     #+CAPTION: Deleting data from SP using the REST API and Postman
+     #+CAPTION: Deleting data from Sightline using the REST API and Postman
      #+CAPTION: is done by selecting the =DELETE= HTTP verb from the
      #+CAPTION: menu, entering the URL of the item to be deleted and
      #+CAPTION: pressing Send.  There will be no content in returned
@@ -778,12 +784,12 @@ listings package.
     select and recast data from JSON input into different JSON
     output.  The complete manual is available at the =jq= website, but
     we will provide a few examples of using =jq= with the JSON from
-    the SP REST API.
+    the Sightline REST API.
 
 **** Extracting only names, descriptions, and ids of routers into a new JSON format
 
-     The HTTPie command to get the router information from SP using
-     the REST API is:
+     The HTTPie command to get the router information from Sightline
+     using the REST API is:
      #+BEGIN_SRC sh :results output :exports code
      http https://leader.example.com/api/sp/routers/
      #+END_SRC
@@ -815,16 +821,16 @@ listings package.
      commas to group elements together for selection.
 
      So the next thing we can do is extract one element from the JSON
-     output of the SP REST API by adding it to the =.data[]= filter.
-     To get the names of the routers we can add =.attributes.name=
-     (remember, ="name"= is in the ="attributes"= subobject of data.
-     On the command line this looks like:
+     output of the Sightline REST API by adding it to the =.data[]=
+     filter.  To get the names of the routers we can add
+     =.attributes.name= (remember, ="name"= is in the ="attributes"=
+     subobject of data.  On the command line this looks like:
      #+BEGIN_SRC sh :results output :exports code
        http https://leader.example.com/api/sp/routers/ | jq '.data[].attributes.name'
      #+END_SRC
      This will print a list of the names of all of the routers
-     configured in SP.  This is part of our original goal, but we
-     still also want the id and description of the routers.
+     configured in Sightline.  This is part of our original goal, but
+     we still also want the id and description of the routers.
 
      To select more than one element, =jq= supports sending each list
      item over which it is iterating to a group of elements for
@@ -899,7 +905,8 @@ listings package.
      =jq= can also look for certain properties of objects and print
      only the objects that have those properties.
 
-     For example, a typical alert from the SP REST API looks like:
+     For example, a typical alert from the Sightline REST API looks
+     like:
      #+BEGIN_SRC json
        {
            "data": {
@@ -1027,7 +1034,7 @@ listings package.
      #+END_SRC
      which is a lot of information to parse; using =jq= you can filter
      the data after the API returns it to you (there is some filtering
-     available via the API that happens on the SP side before
+     available via the API that happens on the Sightline side before
      returning data to you, but it is limited; this will be discussed
      later).
 
@@ -1085,11 +1092,11 @@ listings package.
    Python language a head start in many projects.").
 
    A standard Python installation includes everything you need to
-   access the SP REST API and process data from it---an HTTP library
-   (=httplib=) and a JSON library (=json=).  However, the =httplib=
-   documentation (at https://docs.python.org/2/library/httplib.html)
-   says "The Requests package is recommended for a higher-level HTTP
-   client interface."
+   access the Sightline REST API and process data from it---an HTTP
+   library (=httplib=) and a JSON library (=json=).  However, the
+   =httplib= documentation (at
+   https://docs.python.org/2/library/httplib.html) says "The Requests
+   package is recommended for a higher-level HTTP client interface."
 
    The examples in this book will make significant use of the Requests
    library; you will be able to follow along with nearly all of the
@@ -1156,8 +1163,8 @@ listings package.
 
 ** Summary
 
-   At this point, you should be able to access your SP Leader's REST
-   API using at least one of =curl=, =httpie=, or =postman=.  You
+   At this point, you should be able to access your Sightline Leader's
+   REST API using at least one of =curl=, =httpie=, or =postman=.  You
    might also be able to extract some sort of useful information using
    the =jq= tool.
 
@@ -1166,39 +1173,39 @@ listings package.
 
    The rest of this book will be examples of using these tools (and
    some examples in other programming languages) demonstrating how to
-   do things with the SP REST API that will hopefully be a useful
-   starting point for your own uses of the API.
+   do things with the Sightline REST API that will hopefully be a
+   useful starting point for your own uses of the API.
 
 * Reports
 
   The chapter describes how to produce reports from the data available
-  from the SP REST API.  This certainly isn't an exhaustive list of
-  reports you can produce, and the most interesting reports will be
-  those you create by combining data from SP with data from other
-  sources.
+  from the Sightline REST API.  This certainly isn't an exhaustive
+  list of reports you can produce, and the most interesting reports
+  will be those you create by combining data from Sightline with data
+  from other sources.
 
   The difference between a report program and either configuration or
   operational programs is that a report program only fetches data from
-  SP, it doesn't not change the state of SP in any way (in
-  programmatic terms, the only HTTP verb used in these examples is
+  Sightline, it doesn't not change the state of Sightline in any way
+  (in programmatic terms, the only HTTP verb used in these examples is
   =GET=).
 
 ** Example: Time between an Alert and a Mitigation
    #+INDEX: /alerts/ endpoint
    #+INDEX: /mitigations/ endpoint
-   Arbor Networks SP can alert you to various kinds of network
+   Arbor Networks Sightline can alert you to various kinds of network
    attacks by monitoring the network traffic across hundreds of
    routers and looking for anomalous behavior.  In combination with
    Arbor Networks TMS applicances, these attacks can be mitigated by
    directing the odd traffic through a TMS for inspection and, if
    needed, cleaning.
 
-   SP and TMS support mitigating the anomalous traffic manually, where
-   a network operator notices the alert, applies some other metrics to
-   it, and then either decides to direct that traffic to a TMS or
-   not.  Monitoring the time between an alert and the manual
-   mitigation can be useful.  In addition, SP and TMS support
-   automatic mitigation of traffic that generates an alert.
+   Sightline and TMS support mitigating the anomalous traffic
+   manually, where a network operator notices the alert, applies some
+   other metrics to it, and then either decides to direct that traffic
+   to a TMS or not.  Monitoring the time between an alert and the
+   manual mitigation can be useful.  In addition, Sightline and TMS
+   support automatic mitigation of traffic that generates an alert.
    Monitoring the time between the alert and the automatic mitigation
    can also be useful.
 
@@ -1261,16 +1268,16 @@ listings package.
 ** Example: The Collector with the most system alerts
    #+INDEX: /alerts/ endpoint
    #+INDEX: /devices/ endpoint
-   When operating an Arbor SP/TMS deployment, looking at system errors
-   can helpful in diagnosing performance problems.  The following
-   Python program will gather a list of alerts in the alert class
-   "system" and group them by appliance, then print them sorted by the
-   number of alerts for each appliance.
+   When operating an Arbor Sightline/TMS deployment, looking at system
+   errors can helpful in diagnosing performance problems.  The
+   following Python program will gather a list of alerts in the alert
+   class "system" and group them by appliance, then print them sorted
+   by the number of alerts for each appliance.
 
    #+INCLUDE: code-examples/ragu-python-collector-sys-alerts-ex.py src python
 
-   The output from this is a list of SP appliances with the most
-   system alerts, that looks something like:
+   The output from this is a list of Sightline appliances with the
+   most system alerts, that looks something like:
 
    #+LATEX: \tiny
    #+BEGIN_EXAMPLE
@@ -1311,9 +1318,9 @@ listings package.
 
    This Python program demonstrates reading alert data and using
    =matplotlib= to make a plot of that data.  The plot it creates
-   using the sample data monitored by SP is in Figure
+   using the sample data monitored by Sightline is in Figure
    [[fig:alert-data-plot]].
-   #+CAPTION: The SOAP API to SP can produce PNG files containing plots
+   #+CAPTION: The SOAP API to Sightline can produce PNG files containing plots
    #+CAPTION: of alert traffic data.  The REST API does not offer that
    #+CAPTION: exact functionality, but creating plots using Python and
    #+CAPTION: the =matplotlib= library isn't too difficult and offers
@@ -1336,10 +1343,11 @@ listings package.
    #+INDEX: pandas
 
    As of SP8.4 APIv4 the =/alerts/= endpoint has the option of
-   including all of the information that SP collects about alerts.  If
-   you are familiar with the SP UI, this is the data that is used to
-   create the graphs and tables shown on the alert summary, traffic
-   details, routers, and annotation tabs of the alert page.
+   including all of the information that Sightline collects about
+   alerts.  If you are familiar with the Sightline/SP UI, this is the
+   data that is used to create the graphs and tables shown on the
+   alert summary, traffic details, routers, and annotation tabs of the
+   alert page.
 
    The =/alerts/= endpoint includes relationships to information about
    the alert; the ="relationships"= object in the alert includes:
@@ -1352,17 +1360,17 @@ listings package.
                      "type": "alert_packet_size_distribution"
                  },
                  "links": {
-                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/packet_size_distribution"
+                     "related": "https://sightline-leader.example.com/api/sp/v4/alerts/<alert_id>/packet_size_distribution"
                  }
              },
              "patterns": {
                  "links": {
-                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/patterns/"
+                     "related": "https://sightline-leader.example.com/api/sp/v4/alerts/<alert_id>/patterns/"
                  }
              },
              "router_traffic": {
                  "links": {
-                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/router_traffic/"
+                     "related": "https://sightline-leader.example.com/api/sp/v4/alerts/<alert_id>/router_traffic/"
                  }
              },
              "source_ip_addresses": {
@@ -1371,12 +1379,12 @@ listings package.
                      "type": "alert_source_ip_addresses"
                  },
                  "links": {
-                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/source_ip_addresses"
+                     "related": "https://sightline-leader.example.com/api/sp/v4/alerts/<alert_id>/source_ip_addresses"
                  }
              },
              "thresholds": {
                  "links": {
-                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/misuse_types_thresholds/"
+                     "related": "https://sightline-leader.example.com/api/sp/v4/alerts/<alert_id>/misuse_types_thresholds/"
                  }
              },
              "traffic": {
@@ -1385,7 +1393,7 @@ listings package.
                      "type": "alert_traffic"
                  },
                  "links": {
-                     "related": "https://spleader.example.com/api/sp/v4/alerts/<alert_id>/traffic"
+                     "related": "https://sightline-leader.example.com/api/sp/v4/alerts/<alert_id>/traffic"
                  }
              }
          }
@@ -1498,7 +1506,7 @@ listings package.
    #+INDEX: python!ipaddress
    #+INDEX: paging!recursion
 
-   Arbor Networks SP accumulates and stores a lot of data about
+   NETSCOUT|Arbor Sightline accumulates and stores a lot of data about
    network traffic and distributed denial of service (DDoS) attacks
    and presents this data in ways that have proven useful to network
    engineers and network security analysts.  That data can be used in
@@ -1631,30 +1639,30 @@ listings package.
    and no data will be returned.
 
    This is documented in more detail at
-   https://spleader.example.com/api/sp/doc/v4/endpoints.html#authorization.
+   https://sightline-leader.example.com/api/sp/doc/v4/endpoints.html#authorization.
 
-** Using the SP REST API to write a client that supports caching (or Why the Sub-Object JSON is so Deeply Nested)
+** Using the Sightline REST API to write a client that supports caching (or Why the Sub-Object JSON is so Deeply Nested)
    #+INDEX: /alerts/ endpoint
    #+INDEX: /alerts/ endpoint!sub-objects
    #+INDEX: cache
    #+INDEX: caching
    #+INDEX: design
 
-   The SP REST API is written so that its output for objects that have
-   multiple sub-endpoints or whose output is affected by URL
+   The Sightline REST API is written so that its output for objects
+   that have multiple sub-endpoints or whose output is affected by URL
    parameters can be combined without having to restructure the data
    that you already have or the new data that was just returned.  This
    is useful when your client needs to cache data or wants to create
    data sets by assembling the relevant data from API sub-endpoints or
    different URL parameters.  We aren't going to provide a full
    example of a caching client in this section, but we will describe
-   how this could be done using the SP REST API and you will see how
-   the data from the sub-endpoints or different URL parameters fits
-   into the JSON object that comes from the top-level endpoint.
+   how this could be done using the Sightline REST API and you will
+   see how the data from the sub-endpoints or different URL parameters
+   fits into the JSON object that comes from the top-level endpoint.
 
-   The general idea is that the SP REST API can return data that is
-   different based on URL parameters and can return partial data if
-   the =?include= parameter isn't used or if not all of the
+   The general idea is that the Sightline REST API can return data
+   that is different based on URL parameters and can return partial
+   data if the =?include= parameter isn't used or if not all of the
    sub-endpoint relationships are retrieved.  The data returned in
    either of those cases can be added to the initial data returned by
    the =/alerts/<alert_id>= endpoint without the need to restructure
@@ -1756,7 +1764,7 @@ listings package.
           }
         ],
         "links": {
-          "self": "https://spleader.example.com/api/sp/v5/alerts/<alert_id>/traffic/dest_prefixes/"
+          "self": "https://sightline-leader.example.com/api/sp/v5/alerts/<alert_id>/traffic/dest_prefixes/"
         }
       }
     #+END_SRC
@@ -1795,7 +1803,7 @@ listings package.
               }
           ],
           "links": {
-              "self": "https://spleader.example.com/api/sp/v5/alerts/<alert_id>/traffic/dest_prefixes/?query_unit=pps&query_view=network"
+              "self": "https://sightline-leader.example.com/api/sp/v5/alerts/<alert_id>/traffic/dest_prefixes/?query_unit=pps&query_view=network"
           }
       }
     #+END_SRC
@@ -1893,17 +1901,17 @@ listings package.
                 "type": "alert_packet_size_distribution"
               },
               "links": {
-                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/packet_size_distribution"
+                "related": "https://sightline-leader.example.com/api/sp/v5/alerts/172784/packet_size_distribution"
               }
             },
             "patterns": {
               "links": {
-                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/patterns/"
+                "related": "https://sightline-leader.example.com/api/sp/v5/alerts/172784/patterns/"
               }
             },
             "router_traffic": {
               "links": {
-                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/"
+                "related": "https://sightline-leader.example.com/api/sp/v5/alerts/172784/router_traffic/"
               }
             },
             "source_ip_addresses": {
@@ -1912,12 +1920,12 @@ listings package.
                 "type": "alert_source_ip_addresses"
               },
               "links": {
-                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/source_ip_addresses"
+                "related": "https://sightline-leader.example.com/api/sp/v5/alerts/172784/source_ip_addresses"
               }
             },
             "thresholds": {
               "links": {
-                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/interface_traffic_thresholds/"
+                "related": "https://sightline-leader.example.com/api/sp/v5/alerts/172784/interface_traffic_thresholds/"
               }
             },
             "traffic": {
@@ -1926,7 +1934,7 @@ listings package.
                 "type": "alert_traffic"
               },
               "links": {
-                "related": "https://spleader.example.com/api/sp/v5/alerts/172784/traffic"
+                "related": "https://sightline-leader.example.com/api/sp/v5/alerts/172784/traffic"
               }
             }
           },
@@ -1958,7 +1966,7 @@ listings package.
               },
               "id": "source-ip-addresses-172784",
               "links": {
-                  "self": "https://spleader.example.com/api/sp/v5/alerts/172784/source_ip_addresses"
+                  "self": "https://sightline-leader.example.com/api/sp/v5/alerts/172784/source_ip_addresses"
               },
               "relationships": {
                   "parent": {
@@ -1967,7 +1975,7 @@ listings package.
                           "type": "alert"
                       },
                       "links": {
-                          "related": "https://spleader.example.com/api/sp/v5/alerts/172784"
+                          "related": "https://sightline-leader.example.com/api/sp/v5/alerts/172784"
                       }
                   }
               },
@@ -2010,7 +2018,7 @@ listings package.
                   },
                   "id": "172784-245",
                   "links": {
-                      "self": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/172784-245?query_unit=bps"
+                      "self": "https://sightline-leader.example.com/api/sp/v5/alerts/172784/router_traffic/172784-245?query_unit=bps"
                   },
                   "type": "alert_router_traffic"
               },
@@ -2042,7 +2050,7 @@ listings package.
                   },
                   "id": "172784-246",
                   "links": {
-                      "self": "https://spleader.example.com/api/sp/v5/alerts/172784/router_traffic/172784-246?query_unit=bps"
+                      "self": "https://sightline-leader.example.com/api/sp/v5/alerts/172784/router_traffic/172784-246?query_unit=bps"
                   },
                   "type": "alert_router_traffic"
               }
@@ -2218,21 +2226,23 @@ listings package.
 
 * Configuration
 
-  This chapter describes how to configure SP using the SP REST API.
-  The difference between configuration and operations is that
-  configuration doesn't assume that SP is collecting flow from any
-  routers.  While the example programs in this chapter will change the
-  state of your SP deployment, they can do so without having any
-  information about or effect on the traffic on your network.
+  This chapter describes how to configure Sightline using the SP REST
+  API.  The difference between configuration and operations is that
+  configuration doesn't assume that Sightline is collecting flow from
+  any routers.  While the example programs in this chapter will change
+  the state of your Sightline deployment, they can do so without
+  having any information about or effect on the traffic on your
+  network.
 
 ** Example: Adding a Managed Object using business information
    #+INDEX: /managed\_objects/ endpoint
    #+INDEX: /config/ endpoint
    #+INDEX: config commit
    #+INDEX: config write
-   The SP REST API can be used to create customer configurations in SP
-   using data from other business systems (databases, web sites, text
-   files, etc.) that your company uses to manage its customers.
+   The Sightline REST API can be used to create customer
+   configurations in Sightline using data from other business systems
+   (databases, web sites, text files, etc.) that your company uses to
+   manage its customers.
 
    In the example below, the business information is kept in a CSV
    file called =main.csv= that looks like:
@@ -2242,10 +2252,10 @@ listings package.
      test4,192.168.13.0/24
    #+END_EXAMPLE
    From this information, we want to create a managed object (MO) in
-   SP with the MO name coming from the =name= column and the CIDR
-   match prefix coming from the =prefix= column.  In addition, all of
-   the managed objects will be type =customer=, will be tagged =api=,
-   and will use the mitigation template with the ID 2.
+   Sightline with the MO name coming from the =name= column and the
+   CIDR match prefix coming from the =prefix= column.  In addition,
+   all of the managed objects will be type =customer=, will be tagged
+   =api=, and will use the mitigation template with the ID 2.
 
    The steps to do this are:
    - read the data from the CSV file
@@ -2271,23 +2281,24 @@ listings package.
    #+INDEX: appliance monitoring
    #+INDEX: appliance monitoring!limits
    #+INDEX: limits!appliance monitoring
-   Starting with SPv8.0 monitoring appliances in your SP/TMS
+   Starting with SPv8.0 monitoring appliances in your Sightline/TMS
    deployment improved with the addition of the Appliance Monitoring
    page (available under the System > Status menu in the web UI).  The
    Appliance Monitoring page allows you to configure limits for all of
    the metrics it displays; those limits are used to sort the graphs
    and to color them relatively more red as the limit is exceeded.
 
-   Configuring those limits is done from the SP command line.  For
-   each appliance, you set the limits you want for each metric.  So if
-   you have 10 appliances in your deployment and want to set the "Disk
-   used %" and "Items tracked per day", it requires 20 command line
-   entries.  There are 86 total metrics, so even configuring one
+   Configuring those limits is done from the Sightline command line.
+   For each appliance, you set the limits you want for each metric.
+   So if you have 10 appliances in your deployment and want to set the
+   "Disk used %" and "Items tracked per day", it requires 20 command
+   line entries.  There are 86 total metrics, so even configuring one
    quarter of those would require 20 command line entries per
    appliance.
 
    A much easier way to do this is to establish the limits outside of
-   SP, and use the REST API to apply them to all of the appliances.
+   Sightline, and use the REST API to apply them to all of the
+   appliances.
 
    The Python program below sets the =items_tracked_per_day= metric to
    have a limit of 15 for each of the appliances that the leader
@@ -2353,7 +2364,7 @@ listings package.
    =code-examples= directory) is very rudimentary and should be enhaced
    where the comments indicate (and, probably, in other places) before
    you use it in production.  The program follows these basic steps:
-    - gather the MOs from the SP deployment
+    - gather the MOs from the Sightline deployment
     - if there is a file called =mos_to_merge.json= read that file
     - check that the MOs in =mos_to_merge.json= exist
     - compare the IPv4 and IPv6 MOs against a set of rules to see if
@@ -2361,7 +2372,7 @@ listings package.
     - output the REST API commands to delete the two old MOs and
       create the new combined MO
     - if the file =mos_to_merge.json= doesn't exist, simply print a
-      list of the managed objects on the SP system
+      list of the managed objects on the Sightline system
 
    The format of the =mos_to_merge.json= file is:
    #+BEGIN_SRC json
@@ -2394,7 +2405,7 @@ listings package.
    #+LATEX: \footnotesize
    #+BEGIN_EXAMPLE
      $ ./combine-v4-v6-MOs.py
-     Collecting information on managed objects from spleader.example.com
+     Collecting information on managed objects from sp-leader.example.com
      There are 50 MOs.
      There are 4 out of 37 MOs with CIDR matches that are IPv6 matches.
 
@@ -2580,9 +2591,10 @@ listings package.
   versions of Sightline.  See the Sightline documentation for more
   details on smart alerts.
 
-  The SP REST API can be used to create, edit, and delete smart alert settings
-  which will trigger smart alerts (of alert type =smart_thresh=) whenever
-  traffic meets the settings in a smart alert setting.
+  The Sightline REST API can be used to create, edit, and delete smart
+  alert settings which will trigger smart alerts (of alert type
+  =smart_thresh=) whenever traffic meets the settings in a smart alert
+  setting.
 
   There are two parts to a smart alert setting: the attributes that define what
   will trigger a smart alert, and the settings to pass to the smart alert. The
@@ -2598,7 +2610,7 @@ listings package.
    - Go to the alerts listing page, click on a smart alert
    - Add =&alert_id={alert_id}= to the Insight URL. I.e.:
      #+BEGIN_EXAMPLE
-     https://spleader.example.com/page?id=insight&alert_id=48227
+     https://sightline-leader.example.com/page?id=insight&alert_id=48227
      #+END_EXAMPLE
 
   In the example below, a user creates a smart alert setting that will trigger
@@ -2616,29 +2628,30 @@ listings package.
 
 * Operations
 
-  This chapter will describe how to use the SP REST API
+  This chapter will describe how to use the Sightline REST API
   operationally.  The difference between configuration and operations
-  is that operations requires SP to be receiving and processing
+  is that operations requires Sightline to be receiving and processing
   traffic, generating alerts, routing traffic to TMSs, and other
-  functions that SP provides that help you operate your network.
+  functions that Sightline provides that help you operate your
+  network.
 
 ** Example: Starting a Mitigation
    #+INDEX: /alerts/ endpoint
    #+INDEX: /alerts/ endpoint!filtering
    #+INDEX: /mitigations/ endpoint
    #+INDEX: mitigation
-   There is no better product than Arbor Networks' SP and TMS for
-   detecting and mitigating distributed denial of service attacks on
-   networks, and the automatic mitigations started by SP are very
-   effective.  However, SP provides no facility for additional
-   decision making when deciding whether or not to mitigation a
-   suspected DDoS attacks.  Using the SP REST API allows you to
-   construct your own set of rules around what to mitigate and when to
-   mitigate it.
+   There is no better product than NETSCOUT|Arbor's Sightline and TMS
+   for detecting and mitigating distributed denial of service attacks
+   on networks, and the automatic mitigations started by Sightline are
+   very effective.  However, Sightline provides no facility for
+   additional decision making when deciding whether or not to
+   mitigation a suspected DDoS attacks.  Using the Sightline REST API
+   allows you to construct your own set of rules around what to
+   mitigate and when to mitigate it.
 
    The example Python program below demonstrates how to read alerts
-   from an SP leader, make some decisions about whether or not to
-   mitigate them, and then start the mitigatons.
+   from a Sightline leader, make some decisions about whether or not
+   to mitigate them, and then start the mitigatons.
 
    In the case of the example program below, the function
    =apply_rules= takes a list of alerts and their details, filters
@@ -2677,11 +2690,12 @@ listings package.
    #+INDEX: /alerts/ endpoint!annotations
    #+INDEX: /alerts/ endpoint
    #+INDEX: /alerts/ endpoint!filtering
-   SP will automatically add annotations to alerts in many cases,
-   including changes in the severity of an alert and when a mitigation
-   is started for the alert.  Each set of annotations for an alert can
-   then be viewed in the SP web UI or retrieved via the SP REST API
-   to follow the progress of an alert over time.
+   Sightline will automatically add annotations to alerts in many
+   cases, including changes in the severity of an alert and when a
+   mitigation is started for the alert.  Each set of annotations for
+   an alert can then be viewed in the Sightline web UI or retrieved
+   via the Sightline REST API to follow the progress of an alert over
+   time.
 
    Your organization may want to automatically add annotations to make
    the annotation history of an alert more useful.
@@ -2781,21 +2795,23 @@ listings package.
      programmatic thing in SP.  /--acaird/
 * Insight
   #+INDEX: insight
-  SP Insight is an addition to SP that stores all of the Arbor
-  annotated flow records that SP sees and allows queries on that data
-  in many ways.  One notable feature of SP Insight when compared to SP
-  is that reports with more than two field types can be created.  For
-  example, SP supports reports that are "Customer by TCP Ports" but
-  does not support reports with more than two field types; SP Insight
-  supports reports like "Customer by TCP Ports by Source Country".
+  Sightline Insight is an addition to Sightline that stores all of the
+  Arbor annotated flow records that Sightline sees and allows queries
+  on that data in many ways.  One notable feature of Sightline Insight
+  when compared to Sightline is that reports with more than two field
+  types can be created.  For example, Sightline supports reports that
+  are "Customer by TCP Ports" but does not support reports with more
+  than two field types; Sightline Insight supports reports like
+  "Customer by TCP Ports by Source Country".
 
-  Another difference between SP and SP Insight is that the SP Insight
-  web page retrieves all of its data from the SP REST API, meaning
-  that any of the data visible on the SP Insight web page is available
-  to you via an API client.
+  Another difference between Sightline and Sightline Insight is that
+  the Sightline Insight web page retrieves all of its data from the
+  Sightline REST API, meaning that any of the data visible on the
+  Sightline Insight web page is available to you via an API client.
 
-  The SP Insight API is documented in the API Reference Guide included
-  with SP.  In addition, there are some examples following.
+  The Sightline Insight API is documented in the API Reference Guide
+  included with Sightline.  In addition, there are some examples
+  following.
 
 ** Example: Insight PDF Reports                                    :noexport:
    - gather some data from Insight
@@ -2817,16 +2833,17 @@ listings package.
    possibly, very long query times when makeing report, but allows for
    reports based on almost anything that is available in the raw data.
 
-** Example: Downloading Raw Flows with the SP Insight API
+** Example: Downloading Raw Flows with the Sightline Insight API
    #+INDEX: raw flow
    #+INDEX: insight!query
    #+INDEX: insight!filters
    #+INDEX: python
    #+INDEX: csv
 
-   Because SP Insight stores all of the raw flow records that SP has
-   seen (up to the limits of your SP Insight cluster), you can
-   retrieve those raw flow records via the SP REST API.
+   Because Sightline Insight stores all of the raw flow records that
+   Sightline has seen (up to the limits of your Sightline Insight
+   cluster), you can retrieve those raw flow records via the Sightline
+   REST API.
 
    The script below comprises mostly processing of command-line
    options, but the heart of it is the JSON-formatted query:
@@ -2882,13 +2899,14 @@ listings package.
    is either =443= or =80=.  You can create more complex filters to
    retrieve only the data you need.
 
-   *Note:* As of the version of SP Insight that is shipped with SP 8.4
-   and earlier, the SP Insight filter specification does not support
-   the ="and"= operation between facets of the same type.
+   *Note:* As of the version of Sightline Insight that is shipped with
+   SP 8.4 and earlier, the Sightline Insight filter specification does
+   not support the ="and"= operation between facets of the same type.
 
-   One way to find out how to structure an SP Insight query, including
-   filters, is to use your web browsers developer tools and inspect
-   the queries that the SP Insight is sending to the API.
+   One way to find out how to structure a Sightline Insight query,
+   including filters, is to use your web browsers developer tools and
+   inspect the queries that the Sightline Insight is sending to the
+   API.
 
    #+INCLUDE: code-examples/download-insight-rawflows.py src python
 
@@ -2913,7 +2931,7 @@ listings package.
    $ wc -l raw_flows.csv
    1000001 raw_flows.csv
    #+END_EXAMPLE
-** Example: Creating Traffic Flow Diagrams with the SP Insight API
+** Example: Creating Traffic Flow Diagrams with the Sightline Insight API
    #+INDEX: insight!query
    #+INDEX: insight!filters
    #+INDEX: python
@@ -2924,7 +2942,7 @@ listings package.
    #+INDEX: flow
    #+INDEX: insight!topn
 
-   SP Insight can represent information grouped together by many
+   Sightline Insight can represent information grouped together by many
    aspects.  That is, you can ask the question "How much traffic left
    a host and went out a particular source port destined for one of
    several different ports on another host?" and Insight can answer
@@ -3036,7 +3054,7 @@ listings package.
 
    Using some highly contrived test data, this produces a graphic that
    looks like:
-   #+CAPTION: Using contrived test Netflow data to populate SP Insight,
+   #+CAPTION: Using contrived test Netflow data to populate Sightline Insight,
    #+CAPTION: the Python program in this section, and Graphviz =dot=
    #+CAPTION: we can see a visual representation of the flow of
    #+CAPTION: traffic from a source host, out a source port, into a
@@ -3049,15 +3067,15 @@ listings package.
    #+CAPTION: DNS traffic might be suspicious.
    [[file:images/traffic-flow.dot.pdf]]
 
-   The example here can be constructed using the SP Insight UI page,
-   but this example can be extended to show data that the current
-   version of Insight cannot.  For example, if you wanted to get
-   traffic that matches the destination ports 80 and 443 *or* traffic
-   to 10.12.14.16 you can use the Python program above to make two
-   queries, one for each condition, and put all of the results into
-   the results graph (the variable =G= in the example program).  In
-   Insight parlance, this is an /or between two facets/, which is not
-   supported in the UI or API, but can be done with your own API
+   The example here can be constructed using the Sightline Insight UI
+   page, but this example can be extended to show data that the
+   current version of Insight cannot.  For example, if you wanted to
+   get traffic that matches the destination ports 80 and 443 *or*
+   traffic to 10.12.14.16 you can use the Python program above to make
+   two queries, one for each condition, and put all of the results
+   into the results graph (the variable =G= in the example program).
+   In Insight parlance, this is an /or between two facets/, which is
+   not supported in the UI or API, but can be done with your own API
    client.
 
 * Examples in Languages other than Python
@@ -3070,16 +3088,17 @@ listings package.
    #+INDEX: java
    #+INDEX: /alerts/ endpoint
    #+INDEX: java!keygen
-   When operating an SP deployment that has many collectors, TMSs,
-   and is maintained by many network security engineers, it is
-   convenient to see the system events that SP logs in a concise
-   format.  System events include configuration changes, system
-   errors, and other operational details that can help maintain the
-   stability and availability of your Arbor SP/TMS environment.
+   When operating a Sightline deployment that has many collectors,
+   TMSs, and is maintained by many network security engineers, it is
+   convenient to see the system events that Sightline logs in a
+   concise format.  System events include configuration changes,
+   system errors, and other operational details that can help maintain
+   the stability and availability of your NETSCOUT|Arbor Sightline/TMS
+   environment.
 
-   This example uses a Java program to retrieve the events from an SP
-   leader that are considered system events, and print those events in
-   a concise format.
+   This example uses a Java program to retrieve the events from a
+   Sightline leader that are considered system events, and print those
+   events in a concise format.
 
 
 
@@ -3093,8 +3112,8 @@ listings package.
    keytool -import -alias ca -file https_active.crt -keystore cacerts -storepass changeit
    #+END_SRC
    where =https_active.crt= is the name of the certificate file from
-   SP and =cacerts= is the name of the output file that will later be
-   read by the Java application.
+   Sightline and =cacerts= is the name of the output file that will
+   later be read by the Java application.
 
    This example makes use of the =json-simple=[fn:7] Java library;
    after downloading the =.jar= file for =json-simple=, and place
@@ -3139,13 +3158,13 @@ listings package.
    #+INDEX: curl!command line
    #+INDEX: /alerts/ endpoint
    #+INDEX: /alerts/ endpoint!filtering
-   Using the SP REST API can be done from a =sh= shell script and some
-   command line tools.
+   Using the Sightline REST API can be done from a =sh= shell script
+   and some command line tools.
 
    This example uses =curl= and =jq= (see the section titled [[Useful
    Tools]] for more information on those tools) to get a list of alerts
-   from SP and print them in either JSON, tab-separated values, or
-   comma-separate values.
+   from Sightline and print them in either JSON, tab-separated values,
+   or comma-separate values.
 
    This example makes an API request to get the alerts for the last 24
    hours, then uses =jq= to extract and re-render that information for
@@ -3198,19 +3217,20 @@ listings package.
    #+INDEX: jansson
    #+INDEX: /managed\_objects/ endpoint
    Most of the software in the world is written in the C programming
-   language, so an API client for the SP REST API should be no
+   language, so an API client for the Sightline REST API should be no
    exception.
 
    The example client below uses two libraries to make things easier:
-    - the cURL library to make the HTTPS request to the SP REST API
-      and retrieve the results; see https://curl.haxx.se/ for more
+    - the cURL library to make the HTTPS request to the Sightline REST
+      API and retrieve the results; see https://curl.haxx.se/ for more
       details
-    - the Jansson library for processing JSON data returned by the SP
-      REST API; see http://www.digip.org/jansson/ for more details
+    - the Jansson library for processing JSON data returned by the
+      Sightline REST API; see http://www.digip.org/jansson/ for more
+      details
 
-   This example retrieves all of the managed objects from the SP REST
-   API in groups of 10 at a time (note the =perPage=10= part of the
-   URL) and prints out a table of a few of the attributes.
+   This example retrieves all of the managed objects from the
+   Sightline REST API in groups of 10 at a time (note the =perPage=10=
+   part of the URL) and prints out a table of a few of the attributes.
 
    The output looks like:
    #+LATEX: \tiny
@@ -3245,11 +3265,11 @@ listings package.
    #+INDEX: filter\ list
    #+INDEX: /tms\_filter\_list\_requests/ endpoint
 
-   In SP8.4 you can configure DNS Filter Lists by telling SP about a
-   DNS server from which you can do zone transfers and the domain or
-   subdomain containing the hosts you want to add to the DNS filter
-   list.  This can be a fast way of creating a DNS filter list for a
-   whole subdomain.
+   In SP8.4 you can configure DNS Filter Lists by telling Sightline
+   about a DNS server from which you can do zone transfers and the
+   domain or subdomain containing the hosts you want to add to the DNS
+   filter list.  This can be a fast way of creating a DNS filter list
+   for a whole subdomain.
 
    The following NodeJS API client requires a version of Node that is
    at least 8.4.0 and can be run with the command:
@@ -3308,10 +3328,10 @@ listings package.
 
 ** Versioning
    #+INDEX: versioning
-   The SP REST API version number is displayed in the =meta= section
-   of every API response.  In version 1 of the SP REST API the version
-   is stored by the key =sp_api_version=, in later versions it is
-   stored in the key =api_version=.  The =meta= object looks like:
+   The Sightline REST API version number is displayed in the =meta=
+   section of every API response.  In version 1 of the SP REST API the
+   version is stored by the key =sp_api_version=, in later versions it
+   is stored in the key =api_version=.  The =meta= object looks like:
    #+BEGIN_SRC sh :results output :exports results
    http --session leader GET https://leader.example.com/api/sp/ | jq '{"meta":.meta}'
    #+END_SRC
@@ -3327,14 +3347,15 @@ listings package.
      }
    #+END_SRC
 
-   It is possible for the API version to remain the same across SP
-   versions, but that doesn't necessarily mean that the API hasn't
-   changed.  If keys are *added* to the API, but none of the existing
-   keys are changed or removed and none of the types of the values
-   change, the API version number will not change.  When referring to
-   what version of the API you are using, the most accurate way is to
-   combine the API version with the SP version.  In the example above
-   the version of the API is "SP8.3 APIv3".
+   It is possible for the API version to remain the same across
+   Sightline versions, but that doesn't necessarily mean that the API
+   hasn't changed.  If keys are *added* to the API, but none of the
+   existing keys are changed or removed and none of the types of the
+   values change, the API version number will not change.  When
+   referring to what version of the API you are using, the most
+   accurate way is to combine the API version with the Sightline
+   version.  In the example above the version of the API is "SP8.3
+   APIv3".
 
    If you have written API clients that rely on a particular version,
    you can refer to that version in the URL by inserting =/vX/= after
@@ -3375,15 +3396,15 @@ listings package.
    SP8.3 APIv3.  Use caution when writing to prior APIs.
 
    The differences in each version are in the Deprecation Policy
-   section of the SP REST API Reference manual that is available from
-   the SP UI at the item "REST API Documentation" in the
-   "Administration" menu.
+   section of the Sightline REST API Reference manual that is
+   available from the Sightline UI at the item "REST API
+   Documentation" in the "Administration" menu.
 
 ** Reference Manual
 
-   The SP REST API endpoint reference manual is available from the SP
-   web interface by going to the "Administration" menu and choosing
-   "REST API Documentation".
+   The SP REST API endpoint reference manual is available from the
+   Sightline web interface by going to the "Administration" menu and
+   choosing "REST API Documentation".
 
 ** Reporting Errors to Arbor
    #+INDEX: errors
@@ -3391,10 +3412,10 @@ listings package.
    well-tested software, it is possible that your application will
    uncover mistakes that we missed.
 
-   In the case of the SP REST API, these mistakes will present
+   In the case of the Sightline REST API, these mistakes will present
    themselves as a HTTP response with the code =500 INTERNAL SERVER
    ERROR=.  In nearly all cases this will also print some information
-   to one of SP's log files.
+   to one of Sightline's log files.
 
    Arbor values your reporting of these errors and to help us diagnose
    and fix the problem, it is helpful if you include a few things with
@@ -3404,14 +3425,14 @@ listings package.
    1. The API request that you made
 
       Only the part of the URL from =/api/sp= onwards is required; we
-      do not need to have the name of your SP leader
+      do not need to have the name of your Sightline leader
 
    2. The sections of the logs files with any additional errors
 
       One or more of log files =syslog=, =www_access=, and =www_error=
-      in the directory =/base/var/log/= on SP will likely have a
-      Python traceback in them if you see an error with an HTTP status
-      code of 500; a copy of that will be very useful for us.
+      in the directory =/base/var/log/= on Sightline will likely have
+      a Python traceback in them if you see an error with an HTTP
+      status code of 500; a copy of that will be very useful for us.
 
    3. The =meta= information from any API request
 
@@ -3421,10 +3442,10 @@ listings package.
 
    4. The expected results or results of a similar query that works
 
-   5. The SP diagnostics package
+   5. The Sightline diagnostics package
 
-      A diagnostics package can be created from the SP command line by
-      typing =system diagnostics=
+      A diagnostics package can be created from the Sightline command
+      line by typing =system diagnostics=
 
    The Arbor Technical Assistance Center can be reached at
    http://support.arbornetworks.com
@@ -3492,7 +3513,7 @@ listings package.
 
 * Footnotes
 
-[fn:10] Managed Objects are licensed quantities in SP, see the
+[fn:10] Managed Objects are licensed quantities in Sightline, see the
 Deployment Status page
 (http://sp.example.com/page?id=deployment_status) for how many managed
 objects your license contains and how many you are using.
@@ -3513,8 +3534,8 @@ objects your license contains and how many you are using.
 
 [fn:8] Put another way, this relieves contributors to this document of
 the burden of updating all of the examples and descriptions every time
-a new version of SP is released.  So if you come across an example
-that is 8 versions old, be cautious or edit it and submit an update to
-this document.
+a new version of Sightline is released.  So if you come across an
+example that is 8 versions old, be cautious or edit it and submit an
+update to this document.
 
 [fn:9] https://github.com/phihag/ipaddress
