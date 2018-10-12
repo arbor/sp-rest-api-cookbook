@@ -38,6 +38,12 @@ probably pretty fragile, so please feel free to open [issues in
 GitHub](https://github.com/arbor/sp-rest-api-cookbook/issues) or make
 pull requests to make this more robust._
 
+To render the `.txt` file into a PDF file, run:
+
+    ./mkpdf.sh
+
+in the same directory as this file.
+
 In the same directory as this README file is a Bash shell script
 called `mkpdf.sh` that will create a Docker image for you, or use an
 existing Docker image that will then convert the Emacs org-mode file
@@ -48,29 +54,6 @@ What this is really doing is using the Docker file and two supporting
 files in the `render` directory to create a Docker image that contains
 everything you need to render `sp-rest-api-cookbook.txt` to a PDF
 file.
-
-Once you have [Docker](http://docker.com) installed, you should be
-able to build a Docker image (which, until you delete it, is a
-one-time operation) by typing (in the `sp-rest-api-cookbook`
-directory):
-
-    docker build -t cookbook-render render
-
-This might take a while and will require a network connection.  Once
-it is done, you can see it in the list of Docker images you have by
-typing:
-
-    docker images
-
-Once you have an image called `cookbook-render` you can type:
-
-    docker run -v `pwd`:/source --rm cookbook-render sp-rest-api-cookbook.txt
-
-If all goes well, this will produce a file called
-`sp-rest-api-cookbook.pdf`.  To render `sp-rest-api-cookbook.txt` into
-a PDF file again, you do not need to do the `docker build` step, just
-the `docker run` step, and you don't need a network connection for
-that.
 
 Alternatively, if you want to use Emacs to render this you can use
 Emacs+Orgmode's Export (`C-e`) command to produce HTML, PDF, etc.
