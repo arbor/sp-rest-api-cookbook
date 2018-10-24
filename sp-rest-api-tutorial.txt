@@ -40,7 +40,7 @@ listings package.
 # #+LATEX_HEADER:     showstringspaces=false,
 # #+LATEX_HEADER:     postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}}
 # #+LATEX_HEADER: }
-#+LATEX: \renewcommand \plaintitle{Sightline REST API Cookbook, Sightline v8.4, API v5} % keep the image out of the headers
+#+LATEX: \renewcommand \plaintitle{Sightline REST API Cookbook, Sightline v9.0, API v5} % keep the image out of the headers
 #+LATEX: \renewcommand{\ref}{\nameref}
 
 * Introduction
