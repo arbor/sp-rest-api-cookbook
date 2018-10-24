@@ -1548,6 +1548,32 @@ listings package.
 
    #+INCLUDE: code-examples/attacked-cidrs.py src python
 
+** Example: Filtering Mitigations by Alert ID
+   #+INDEX: /mitigations/ endpoint
+   #+INDEX: paging!recursion
+   #+INDEX: relationships
+   #+INDEX: alerts
+
+   Sightline and SP up through version 9.0 does not offer a way to
+   filter mitigations based on alert IDs.  However, this is often a
+   useful thing to do.
+
+   While we wait for filtering functionality to be added to Sightline
+   natively, there is a brute-force method of doing this that pages
+   through all of the running mitigations on the deployment and looks
+   for the relationship to the alert you are searching for.
+
+   The following Python program demonstrates paging through the
+   mitigations on a deployment and checking for a specified alert in
+   the relationship object.  It also demonstrates the use of
+   =argparse= for command line arguments.
+
+   The output from this program is the JSON directly from the API for
+   each mitigation.
+
+   #+INCLUDE: code-examples/mit-filter-by-alert.py src python
+
+
 ** Example: Differences in output between accounts with different authorization
    #+INDEX: /alerts/ endpoint
    #+INDEX: authorization
