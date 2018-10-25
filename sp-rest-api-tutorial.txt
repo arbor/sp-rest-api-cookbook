@@ -3104,21 +3104,66 @@ listings package.
    not supported in the UI or API, but can be done with your own API
    client.
 
-** Using Tagrules with an Incident Tracking System
+** Example: Using Tagrules to Relate Traffic Data to an Incident Tracking System
+
+   Sightline Insight stores data in columns called *dimensions* and
+   the Sightline REST API sometimes combines those dimensions or
+   applies logic to them resulting in *aspects*.  As a group
+   dimensions and aspects are referred to as *facets*.  Sightline
+   Insight does not support modifying aspects within the API but does
+   expect that API clients might combine several facets with local
+   logic to produce an *external aspect*.  It is also possible to add
+   dimensions to Insight data directly via *tagrules* which specify a
+   filter (any valid Insight filter), a new dimension, and a value to
+   insert into that dimension.  The new dimension or dimensions extend
+   the Insight data store.  If a dimension is removed, it will persist
+   in the data store until all of the data related to the new
+   dimension has aged out of Insight.
+
+   One example of using an additional dimension in Insight is to
+   associate traffic on your network with DNS data.  Assume a host
+   using your network makes DNS queries to a DNS server that you
+   control.  You can then associate the DNS lookup of =netflix.com=
+   with a source and destination pair, and that association is valid
+   for as long as the time-to-live of the DNS lookup.  Adding
+   =netflix.com= to a dimension in Insight for each occurance of this
+   allows you to analyze traffic between clients on your network and
+   =netflix.com=.  This is often referred to as "over-the-top" or OTT
+   analysis, as it looks at traffic between two known entities that is
+   going "over the top" of your network.  That, however, is a
+   complicated example.
+
+   Another, simpler, example is that of a Network Operations Center
+   (NOC) that has a task of producing reports on network traffic from
+   specific IP addresses that it learns of via other means.  One
+   example of this is looking at botnet command-and-control networks
+   and getting frequently updated data on the IP addresses that are
+   part of that network.  For each new IP address that is part of the
+   C&C network, the NOC is informed via an Incident in their service
+   desk system.  The NOC must then look back in time at related
+   network traffic that is stored in Insight and also maintain
+   visibility on future related network traffic.
 
    Adding a "column" or dimension to the Insight data that is for an
    Incident ID from an Incident Tracking System allows traffic
    related to an incident to be analyzed both retrospectively and as
    time goes on.
 
+   This new dimension is added via a tag rule that includes three
+   pieces of information: the source IP address (the new C&C address),
+   the name of the dimension that is being updated (if the dimension
+   doesn't exist it will be created), and the value for the dimension
+   (the Incident ID number).
+
    Using the Python programs below this can be demonstrated.  The
    first program has hard-coded incident numbers and assigns
-   yesterday's top talkers to those incident numbers.  The second
-   program reports on the newly-created Incident dimesion of the
-   Insight data.
+   yesterday's top talkers instead of C&C IP addresses to those
+   incident numbers.  The second program reports on the newly-created
+   Incident dimesion of the Insight data.
 
    Adding Incidents to the Incident column and associating them with
    IP addresses looks like:
+   #+LATEX: \scriptsize
    #+BEGIN_EXAMPLE
      ID        Source IP                 Valid from                Valid until    Incident
      39      163.193.0.1  2018-10-23T00:00:00+00:00  2018-10-31T00:00:00+00:00       12345
@@ -3126,6 +3171,12 @@ listings package.
      41      163.193.0.9  2018-10-23T00:00:00+00:00  2018-10-31T00:00:00+00:00       12345
      42        4.16.52.3  2018-10-23T00:00:00+00:00  2018-10-31T00:00:00+00:00       54321
    #+END_EXAMPLE
+   #+LATEX: \normalsize
+   The =ID= column is Insight's internal number for the tagrule, the
+   =Source IP= is the Source IP address of interest, the =Valid from=
+   and =Valid until= dates specify how long this data is to be
+   monitored, and the =Incident= number is what relates this traffic
+   to the service desk Incident.
 
    Then, after waiting for the re-ingestion of the Insight data to
    happen where the new Incident data is added, the report script
@@ -3137,6 +3188,11 @@ listings package.
      12345   216.175.102.23      163.193.0.9         89278.84
      54321   216.175.102.23      163.193.0.8         88053.12
    #+END_EXAMPLE
+   Which tells you that the two IP addresses in Incident 12345
+   generated more traffic than the two in Incident 54321 and that the
+   traffic between the external address =163.193.0.1= and the internal
+   address =216.175.102.23= was the highest and would be the most
+   valuable thing to investigate.
 
 *** Creating Incidents
 
@@ -3147,13 +3203,18 @@ listings package.
     an example of that workflow, but constrained for the purposes of
     this example.
 
+    #+INCLUDE: code-examples/tagrules-create.py src python
+
 *** Reporting on Incidents
 
     A Python prorgam that demonstrates the destination traffic that
-    results from filtering on the source traffic is below.  It is
-    pretty simple, but demonstrates how you could get potentially
-    valueable data associated with an external reference using
-    Insight.
+    results from filtering on the source traffic and relates each
+    destination/source pair to an arbitrary Incident ID number is
+    below.  It is pretty simple, but demonstrates how you could get
+    potentially valueable data associated with an external reference
+    using Insight.
+
+    #+INCLUDE: code-examples/tagrules-report.py src python
 
 * Examples in Languages other than Python
 
