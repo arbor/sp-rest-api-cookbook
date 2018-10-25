@@ -167,6 +167,6 @@ def main(leader, apikey):
 
 
 if __name__ == '__main__':
-    leader = 'static.tb.arbor.net'
-    apikey = 'Quafina'
+    leader = 'sightline-leader.example.com'
+    apikey = 'My_API_Token'
     main(leader, apikey)

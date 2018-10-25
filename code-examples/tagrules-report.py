@@ -82,7 +82,7 @@ def main(leader, apikey, tagrules):
 
 
 if __name__ == '__main__':
-    leader = 'static.tb.arbor.net'
-    apikey = 'Quafina'
+    leader = 'sightline-leader.example.com'
+    apikey = 'My_SIGHTLINE_API_Token'
     tagrules_to_groupby = ['Incident']
     main(leader, apikey, tagrules_to_groupby)
