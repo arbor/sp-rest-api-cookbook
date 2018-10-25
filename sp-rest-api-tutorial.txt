@@ -3104,6 +3104,57 @@ listings package.
    not supported in the UI or API, but can be done with your own API
    client.
 
+** Using Tagrules with an Incident Tracking System
+
+   Adding a "column" or dimension to the Insight data that is for an
+   Incident ID from an Incident Tracking System allows traffic
+   related to an incident to be analyzed both retrospectively and as
+   time goes on.
+
+   Using the Python programs below this can be demonstrated.  The
+   first program has hard-coded incident numbers and assigns
+   yesterday's top talkers to those incident numbers.  The second
+   program reports on the newly-created Incident dimesion of the
+   Insight data.
+
+   Adding Incidents to the Incident column and associating them with
+   IP addresses looks like:
+   #+BEGIN_EXAMPLE
+     ID        Source IP                 Valid from                Valid until    Incident
+     39      163.193.0.1  2018-10-23T00:00:00+00:00  2018-10-31T00:00:00+00:00       12345
+     40      163.193.0.8  2018-10-23T00:00:00+00:00  2018-10-31T00:00:00+00:00       54321
+     41      163.193.0.9  2018-10-23T00:00:00+00:00  2018-10-31T00:00:00+00:00       12345
+     42        4.16.52.3  2018-10-23T00:00:00+00:00  2018-10-31T00:00:00+00:00       54321
+   #+END_EXAMPLE
+
+   Then, after waiting for the re-ingestion of the Insight data to
+   happen where the new Incident data is added, the report script
+   results in:
+   #+BEGIN_EXAMPLE
+     Inc.#     Dest IP Addr      Src IP Addr    In Traf (bps)
+     12345   216.175.102.23      163.193.0.1        177592.53
+     54321    216.130.192.1        4.16.52.3        124684.16
+     12345   216.175.102.23      163.193.0.9         89278.84
+     54321   216.175.102.23      163.193.0.8         88053.12
+   #+END_EXAMPLE
+
+*** Creating Incidents
+
+    A Python program that demonstrates how traffic can be associated
+    with an Incident ID is below.  A more useful thing to do might be
+    to have a web page where a set of Source IP Addresses can be
+    entered along with an Incident ID number; this script is nearly
+    an example of that workflow, but constrained for the purposes of
+    this example.
+
+*** Reporting on Incidents
+
+    A Python prorgam that demonstrates the destination traffic that
+    results from filtering on the source traffic is below.  It is
+    pretty simple, but demonstrates how you could get potentially
+    valueable data associated with an external reference using
+    Insight.
+
 * Examples in Languages other than Python
 
   These examples are intentionally less sophisticated than those
