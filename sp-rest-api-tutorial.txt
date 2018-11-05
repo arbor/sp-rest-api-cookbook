@@ -3105,6 +3105,12 @@ listings package.
    client.
 
 ** Example: Using Tagrules to Relate Traffic Data to an Incident Tracking System
+   #+INDEX: insight!query
+   #+INDEX: insight!filters
+   #+INDEX: python
+   #+INDEX: insight!over the top
+   #+INDEX: insight!ott
+   #+INDEX: insight!tagrules
 
    Sightline Insight stores data in columns called *dimensions* and
    the Sightline REST API sometimes combines those dimensions or
