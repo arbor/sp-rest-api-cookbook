@@ -10,20 +10,7 @@
     return JSON.parse(response);
   });
 
-  /*
-   * GET API data
-   * Data will need to be in the following format:
-   * {
-   *   MX: {
-   *    fillKey: 'HIGH',
-   *    ratio: 9999
-   *   },
-   *   USA: {
-   *     fillKey: 'LOW',
-   *     ratio: 42
-   *   }
-   * }
-   */
+  /* GET API data (function defined further down). */
   getAPIData('statistics_by_country/');
 
   /* Load iso3 json from JSON file on disk */
@@ -38,7 +25,22 @@
     xobj.send(null);
   }
 
-  /* use wrapper call to API defined in server.js */
+  /*
+   * Calls our nodejs "server" to make SP API calls.
+   *
+   * We transform API data for pps dropped to the format needed by
+   * the datamaps library:
+   * {
+   *   MX: {
+   *    fillColor: #000,
+   *    numberOfThings: 9999
+   *   },
+   *   USA: {
+   *     fillColor: #FFF,
+   *     numberOfThings: 42
+   *   }
+   * }
+   */
   function getAPIData(endpoint) {
     var request = new Request({
       method: 'GET',
@@ -46,6 +48,7 @@
         'Content-Type': 'application/json'
       })
     });
+    // make request to server.js
     fetch('/get_stats_by_country', request)
       .then(function(resp) {
         return resp.json();
@@ -77,6 +80,8 @@
           };
         });
 
+        // Define our datamap
+        // datamaps repo: https://github.com/markmarkoh/datamaps
         var map = new Datamap({
           element: document.getElementById('container'),
           scope: 'world',
@@ -84,7 +89,6 @@
           geographyConfig: {
             borderColor: '#DEDEDE',
             highlightBorderWidth: 2,
-            // do not change fill color on highlight
             highlightFillColor: function(geo) {
               return geo['fillColor'] || '#F5F5F5';
             },
