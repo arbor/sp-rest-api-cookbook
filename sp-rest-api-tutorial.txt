@@ -1573,7 +1573,6 @@ listings package.
 
    #+INCLUDE: code-examples/mit-filter-by-alert.py src python
 
-
 ** Example: Differences in output between accounts with different authorization
    #+INDEX: /alerts/ endpoint
    #+INDEX: authorization
@@ -2249,6 +2248,75 @@ listings package.
     unnecessarily nested or complicated when taken out of context,
     however, this structure allows for simple construction of the
     entirety of the alert data into one JSON object.
+
+** Example: A List of Victim IPs and using the =include= functionality
+   #+INDEX: /alerts/ endpoint
+   #+INDEX: /alerts/ endpoint!sub-objects
+   #+INDEX: cache
+   #+INDEX: caching
+   #+INDEX: include
+
+   It can be useful for an enterprise or ISP to see what IP addresses
+   on their network are often attacked, and getting a list of the
+   victim IP addresses from the SP alerts list can help to start
+   answering this question.
+
+   The following example program demonstrates how to use the
+   ~?include=~ URL parameter in an API request, store the data in the
+   ="included":= block of the response, and refer to that in other
+   places.  The key thing to recognize is that the ="included":= block
+   is a flat list of objects that is identified by the type/ID pair
+   and that the type/ID pair is also in the relationships in the
+   ="data":= block of the response.
+
+   In this particular example, the ~?include=~ parameter also includes
+   subobjects by asking for =traffic.dest_prefixes=; that is, the
+   request to include both the data from the =traffic= relationship
+   and the data from the =dest_prefixes= relationship that is in
+   =traffic=.
+
+   #+INCLUDE: code-examples/dest-ip-dos-report.py src python
+
+   The output from this example is not very pretty, and doesn't
+   include any analysis of the victim IP frequency, alert levels, or
+   anything else.  A minimized version of the output looks like:
+
+   #+BEGIN_SRC json
+     [
+         {
+             "id": "1469814",
+             "start": "2020-01-17T18:46:25+00:00",
+             "end": "2020-01-17T19:04:59+00:00",
+             "dest_ips": []
+         },
+         {
+             "id": "1469808",
+             "start": "2020-01-17T18:31:45+00:00",
+             "end": "2020-01-17T18:56:00+00:00",
+             "dest_ips": [
+                 "3ffe:1:14:20::1/128"
+             ]
+         },
+         {
+             "id": "1469807",
+             "start": "2020-01-17T18:31:45+00:00",
+             "end": "2020-01-17T18:55:00+00:00",
+             "dest_ips": [
+                 "3ffe:1:14:20::/128"
+             ]
+         },
+         {
+             "id": "1469804",
+             "start": "2020-01-17T18:24:45+00:00",
+             "end": "2020-01-17T18:40:59+00:00",
+             "dest_ips": [
+                 "85.94.160.137/32"
+             ]
+         }
+     ]
+   #+END_SRC
+
+   This program can take several seconds to complete.
 
 * Configuration
 
