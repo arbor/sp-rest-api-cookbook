@@ -17,6 +17,7 @@ import ipaddress
 import requests
 import sys
 from datetime import datetime
+import slenv
 
 
 def iso8601_to_datetime(iso8601_string):
@@ -40,7 +41,7 @@ def get_attacked_addresses(leader, token, cert,
     until the last alert in the list started before the `start` time
     """
 
-    url = 'https://{}/api/sp/v2/alerts/?page={}'.format(leader, page)
+    url = 'https://{}/api/sp/alerts/?page={}'.format(leader, page)
     start_dt = iso8601_to_datetime(start)
     end_dt = iso8601_to_datetime(end)
 
@@ -102,12 +103,12 @@ def bundle_addresses(addrs, netmasks):
 
 
 if __name__ == '__main__':
-    SPLEADER = 'spleader.example.com'
-    APITOKEN = 'MySecretAPItoken'
+    SPLEADER = slenv.leader
+    APITOKEN = slenv.apitoken
     CERTFILE = './certfile'
 
-    START_DATE = '2018-05-23T12:00:00+00:00'
-    END_DATE = '2018-05-23T23:00:00+00:00'
+    START_DATE = '2023-03-07T12:00:00+00:00'
+    END_DATE = '2023-03-07T23:00:00+00:00'
 
     IPv4_MASK = '24'
     IPv6_MASK = '116'

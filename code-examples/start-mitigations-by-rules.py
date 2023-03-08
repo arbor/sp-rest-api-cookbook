@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from sys import stderr
 import requests
 import json
-import urllib
+import urllib.parse
+import slenv
 
 CERT_FILE = './certfile'
 
@@ -17,32 +18,32 @@ def api_request(URL, key, body=None):
 
     api_response = None
     if body is None:
-	api_response = requests.get(
-	    URL,
-	    headers={'X-Arbux-APIToken':
-		     key,
-		     'Content-Type':
-		     'application/vnd.api+json'},
-	    verify=CERT_FILE)
+        api_response = requests.get(
+			URL,
+			headers={'X-Arbux-APIToken':
+					key,
+					'Content-Type':
+					'application/vnd.api+json'},
+			verify=CERT_FILE)
     else:
-	api_response = requests.post(
-	    URL,
-	    data=body,
-	    headers={'X-Arbux-APIToken':
-		     key,
-		     'Content-Type':
-		     'application/vnd.api+json'},
-	    verify=CERT_FILE)
+        api_response = requests.post(
+			URL,
+			data=body,
+			headers={'X-Arbux-APIToken':
+					key,
+					'Content-Type':
+					'application/vnd.api+json'},
+			verify=CERT_FILE)
 
     # Handle any API error responses
     if (api_response.status_code < requests.codes.ok or
-	    api_response.status_code >= requests.codes.multiple_choices):
-	print("API responded with this error: \n{}"
-	      .format(
-		  api_response.text),
-	      file=stderr)
+			api_response.status_code >= requests.codes.multiple_choices):
+        print("API responded with this error: \n{}"
+			  .format(
+			  	api_response.text),
+			  file=stderr)
 
-	return []
+        return []
 
     # Convert the response to JSON and return it
     api_response = api_response.json()
@@ -60,7 +61,7 @@ def get_alerts(leader, key, period):
     iso_time = period.isoformat()
 
     print("Fetching alerts from {} onwards"
-	  .format(time))
+		  .format(time))
 
     # Craft the URL components, filtering
     # based on time period
@@ -69,7 +70,7 @@ def get_alerts(leader, key, period):
     FILTER = "/data/attributes/start_time > " + iso_time
 
     # Percent-encode our filter query and combine URL components
-    FILTER = urllib.quote(FILTER, safe='')
+    FILTER = urllib.parse.quote(FILTER, safe='')
     URL = "https://" + leader + ALERT_URI + FILTER
 
     # Make the api request and return its results
@@ -88,14 +89,14 @@ def apply_rules(alerts):
     # Return alerts that match the following rules:
     # Importance = High, Ongoing = True, Alert Type = DOS
     for alert in alerts:
-	attributes = alert['attributes']
-	if (attributes['importance'] == 2 and
-		attributes['ongoing'] is True and
-		attributes['alert_type'] == 'dos_host_detection'):
-	    filtered_alerts.append(alert)
+        attributes = alert['attributes']
+        if (attributes['importance'] == 2 and
+				attributes['ongoing'] is True and
+				attributes['alert_type'] == 'dos_host_detection'):
+            filtered_alerts.append(alert)
 
     print("{} alert(s) match mitigation criterion"
-	  .format(len(filtered_alerts)))
+		  .format(len(filtered_alerts)))
     return filtered_alerts
 
 
@@ -107,27 +108,27 @@ def extract_mitigation_attr(alert):
 
     # Configure mitigation information for the current alert
     name = "Alert {} Auto-API-Mitigation".format(
-	alert['id'])
+		alert['id'])
     description = "Mitigation triggered by script via REST API"
     ongoing = True
     ip_version = alert['attributes']['subobject']['ip_version']
     protection_cidr = '/32'
     if ip_version == 6:
-	protection_cidr = '/128'
+        protection_cidr = '/128'
     subobject = {
-	'bgp_announce': False,
-	'protection_prefixes':
-	    [alert['attributes']['subobject']['host_address'] +
-	     protection_cidr]
+		'bgp_announce': False,
+		'protection_prefixes':
+			[alert['attributes']['subobject']['host_address'] +
+			protection_cidr]
     }
     subtype = 'tms'
     attributes = {
-	"name": name,
-	"description": description,
-	"ongoing": ongoing,
-	"ip_version": ip_version,
-	"subobject": subobject,
-	"subtype": subtype
+		"name": name,
+		"description": description,
+		"ongoing": ongoing,
+		"ip_version": ip_version,
+		"subobject": subobject,
+		"subtype": subtype
     }
 
     return attributes
@@ -139,49 +140,49 @@ def mitigate(leader, key, alerts):
     mitigations = []
     # Create a POST body for each mitigation to make
     for alert in alerts:
-	attributes = extract_mitigation_attr(alert)
-	post = {
-	    "data": {
-		"attributes": attributes,
-		"alert": {
-		    "data": {
-			"id": alert['id'],
-			"type": "alert"
-		    }
-		},
-		"relationships": {
-		    "tms_group": {
+        attributes = extract_mitigation_attr(alert)
+        post = {
 			"data": {
-			    "id": "3",
-			    "type": "tms_group"
+				"attributes": attributes,
+				"alert": {
+					"data": {
+						"id": alert['id'],
+						"type": "alert"
+					}
+				},
+				"relationships": {
+					"tms_group": {
+						"data": {
+							"id": "3",
+							"type": "tms_group"
+						}
+					}
+				}
 			}
-		    }
 		}
-	    }
-	}
-	mitigations.append(post)
+    mitigations.append(post)
 
     MIT_URI = '/api/sp/mitigations/'
     URL = "https://" + leader + MIT_URI
     # POST mitigations for each POST body created
     for mitigation in mitigations:
-	api_response = api_request(URL,
-				   key,
-				   json.dumps(mitigation))
+        api_response = api_request(URL,
+								   key,
+								   json.dumps(mitigation))
 
-	# Handle any API responses
-	if len(api_response) > 0:
-	    print("{} started"
-		  .format(mitigation['data']['attributes']['name']))
-	else:
-	    print("Could not start mitigation: {}"
-		  .format(mitigation['data']['attributes']['name']))
+		# Handle any API responses
+        if len(api_response) > 0:
+            print("{} started"
+				  .format(mitigation['data']['attributes']['name']))
+        else:
+            print("Could not start mitigation: {}"
+				  .format(mitigation['data']['attributes']['name']))
 
-###################
+#####################
 # Start the program #
-###################
-SP_LEADER = 'leader.example.com
-API_KEY = 'viZqKYlEPKSWSpvzftr3Bs8Lqu_7u7_l8yiwxaD9'
+#####################
+SP_LEADER = slenv.leader
+API_KEY = slenv.apitoken
 
 TIMEFRAME = datetime.now() - timedelta(minutes=15)
 
@@ -192,8 +193,8 @@ if len(alerts) > 0:
     target_alerts = apply_rules(alerts)
 
     if len(target_alerts) > 0:
-	print("Mitigating alerts")
-	mitigate(SP_LEADER, API_KEY, target_alerts)
-	print("Done")
+        print("Mitigating alerts")
+        mitigate(SP_LEADER, API_KEY, target_alerts)
+        print("Done")
 else:
     print("No alerts were found in the requested period")

@@ -1,9 +1,10 @@
 from __future__ import print_function
 import sys
-import requests  # version: 2.18.4
-import json  # version: 2.0.9
+import requests  # version: 2.28.1
+import json
+import slenv
 
-CERT_FILE = './https_active.crt'
+CERT_FILE = "./certfile"
 
 
 def api_request(URL, key, body=None):
@@ -120,8 +121,8 @@ def set_limits(leader, key, appliances):
 
 
 def main():
-    SP_LEADER = 'leader.example.com'
-    API_KEY = 'okw_TF2PLL20ojZ1ptzazGh6TPS0C2MlqpO3LDzv'
+    SP_LEADER = slenv.leader
+    API_KEY = slenv.apitoken
 
     print('Starting appliance-limiting script')
     appliances = get_appliances(SP_LEADER, API_KEY)

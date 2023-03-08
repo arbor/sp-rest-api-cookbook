@@ -8,10 +8,9 @@ related managed objects for two diferent user, demonstrating the different
 results for each user"""
 
 from __future__ import print_function
-import os
 import sys
 import requests
-
+import slenv
 
 
 def get_some_alerts(leader, token, cert):
@@ -66,11 +65,12 @@ def alert_report(alerts):
 
 
 if __name__ == '__main__':
-    SP_LEADER = os.getenv('SPLEADER')
+    SP_LEADER = slenv.leader
     API_TOKEN = {}
-    API_TOKEN['admin'] = os.getenv('ADMIN_TOKEN')
-    API_TOKEN['mssp_user'] = os.getenv('MSSP_TOKEN')
-    CERT_FILE = './certfile'
+    API_TOKEN['admin'] = slenv.apitoken
+    API_TOKEN['mssp_user'] = slenv.mssptoken
+    #CERT_FILE = './certfile'
+    CERT_FILE = False
     for token in API_TOKEN:
         print ("Getting alerts for the {} account".format(token))
         alerts = get_some_alerts(SP_LEADER,

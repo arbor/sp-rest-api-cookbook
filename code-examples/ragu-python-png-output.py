@@ -1,14 +1,15 @@
 from __future__ import print_function
 from sys import stderr
-import requests  # version 2.18.4
-import arrow  # version 0.10.0
+import requests  # version 2.28.1
+import arrow  # version 1.2.3
 import datetime
-import matplotlib  # version 2.0.2
+import matplotlib  # version 3.6.0
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib.dates import DayLocator, HourLocator, DateFormatter, drange
+import slenv
 
-ALERT_ID = 870
+ALERT_ID = 321334
 
 
 def render_matplotlib_png(alert_router_id, points, start, end, step):
@@ -105,7 +106,8 @@ def graph_timeseries_data_per_router(router_traffic):
         return
 
     for router in router_traffic:
-        data = router['attributes']['view']['network']['unit']['bps']
+        router_id = 'router-' + router['id'].split('-')[1]
+        data = router['attributes']['view'][router_id]['unit']['bps']
 
         step = data['step']
         # Find the end time. Create arrow datetime objects for start and end.
@@ -114,14 +116,14 @@ def graph_timeseries_data_per_router(router_traffic):
         start, end = start_time.span('second', count=seconds_after)
 
         # Build timeseries graph
-        render_matplotlib_png(router['id'], data['timeseries'], start, end,
+        render_matplotlib_png(router_id, data['timeseries'], start, end,
                               step)
     return
 
 
 if __name__ == '__main__':
-    sp_leader = 'leader.example.com'
-    api_key = 'JskW5QLVUMkNn4ruVwXOM0hQdyXCtOwnpkOjOev4'
+    sp_leader = slenv.leader
+    api_key = slenv.apitoken
     print("Getting traffic data for alert {} ...".format(ALERT_ID))
     # get router traffic timeseries
     router_traffic = get_alert_traffic_data_router(sp_leader, api_key, ALERT_ID)
