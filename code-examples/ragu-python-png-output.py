@@ -106,18 +106,17 @@ def graph_timeseries_data_per_router(router_traffic):
         return
 
     for router in router_traffic:
-        router_id = 'router-' + router['id'].split('-')[1]
-        data = router['attributes']['view'][router_id]['unit']['bps']
+        for router_id, view in router['attributes']['view'].items():
+            data = view['unit']['bps']
+            step = data['step']
+            # Find the end time. Create arrow datetime objects for start and end.
+            start_time = arrow.get(data['timeseries_start'])
+            seconds_after = (step * len(data['timeseries']))
+            start, end = start_time.span('second', count=seconds_after)
 
-        step = data['step']
-        # Find the end time. Create arrow datetime objects for start and end.
-        start_time = arrow.get(data['timeseries_start'])
-        seconds_after = (step * len(data['timeseries']))
-        start, end = start_time.span('second', count=seconds_after)
-
-        # Build timeseries graph
-        render_matplotlib_png(router_id, data['timeseries'], start, end,
-                              step)
+            # Build timeseries graph
+            render_matplotlib_png(router_id, data['timeseries'], start, end,
+                                step)
     return
 
 
