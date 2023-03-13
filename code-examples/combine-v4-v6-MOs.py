@@ -43,6 +43,7 @@ import os
 import sys
 import requests
 from copy import deepcopy
+import slenv
 
 
 def get_mos(leader, apikey, certfile, page=1, mos=[]):
@@ -239,8 +240,8 @@ def combine_mos(mov4, mov6):
 
 if __name__ == '__main__':
 
-    LEADER = os.getenv('SPLEADER')
-    APIKEY = os.getenv('SPAPIKEY')
+    LEADER = slenv.leader
+    APIKEY = slenv.apitoken
     CERTFILE = './certfile'
     MOS_FILE = 'mos_to_merge.json'
 

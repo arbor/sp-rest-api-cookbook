@@ -1,12 +1,13 @@
 """Example SP API script to retrieve and summarize device system alerts."""
 from __future__ import print_function
-import arrow     # version: 0.10.0
+import arrow           # version: 1.2.3
 import sys
 import re
-import requests  # version: 2.18.4
-import urllib    # version: 1.17
+import requests        # version: 2.28.1
+import urllib.parse    # version: 1.26.13
+import slenv
 
-CERT_FILE = './https_active.crt'
+CERT_FILE = "./certfile"
 
 
 def get_page_from_link(link):
@@ -106,13 +107,13 @@ def get_alerts_page(leader, key, start_time, page=1):
         list: A specific page of alerts from the leader.
     """
     # Craft the URL components. Filter on alert class and starting time.
-    alert_uri = '/api/sp/v3/alerts/'
+    alert_uri = '/api/sp/alerts/'
     filter_value = ("/data/attributes/alert_class = system AND "
                     "/data/attributes/start_time > {0}".format(
                         start_time.format('YYYY-MM-DD:HH:mm:ss')))
 
     # Percent-encode our filter query.
-    filter_value = urllib.quote(filter_value, safe='')
+    filter_value = urllib.parse.quote(filter_value, safe='')
 
     # Add the parameters to the request url.
     params = list()
@@ -136,7 +137,7 @@ def get_devices(leader, key):
     Returns:
         list: Device data from the leader.
     """
-    device_uri = '/api/sp/v3/devices/'
+    device_uri = '/api/sp/devices/'
 
     url = "https://{0}{1}".format(leader, device_uri)
 
@@ -147,8 +148,8 @@ def get_devices(leader, key):
 
 def main():
     """Print a list of devices sorted by system alert count."""
-    SP_LEADER = 'leader.example.com'
-    API_KEY = 'jrqRzJBV5Ua4t88YWuoTJ8TJsnHBe4qR1phcCvcD'
+    SP_LEADER = slenv.leader
+    API_KEY = slenv.apitoken
 
     # Create a start date one week before the current time.
     arrow_now = arrow.utcnow()
@@ -180,12 +181,10 @@ def main():
     # Transform the dict into list of dicts containing id
     # and alert_count for each device.
     alert_count_list = [{"id": key, "alert_count": value}
-                        for key, value in alert_counts.iteritems()]
+                        for key, value in alert_counts.items()]
 
     # Sort the list in decending order by alert count.
-    alert_count_list.sort(reverse=True,
-                          cmp=lambda x, y: cmp(x["alert_count"],
-                                               y["alert_count"]))
+    alert_count_list.sort(reverse=True, key=lambda k : k['alert_count'])
 
     # Display a report of collectors sorted by the number of system alerts
     # found on each collector.

@@ -1,11 +1,12 @@
 from __future__ import print_function
 from datetime import datetime, timedelta
 import sys
-import requests  # version: 2.18.4
-import json  # version: 2.0.9
-import urllib  # version: 1.17
+import requests      # version: 2.28.1
+import json
+import urllib.parse  # version: 1.16.13
+import slenv
 
-CERT_FILE = './https_active.crt'
+CERT_FILE = './certfile'
 
 
 def api_request(URL, key, body=None):
@@ -70,7 +71,7 @@ def get_alerts(leader, key):
               "/data/attributes/alert_class = dos")
 
     # Percent-encode our filter query and combine URL components
-    FILTER = urllib.quote(FILTER, safe='')
+    FILTER = urllib.parse.quote(FILTER, safe='')
     URL = "https://" + leader + ALERT_URI + FILTER
 
     # Make the api request and return its results
@@ -191,8 +192,8 @@ def annotate(leader, key, alerts):
 
 
 def main():
-    SP_LEADER = 'leader.example.com'
-    API_KEY = 'okw_TF2PLL20ojZ1ptzazGh6TPS0C2MlqpO3LDzv'
+    SP_LEADER = slenv.leader
+    API_KEY = slenv.apitoken
 
     print('Starting auto-annotation script')
     alerts = get_alerts(SP_LEADER, API_KEY)

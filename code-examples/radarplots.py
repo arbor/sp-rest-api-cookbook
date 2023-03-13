@@ -11,9 +11,10 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 from math import pi, ceil
+import slenv
 
-LEADER = 'spleader.example.com'
-APITOKEN = 'mYsEcReTkEy007'
+LEADER = slenv.leader
+APITOKEN = slenv.apitoken
 PER_PAGE = 12
 ONGOING = True
 INCLUDE = ['source_ip_addresses']
@@ -46,7 +47,7 @@ def get_alerts(leader, apitoken, per_page, ongoing, include):
             "X-Arbux-APIToken": apitoken,
             "Content-Type": "application/vnd.api+json"
         },
-        verify="./certfile"
+        verify=False
     )
 
     if results.status_code != requests.codes.ok:

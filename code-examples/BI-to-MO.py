@@ -1,10 +1,11 @@
 from __future__ import print_function
 import csv
 import json
-import requests  # version: 2.18.4
+import requests  # version: 2.28.1
 import sys
+import slenv
 
-CERTFILE="../certfile"
+CERTFILE="./certfile"
 
 def api_request(URL, key, body=None):
     """ Creates and makes a post request to an SP
@@ -73,10 +74,10 @@ def get_request_body(managed_object):
                 'family': 'customer',
                 'match_type': 'cidr_block',
                 'match': managed_object['prefix'],
-                'tags': ['api']
+                'tags': ['api', 'customer']
             },
             'relationships': {
-                'mitigation_template': {
+                'mitigation_templates_auto_ipv4': {
                     'data': {
                         'id': '2',
                         'type': 'mitigation_template'
@@ -184,8 +185,8 @@ def commit_config(leader, key):
 
 
 def main():
-    LEADER = "leader.example.com"
-    KEY = "eFvokphdyGHA_M4oLlLtfDnlIf9bpjFnn0mWlDqw"
+    LEADER = slenv.leader
+    KEY = slenv.apitoken
 
     for listing in get_managed_objects_from_csv('main.csv'):
         create_managed_object(LEADER, KEY, listing)
